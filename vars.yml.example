@@ -1,8 +1,8 @@
 rhev_required_repos: ['rhel-7-server-rpms', 'rhel-7-server-extras-rpms', 'rhel-7-server-supplementary-rpms', 'rhel-7-server-rhv-4.1-rpms', 'rhel-7-server-rhv-4-tools-rpms', 'jb-eap-7-for-rhel-7-server-rpms','rhel-7-server-rhv-4-mgmt-agent-rpms']
 openshift_required_repos: "{{ rhev_required_repos }}"
 rhsm_pool: 8a85f98c60c2c2b40160c32445b41b29
-rhsm_user: rhn-gps-jhorn
-rhsm_password: d70fyarRH
+rhsm_user: 
+rhsm_password:
 
 #NFS
 iptables_rules:
