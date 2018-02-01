@@ -16,7 +16,7 @@
 
     - name: Remove satellite configuration if using RH CDN
       command: "mv -f /etc/rhsm/rhsm.conf.kat-backup /etc/rhsm/rhsm.conf"
-      when: ***REMOVED*** is defined and ***REMOVED***|trim != '' and sat_cfg.stat.exists == True
+      when: rhsm_user is defined and rhsm_user|trim != '' and sat_cfg.stat.exists == True
       ignore_errors: yes
 
     - name: Install Satellite certificate (if applicable)
@@ -28,7 +28,7 @@
 
     - name: Remove satellite SSL if using RH CDN
       command: "rpm -e $(rpm -qa katello-ca-consumer*)"
-      when: ***REMOVED*** is defined and ***REMOVED***|trim != '' and sat_cfg.stat.exists == True
+      when: rhsm_user is defined and rhsm_user|trim != '' and sat_cfg.stat.exists == True
       ignore_errors: yes
 
     - name: Is the system already registered?
@@ -39,13 +39,13 @@
     - name: Register system using Red Hat Subscription Manager
       redhat_subscription:
         state: present
-        username: "{{ ***REMOVED*** | default(omit) }}"
-        password: "{{ ***REMOVED*** | default(omit) }}"
+        username: "{{ rhsm_user | default(omit) }}"
+        password: "{{ rhsm_password | default(omit) }}"
         pool: "{{ rhsm_pool | default(omit) }}"
       when:
         - "'not registered' in subscribed.stdout"
-        - ***REMOVED*** is defined
-        - ***REMOVED***|trim != ''
+        - rhsm_user is defined
+        - rhsm_user|trim != ''
       register: rhn
       until: rhn|success
       retries: 5

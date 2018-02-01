@@ -29,7 +29,7 @@
     path: /etc/sysconfig/nfs
     state: present
     regexp: "RPCNFSDARGS="
-    line: "RPCNFSDARGS=\"-N 2\""
+    line: "^#RPCNFSDARGS="
   tags:
     - nfs_vers
 

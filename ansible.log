@@ -353,3 +353,16 @@ be disabled by setting deprecation_warnings=False in ansible.cfg.
 2018-01-27 01:49:51,907 p=5054 u=root |  ok: [goliath.foo.bar]
 2018-01-27 01:49:51,909 p=5054 u=root |  PLAY RECAP *****************************************************************************
 2018-01-27 01:49:51,909 p=5054 u=root |  goliath.foo.bar            : ok=2    changed=0    unreachable=0    failed=0   
+2018-02-01 11:00:00,528 p=18673 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 'include_tasks'
+ for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled by setting 
+deprecation_warnings=False in ansible.cfg.
+2018-02-01 11:00:00,528 p=18673 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details page may
+ explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be disabled by setting
+ deprecation_warnings=False in ansible.cfg.
+2018-02-01 11:00:00,649 p=18673 u=root |  PLAY [Install RHEV] *******************************************************************************************************************
+2018-02-01 11:00:00,671 p=18673 u=root |  TASK [Gathering Facts] ****************************************************************************************************************
+2018-02-01 11:00:03,114 p=18673 u=root |  ok: [goliath.foo.bar]
+2018-02-01 11:00:03,141 p=18673 u=root |  TASK [nfs-server : Update /etc/sysconfig/nfs allowing nfsv3] **************************************************************************
+2018-02-01 11:00:03,920 p=18673 u=root |  changed: [goliath.foo.bar]
+2018-02-01 11:00:03,922 p=18673 u=root |  PLAY RECAP ****************************************************************************************************************************
+2018-02-01 11:00:03,922 p=18673 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
