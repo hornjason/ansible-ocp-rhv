@@ -1,0 +1,62 @@
+rhev_required_repos: ['rhel-7-server-rpms', 'rhel-7-server-extras-rpms', 'rhel-7-server-supplementary-rpms', 'rhel-7-server-rhv-4.1-rpms', 'rhel-7-server-rhv-4-tools-rpms', 'jb-eap-7-for-rhel-7-server-rpms','rhel-7-server-rhv-4-mgmt-agent-rpms']
+openshift_required_repos: "{{ rhev_required_repos }}"
+rhsm_pool: 8a85f98c60c2c2b40160c32445b41b29
+rhsm_user: 
+rhsm_password:
+
+#NFS
+iptables_rules:
+  # cockpit
+  - proto: tcp 
+    port: 9090 
+    state: present
+  - proto: tcp 
+    port: 2049 
+    state: present
+  - proto: tcp 
+    port: 32803 
+    state: present
+  - proto: tcp
+    port: 32769
+    state: present
+  - proto: tcp 
+    port: 892 
+    state: present
+  - proto: udp
+    port: 892 
+    state: present
+  - proto: tcp
+    port: 875 
+    state: present
+  - proto: udp
+    port: 875 
+    state: present
+  - proto: tcp
+    port: 662 
+    state: present
+  - proto: udp
+    port: 662 
+    state: present
+  - proto: udp
+    port: 7070
+    state: absent
+nfs_storage_device: /dev/sda3 # list of devices or partitions to use sda1,hda1,sda3
+nfs_share_basedir: /hosted_engine
+nfs_vg_name: "virt_data"
+
+nfs_shares:
+- name: rhvm
+  nfs_owner: vdsm    # (optional - default: "nfsnobody") 
+  nfs_group: kvm     # (optional - default: "nfsnobody") 
+  nfs_mode: "0777"     # (optional - default: "0777")
+  nfs_share_options: "rw,anonuid=36,anongid=36,all_squash"   # (optional - default: "rw,root_squash,no_wdelay")
+  nfs_lv_name: "rhvm"
+- name: vmdata
+  nfs_owner: vdsm    # (optional - default: "nfsnobody") 
+  nfs_group: kvm     # (optional - default: "nfsnobody") 
+  nfs_mode: "0777"     # (optional - default: "0777")
+  nfs_share_options: "rw,anonuid=36,anongid=36,all_squash"   # (optional - default: "rw,root_squash,no_wdelay")
+  nfs_lv_name: "vmdata"
+- name: ocp-pv
+  nfs_share_options: "rw,no_root_squash,no_wdelay"      # (optional - default: "rw,root_squash,no_wdelay")
+  nfs_lv_name: "shared"

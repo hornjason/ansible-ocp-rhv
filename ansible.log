@@ -1,0 +1,368 @@
+2018-01-25 16:43:41,384 p=1381 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 16:43:41,385 p=1381 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 16:43:41,499 p=1381 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-25 16:43:41,516 p=1381 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-25 16:43:43,541 p=1381 u=root |  ok: [goliath.foo.bar]
+2018-01-25 16:43:43,562 p=1381 u=root |  TASK [Add vdsm user] **********************************************************************************************************
+2018-01-25 16:43:44,309 p=1381 u=root |  ok: [goliath.foo.bar]
+2018-01-25 16:43:44,315 p=1381 u=root |  TASK [rhsm : Allow rhsm a longer timeout to help out with subscription-manager] ***********************************************
+2018-01-25 16:43:44,929 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 16:43:44,934 p=1381 u=root |  TASK [rhsm : Check for sat config file] ***************************************************************************************
+2018-01-25 16:43:45,543 p=1381 u=root |  ok: [goliath.foo.bar]
+2018-01-25 16:43:45,550 p=1381 u=root |  TASK [rhsm : Check for katello file] ******************************************************************************************
+2018-01-25 16:43:46,055 p=1381 u=root |  ok: [goliath.foo.bar]
+2018-01-25 16:43:46,064 p=1381 u=root |  TASK [rhsm : Remove satellite configuration if using RH CDN] ******************************************************************
+2018-01-25 16:43:46,080 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:43:46,086 p=1381 u=root |  TASK [rhsm : Install Satellite certificate (if applicable)] *******************************************************************
+2018-01-25 16:43:46,108 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:43:46,114 p=1381 u=root |  TASK [rhsm : Remove satellite SSL if using RH CDN] ****************************************************************************
+2018-01-25 16:43:46,133 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:43:46,138 p=1381 u=root |  TASK [rhsm : Is the system already registered?] *******************************************************************************
+2018-01-25 16:43:49,212 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 16:43:49,217 p=1381 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **************************************************************
+2018-01-25 16:45:06,980 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 16:45:06,985 p=1381 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **************************************************************
+2018-01-25 16:45:07,002 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:45:07,007 p=1381 u=root |  TASK [rhsm : Obtain currently enabled repos] **********************************************************************************
+2018-01-25 16:45:19,255 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 16:45:19,261 p=1381 u=root |  TASK [rhsm : Disable repositories that should not be enabled] *****************************************************************
+2018-01-25 16:45:36,538 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-rc-rpms)
+2018-01-25 16:45:53,263 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-htb-rpms)
+2018-01-25 16:46:11,027 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-tus-rpms)
+2018-01-25 16:46:28,594 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-aus-rpms)
+2018-01-25 16:46:45,578 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-nfv-rpms)
+2018-01-25 16:47:03,464 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-rt-rpms)
+2018-01-25 16:47:03,471 p=1381 u=root |  TASK [rhsm : Enable specified repositories not already enabled] ***************************************************************
+2018-01-25 16:47:21,036 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-extras-rpms)
+2018-01-25 16:47:38,426 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-supplementary-rpms)
+2018-01-25 16:47:55,501 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-rhv-4.1-rpms)
+2018-01-25 16:48:12,340 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-rhv-4-tools-rpms)
+2018-01-25 16:48:29,572 p=1381 u=root |  changed: [goliath.foo.bar] => (item=jb-eap-7-for-rhel-7-server-rpms)
+2018-01-25 16:48:46,399 p=1381 u=root |  changed: [goliath.foo.bar] => (item=rhel-7-server-rhv-4-mgmt-agent-rpms)
+2018-01-25 16:48:46,406 p=1381 u=root |  TASK [rhsm : Enable satellite tools repo if required] *************************************************************************
+2018-01-25 16:48:46,423 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:48:46,430 p=1381 u=root |  TASK [nfs-server : Ensure everything is up-to-date] ***************************************************************************
+2018-01-25 16:54:20,860 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 16:54:20,867 p=1381 u=root |  TASK [nfs-server : Install required packages] *********************************************************************************
+2018-01-25 16:54:36,544 p=1381 u=root |  ok: [goliath.foo.bar] => (item=nfs-utils)
+2018-01-25 16:54:51,684 p=1381 u=root |  ok: [goliath.foo.bar] => (item=lvm2)
+2018-01-25 16:55:07,169 p=1381 u=root |  ok: [goliath.foo.bar] => (item=firewalld)
+2018-01-25 16:55:22,382 p=1381 u=root |  ok: [goliath.foo.bar] => (item=python-firewall)
+2018-01-25 16:55:22,388 p=1381 u=root |  TASK [nfs-server : Ensure firewalld is running] *******************************************************************************
+2018-01-25 16:55:23,816 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 16:55:23,822 p=1381 u=root |  TASK [nfs-server : Ensure nfs-server is running] ******************************************************************************
+2018-01-25 16:55:24,332 p=1381 u=root |  ok: [goliath.foo.bar]
+2018-01-25 16:55:24,338 p=1381 u=root |  TASK [nfs-server : Open Firewall for NFS use] *********************************************************************************
+2018-01-25 16:55:25,442 p=1381 u=root |  changed: [goliath.foo.bar] => (item=111/tcp)
+2018-01-25 16:55:26,419 p=1381 u=root |  changed: [goliath.foo.bar] => (item=111/udp)
+2018-01-25 16:55:27,365 p=1381 u=root |  changed: [goliath.foo.bar] => (item=2049/tcp)
+2018-01-25 16:55:28,287 p=1381 u=root |  changed: [goliath.foo.bar] => (item=2049/udp)
+2018-01-25 16:55:28,296 p=1381 u=root |  TASK [nfs-server : Check if LV has been created and mounted] ******************************************************************
+2018-01-25 16:55:28,801 p=1381 u=root |  ok: [goliath.foo.bar]
+2018-01-25 16:55:28,808 p=1381 u=root |  TASK [nfs-server : Set VG name] ***********************************************************************************************
+2018-01-25 16:55:28,825 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:55:28,833 p=1381 u=root |  TASK [nfs-server : Set LV name] ***********************************************************************************************
+2018-01-25 16:55:28,845 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:55:28,851 p=1381 u=root |  TASK [nfs-server : Set NFS share basename] ************************************************************************************
+2018-01-25 16:55:28,866 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:55:28,872 p=1381 u=root |  TASK [nfs-server : Setup and create PV & VG] **********************************************************************************
+2018-01-25 16:55:28,888 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:55:28,896 p=1381 u=root |  TASK [nfs-server : Setup LV] **************************************************************************************************
+2018-01-25 16:55:28,934 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'}) 
+2018-01-25 16:55:28,935 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'}) 
+2018-01-25 16:55:28,935 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'}) 
+2018-01-25 16:55:28,941 p=1381 u=root |  TASK [nfs-server : Create file system on share] *******************************************************************************
+2018-01-25 16:55:28,980 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'}) 
+2018-01-25 16:55:28,980 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'}) 
+2018-01-25 16:55:28,980 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'}) 
+2018-01-25 16:55:28,986 p=1381 u=root |  TASK [nfs-server : Ensure the base dir for NFS shares exists] *****************************************************************
+2018-01-25 16:55:29,000 p=1381 u=root |  skipping: [goliath.foo.bar]
+2018-01-25 16:55:29,009 p=1381 u=root |  TASK [nfs-server : Mount NFS base dir] ****************************************************************************************
+2018-01-25 16:55:29,047 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'}) 
+2018-01-25 16:55:29,048 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'}) 
+2018-01-25 16:55:29,048 p=1381 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'}) 
+2018-01-25 16:55:29,054 p=1381 u=root |  TASK [nfs-server : Set share basedir] *****************************************************************************************
+2018-01-25 16:55:29,081 p=1381 u=root |  ok: [goliath.foo.bar]
+2018-01-25 16:55:29,088 p=1381 u=root |  TASK [nfs-server : Create directories] ****************************************************************************************
+2018-01-25 16:55:29,718 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'})
+2018-01-25 16:55:30,214 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'})
+2018-01-25 16:55:30,685 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'})
+2018-01-25 16:55:30,694 p=1381 u=root |  TASK [nfs-server : Update export file to share out the directory] *************************************************************
+2018-01-25 16:55:31,235 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'})
+2018-01-25 16:55:31,728 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'})
+2018-01-25 16:55:32,213 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'})
+2018-01-25 16:55:32,219 p=1381 u=root |  RUNNING HANDLER [nfs-server : Reload NFS] *************************************************************************************
+2018-01-25 16:55:32,718 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 16:55:32,727 p=1381 u=root |  TASK [Install hosted engine deploy packages] **********************************************************************************
+2018-01-25 17:00:20,472 p=1381 u=root |  changed: [goliath.foo.bar] => (item=[u'cockpit-ovirt-dashboard', u'ovirt-hosted-engine-setup', u'ovirt-engine-extension-aaa-jdbc'])
+2018-01-25 17:00:20,479 p=1381 u=root |  TASK [Enable and start services] **********************************************************************************************
+2018-01-25 17:00:21,208 p=1381 u=root |  changed: [goliath.foo.bar]
+2018-01-25 17:00:21,216 p=1381 u=root |  TASK [Add NFS to iptables] ****************************************************************************************************
+2018-01-25 17:00:21,874 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 2049, u'proto': u'tcp'})
+2018-01-25 17:00:22,396 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32803, u'proto': u'tcp'})
+2018-01-25 17:00:22,896 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32769, u'proto': u'tcp'})
+2018-01-25 17:00:23,394 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'tcp'})
+2018-01-25 17:00:23,972 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'udp'})
+2018-01-25 17:00:24,485 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'tcp'})
+2018-01-25 17:00:24,994 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'udp'})
+2018-01-25 17:00:25,511 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'tcp'})
+2018-01-25 17:00:26,020 p=1381 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'udp'})
+2018-01-25 17:00:26,514 p=1381 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'absent', u'port': 7070, u'proto': u'udp'})
+2018-01-25 17:00:26,517 p=1381 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-25 17:00:26,518 p=1381 u=root |  goliath.foo.bar            : ok=23   changed=15   unreachable=0    failed=0   
+2018-01-25 17:17:38,191 p=1801 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:17:38,191 p=1801 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:17:38,311 p=1801 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-25 17:17:38,326 p=1801 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-25 17:17:40,143 p=1801 u=root |  ok: [goliath.foo.bar]
+2018-01-25 17:17:40,162 p=1801 u=root |  TASK [Enable and start services] **********************************************************************************************
+2018-01-25 17:17:40,903 p=1801 u=root |  failed: [goliath.foo.bar] (item=cockpit.server) => {
+    "changed": false, 
+    "item": "cockpit.server"
+}
+
+MSG:
+
+Could not find the requested service cockpit.server: host
+
+2018-01-25 17:17:41,582 p=1801 u=root |  changed: [goliath.foo.bar] => (item=cockpit.socket)
+2018-01-25 17:17:41,585 p=1801 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-25 17:17:41,585 p=1801 u=root |  goliath.foo.bar            : ok=1    changed=0    unreachable=0    failed=1   
+2018-01-25 17:17:54,625 p=1837 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:17:54,625 p=1837 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:17:54,739 p=1837 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-25 17:17:54,754 p=1837 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-25 17:17:56,049 p=1837 u=root |  ok: [goliath.foo.bar]
+2018-01-25 17:17:56,066 p=1837 u=root |  TASK [Enable and start services] **********************************************************************************************
+2018-01-25 17:17:56,877 p=1837 u=root |  changed: [goliath.foo.bar] => (item=cockpit.service)
+2018-01-25 17:17:57,456 p=1837 u=root |  ok: [goliath.foo.bar] => (item=cockpit.socket)
+2018-01-25 17:17:57,460 p=1837 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-25 17:17:57,460 p=1837 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
+2018-01-25 17:19:56,059 p=1880 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:19:56,059 p=1880 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:19:56,181 p=1880 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-25 17:19:56,200 p=1880 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-25 17:19:57,803 p=1880 u=root |  ok: [goliath.foo.bar]
+2018-01-25 17:19:57,822 p=1880 u=root |  TASK [Add NFS to iptables] ****************************************************************************************************
+2018-01-25 17:19:58,529 p=1880 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 9090, u'proto': u'tcp'})
+2018-01-25 17:19:59,126 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 2049, u'proto': u'tcp'})
+2018-01-25 17:19:59,742 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32803, u'proto': u'tcp'})
+2018-01-25 17:20:00,308 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32769, u'proto': u'tcp'})
+2018-01-25 17:20:00,974 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'tcp'})
+2018-01-25 17:20:01,603 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'udp'})
+2018-01-25 17:20:02,630 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'tcp'})
+2018-01-25 17:20:03,169 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'udp'})
+2018-01-25 17:20:03,734 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'tcp'})
+2018-01-25 17:20:04,273 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'udp'})
+2018-01-25 17:20:04,842 p=1880 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'absent', u'port': 7070, u'proto': u'udp'})
+2018-01-25 17:20:04,846 p=1880 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-25 17:20:04,846 p=1880 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
+2018-01-25 17:23:38,591 p=1971 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:23:38,591 p=1971 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:23:38,710 p=1971 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-25 17:23:38,727 p=1971 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-25 17:23:40,451 p=1971 u=root |  ok: [goliath.foo.bar]
+2018-01-25 17:23:40,469 p=1971 u=root |  TASK [Enable and start services] **********************************************************************************************
+2018-01-25 17:23:41,465 p=1971 u=root |  failed: [goliath.foo.bar] (item={u'state': u'started', u'enable': u'enabled', u'name': u'cockpit.service'}) => {
+    "changed": false, 
+    "item": {
+        "enable": "enabled", 
+        "name": "cockpit.service", 
+        "state": "started"
+    }
+}
+
+MSG:
+
+enabled is not a valid boolean.  Valid booleans include: 0, 'on', 'f', 'false', 1, 'no', 'n', '1', '0', 't', 'y', 'off', 'yes', 'true'
+
+2018-01-25 17:23:42,274 p=1971 u=root |  failed: [goliath.foo.bar] (item={u'state': u'started', u'enable': u'enabled', u'name': u'cockpit.socket'}) => {
+    "changed": false, 
+    "item": {
+        "enable": "enabled", 
+        "name": "cockpit.socket", 
+        "state": "started"
+    }
+}
+
+MSG:
+
+enabled is not a valid boolean.  Valid booleans include: 0, 'on', 'f', 'false', 1, 'no', 'n', '1', '0', 't', 'y', 'off', 'yes', 'true'
+
+2018-01-25 17:23:43,173 p=1971 u=root |  failed: [goliath.foo.bar] (item={u'state': u'stopped', u'enable': u'disabled', u'name': u'firewalld'}) => {
+    "changed": false, 
+    "item": {
+        "enable": "disabled", 
+        "name": "firewalld", 
+        "state": "stopped"
+    }
+}
+
+MSG:
+
+disabled is not a valid boolean.  Valid booleans include: 0, 'on', 'f', 'false', 1, 'no', 'n', '1', '0', 't', 'y', 'off', 'yes', 'true'
+
+2018-01-25 17:23:43,176 p=1971 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-25 17:23:43,176 p=1971 u=root |  goliath.foo.bar            : ok=1    changed=0    unreachable=0    failed=1   
+2018-01-25 17:24:20,750 p=2013 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:24:20,751 p=2013 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-25 17:24:20,868 p=2013 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-25 17:24:20,885 p=2013 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-25 17:24:22,081 p=2013 u=root |  ok: [goliath.foo.bar]
+2018-01-25 17:24:22,098 p=2013 u=root |  TASK [Enable and start services] **********************************************************************************************
+2018-01-25 17:24:22,882 p=2013 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'started', u'enable': True, u'name': u'cockpit.service'})
+2018-01-25 17:24:23,736 p=2013 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'started', u'enable': True, u'name': u'cockpit.socket'})
+2018-01-25 17:24:24,839 p=2013 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'stopped', u'enable': False, u'name': u'firewalld'})
+2018-01-25 17:24:24,844 p=2013 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-25 17:24:24,845 p=2013 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
+2018-01-26 00:35:42,471 p=29676 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-26 00:35:42,472 p=29676 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-26 00:35:42,609 p=29676 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-26 00:35:42,627 p=29676 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-26 00:35:44,871 p=29676 u=root |  ok: [goliath.foo.bar]
+2018-01-26 00:35:44,903 p=29676 u=root |  TASK [Add NFS to iptables] ****************************************************************************************************
+2018-01-26 00:35:44,921 p=29676 u=root |  fatal: [goliath.foo.bar]: FAILED! => {}
+
+MSG:
+
+'iptables_rules' is undefined
+
+2018-01-26 00:35:44,922 p=29676 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-26 00:35:44,922 p=29676 u=root |  goliath.foo.bar            : ok=1    changed=0    unreachable=0    failed=1   
+2018-01-26 00:36:06,003 p=29701 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-26 00:36:06,004 p=29701 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-26 00:36:06,119 p=29701 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-26 00:36:06,136 p=29701 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-26 00:36:07,779 p=29701 u=root |  ok: [goliath.foo.bar]
+2018-01-26 00:36:07,837 p=29701 u=root |  TASK [Add NFS to iptables] ****************************************************************************************************
+2018-01-26 00:36:08,700 p=29701 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 9090, u'proto': u'tcp'})
+2018-01-26 00:36:09,422 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 2049, u'proto': u'tcp'})
+2018-01-26 00:36:10,134 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32803, u'proto': u'tcp'})
+2018-01-26 00:36:10,801 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32769, u'proto': u'tcp'})
+2018-01-26 00:36:11,351 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'tcp'})
+2018-01-26 00:36:11,934 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'udp'})
+2018-01-26 00:36:12,512 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'tcp'})
+2018-01-26 00:36:13,205 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'udp'})
+2018-01-26 00:36:13,817 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'tcp'})
+2018-01-26 00:36:14,435 p=29701 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'udp'})
+2018-01-26 00:36:15,029 p=29701 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'absent', u'port': 7070, u'proto': u'udp'})
+2018-01-26 00:36:15,033 p=29701 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-26 00:36:15,033 p=29701 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
+2018-01-26 00:39:27,393 p=29797 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 
+'include_tasks' for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+2018-01-26 00:39:27,393 p=29797 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details 
+page may explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be 
+disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-26 00:39:27,510 p=29797 u=root |  PLAY [Install RHEV] ***********************************************************************************************************
+2018-01-26 00:39:27,525 p=29797 u=root |  TASK [Gathering Facts] ********************************************************************************************************
+2018-01-26 00:39:29,599 p=29797 u=root |  ok: [goliath.foo.bar]
+2018-01-26 00:39:29,628 p=29797 u=root |  TASK [Add NFS to iptables] ****************************************************************************************************
+2018-01-26 00:39:30,349 p=29797 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 9090, u'proto': u'tcp'})
+2018-01-26 00:39:30,938 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 2049, u'proto': u'tcp'})
+2018-01-26 00:39:31,556 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32803, u'proto': u'tcp'})
+2018-01-26 00:39:32,137 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32769, u'proto': u'tcp'})
+2018-01-26 00:39:32,725 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'tcp'})
+2018-01-26 00:39:33,453 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'udp'})
+2018-01-26 00:39:34,121 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'tcp'})
+2018-01-26 00:39:34,698 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'udp'})
+2018-01-26 00:39:35,315 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'tcp'})
+2018-01-26 00:39:35,894 p=29797 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'udp'})
+2018-01-26 00:39:36,441 p=29797 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'absent', u'port': 7070, u'proto': u'udp'})
+2018-01-26 00:39:36,445 p=29797 u=root |  PLAY RECAP ********************************************************************************************************************
+2018-01-26 00:39:36,445 p=29797 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
+2018-01-27 01:49:20,112 p=5005 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 
+'import_tasks' for static inclusions or 'include_tasks' for dynamic inclusions. This 
+feature will be removed in a future release. Deprecation warnings can be disabled by 
+setting deprecation_warnings=False in ansible.cfg.
+2018-01-27 01:49:20,113 p=5005 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is 
+discouraged. The module documentation details page may explain more about this 
+rationale.. This feature will be removed in a future release. Deprecation warnings can 
+be disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-27 01:49:20,134 p=5005 u=root |  ERROR! Syntax Error while loading YAML.
+
+
+The error appears to have been in '/root/git/install-rhv/roles/nfs-server/tasks/shares.yml': line 32, column 25, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+    regexp: "RPCNFSDARGS="
+    line: "RPCNFSDARGS="-N 2"
+                        ^ here
+We could be wrong, but this one looks like it might be an issue with
+unbalanced quotes.  If starting a value with a quote, make sure the
+line ends with the same set of quotes.  For instance this arbitrary
+example:
+
+    foo: "bad" "wolf"
+
+Could be written as:
+
+    foo: '"bad" "wolf"'
+
+exception type: <class 'yaml.parser.ParserError'>
+exception: while parsing a block mapping
+  in "<unicode string>", line 29, column 5
+did not find expected key
+  in "<unicode string>", line 32, column 25
+2018-01-27 01:49:48,775 p=5054 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 
+'import_tasks' for static inclusions or 'include_tasks' for dynamic inclusions. This 
+feature will be removed in a future release. Deprecation warnings can be disabled by 
+setting deprecation_warnings=False in ansible.cfg.
+2018-01-27 01:49:48,776 p=5054 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is 
+discouraged. The module documentation details page may explain more about this 
+rationale.. This feature will be removed in a future release. Deprecation warnings can 
+be disabled by setting deprecation_warnings=False in ansible.cfg.
+2018-01-27 01:49:48,987 p=5054 u=root |  PLAY [Install RHEV] ********************************************************************
+2018-01-27 01:49:49,013 p=5054 u=root |  TASK [Gathering Facts] *****************************************************************
+2018-01-27 01:49:51,217 p=5054 u=root |  ok: [goliath.foo.bar]
+2018-01-27 01:49:51,235 p=5054 u=root |  TASK [nfs-server : Update /etc/sysconfig/nfs allowing nfsv3] ***************************
+2018-01-27 01:49:51,907 p=5054 u=root |  ok: [goliath.foo.bar]
+2018-01-27 01:49:51,909 p=5054 u=root |  PLAY RECAP *****************************************************************************
+2018-01-27 01:49:51,909 p=5054 u=root |  goliath.foo.bar            : ok=2    changed=0    unreachable=0    failed=0   
+2018-02-01 11:00:00,528 p=18673 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 'include_tasks'
+ for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled by setting 
+deprecation_warnings=False in ansible.cfg.
+2018-02-01 11:00:00,528 p=18673 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details page may
+ explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be disabled by setting
+ deprecation_warnings=False in ansible.cfg.
+2018-02-01 11:00:00,649 p=18673 u=root |  PLAY [Install RHEV] *******************************************************************************************************************
+2018-02-01 11:00:00,671 p=18673 u=root |  TASK [Gathering Facts] ****************************************************************************************************************
+2018-02-01 11:00:03,114 p=18673 u=root |  ok: [goliath.foo.bar]
+2018-02-01 11:00:03,141 p=18673 u=root |  TASK [nfs-server : Update /etc/sysconfig/nfs allowing nfsv3] **************************************************************************
+2018-02-01 11:00:03,920 p=18673 u=root |  changed: [goliath.foo.bar]
+2018-02-01 11:00:03,922 p=18673 u=root |  PLAY RECAP ****************************************************************************************************************************
+2018-02-01 11:00:03,922 p=18673 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
