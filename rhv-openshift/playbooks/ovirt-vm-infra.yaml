@@ -1,0 +1,103 @@
+---
+- name: oVirt infra
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/ovirt-infra-vars.yaml
+  pre_tasks:
+    - name: copy dynamic inventory script to inventory dir
+      copy:
+        src: ovirt4.py
+        dest: ./inventory/ovirt4.py
+
+    - name: download ca.pem from RHV Manager
+      get_url:
+        url: 'http://{{ engine_hostname }}/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA'
+        dest: "{{ playbook_dir }}/files/ca.pem"
+      register: ca_file
+      tags:
+        - test
+
+    - name: template dynamic inventory  ini (ovirt.init)
+      template:
+        src: ovirt.ini.j2
+        dest: "./inventory/ovirt.ini"
+      tags:
+        - test
+
+- name: oVirt infra
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/ovirt-infra-vars.yaml
+
+  pre_tasks:
+    - name: Log in to oVirt
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+  
+  roles:
+    - oVirt.image-template
+    - oVirt.vm-infra
+
+  post_tasks:
+    - name: Logout from oVirt
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - always
+
+    - pause: minutes=2
+
+    #JTH: Fix for below
+    - local_action: meta 
+        refresh_inventory
+# FIX: cloud-init on shipped with rhel7.4 qcow image
+#      has bug https://bugzilla.redhat.com/show_bug.cgi?id=1450521
+#       cloud-init 0.7.6 works not 0.7.9
+- name: Change HostNames | Cloud_Init fix
+  hosts: all 
+  gather_facts: true
+  vars_files:
+    - vars/ovirt-infra-vars.yaml
+  tasks:
+    - name: Wait for VM SSH
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: 22
+        state: started
+        # Wait for the reboot delay from the previous task plus 10 seconds.
+        # Otherwise, the SSH port would still be open because the system
+        # has not rebooted.
+        delay: 10
+      register: wait_for_reboot
+      tags: 
+        - ssh
+
+    - name: Set Hostnames
+      hostname:
+        name: "{{ inventory_hostname }}.{{ public_hosted_zone }}"
+      when: 
+        - inventory_hostname != 'HostedEngine'
+        - inventory_hostname != 'localhost'
+        - inventory_hostname != storage_host
+      notify: restart network
+      tags: 
+        - ssh
+
+  handlers:
+    - name: restart network
+      systemd:
+        state: restarted
+        name: network
+      tags: 
+        - ssh

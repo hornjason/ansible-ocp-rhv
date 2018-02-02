@@ -366,3 +366,301 @@ deprecation_warnings=False in ansible.cfg.
 2018-02-01 11:00:03,920 p=18673 u=root |  changed: [goliath.foo.bar]
 2018-02-01 11:00:03,922 p=18673 u=root |  PLAY RECAP ****************************************************************************************************************************
 2018-02-01 11:00:03,922 p=18673 u=root |  goliath.foo.bar            : ok=2    changed=1    unreachable=0    failed=0   
+2018-02-02 09:57:33,259 p=22465 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 'include_tasks'
+ for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled by setting 
+deprecation_warnings=False in ansible.cfg.
+2018-02-02 09:57:33,260 p=22465 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details page may
+ explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be disabled by setting
+ deprecation_warnings=False in ansible.cfg.
+2018-02-02 09:57:33,418 p=22465 u=root |  PLAY [Install RHEV] *******************************************************************************************************************
+2018-02-02 09:57:33,439 p=22465 u=root |  TASK [Gathering Facts] ****************************************************************************************************************
+2018-02-02 09:57:35,970 p=22465 u=root |  ok: [goliath.foo.bar]
+2018-02-02 09:57:35,996 p=22465 u=root |  TASK [Add vdsm user] ******************************************************************************************************************
+2018-02-02 09:57:36,844 p=22465 u=root |  ok: [goliath.foo.bar]
+2018-02-02 09:57:36,852 p=22465 u=root |  TASK [rhsm : Allow rhsm a longer timeout to help out with subscription-manager] *******************************************************
+2018-02-02 09:57:37,561 p=22465 u=root |  ok: [goliath.foo.bar]
+2018-02-02 09:57:37,568 p=22465 u=root |  TASK [rhsm : Check for sat config file] ***********************************************************************************************
+2018-02-02 09:57:38,243 p=22465 u=root |  ok: [goliath.foo.bar]
+2018-02-02 09:57:38,251 p=22465 u=root |  TASK [rhsm : Check for katello file] **************************************************************************************************
+2018-02-02 09:57:38,891 p=22465 u=root |  ok: [goliath.foo.bar]
+2018-02-02 09:57:38,899 p=22465 u=root |  TASK [rhsm : Remove satellite configuration if using RH CDN] **************************************************************************
+2018-02-02 09:57:38,914 p=22465 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 09:57:38,924 p=22465 u=root |  TASK [rhsm : Install Satellite certificate (if applicable)] ***************************************************************************
+2018-02-02 09:57:38,942 p=22465 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 09:57:38,953 p=22465 u=root |  TASK [rhsm : Remove satellite SSL if using RH CDN] ************************************************************************************
+2018-02-02 09:57:38,972 p=22465 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 09:57:38,981 p=22465 u=root |  TASK [rhsm : Is the system already registered?] ***************************************************************************************
+2018-02-02 09:57:41,350 p=22465 u=root |  changed: [goliath.foo.bar]
+2018-02-02 09:57:41,359 p=22465 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **********************************************************************
+2018-02-02 09:57:41,378 p=22465 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 09:57:41,385 p=22465 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **********************************************************************
+2018-02-02 09:57:41,402 p=22465 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 09:57:41,418 p=22465 u=root |  TASK [rhsm : Obtain currently enabled repos] ******************************************************************************************
+2018-02-02 09:57:55,377 p=22465 u=root |  changed: [goliath.foo.bar]
+2018-02-02 09:57:55,391 p=22465 u=root |  TASK [rhsm : Disable repositories that should not be enabled] *************************************************************************
+2018-02-02 09:57:55,420 p=22465 u=root |  TASK [rhsm : Enable specified repositories not already enabled] ***********************************************************************
+2018-02-02 09:57:55,500 p=22465 u=root |  TASK [rhsm : Enable satellite tools repo if required] *********************************************************************************
+2018-02-02 09:57:55,546 p=22465 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 09:57:55,573 p=22465 u=root |  TASK [nfs-server : Ensure everything is up-to-date] ***********************************************************************************
+2018-02-02 09:58:16,267 p=22465 u=root |  ok: [goliath.foo.bar]
+2018-02-02 09:58:16,275 p=22465 u=root |  TASK [nfs-server : Install required packages] *****************************************************************************************
+2018-02-02 09:58:32,714 p=22465 u=root |  ok: [goliath.foo.bar] => (item=nfs-utils)
+2018-02-02 09:58:49,344 p=22465 u=root |  ok: [goliath.foo.bar] => (item=lvm2)
+2018-02-02 09:59:05,750 p=22465 u=root |  ok: [goliath.foo.bar] => (item=firewalld)
+2018-02-02 09:59:22,419 p=22465 u=root |  ok: [goliath.foo.bar] => (item=python-firewall)
+2018-02-02 09:59:22,428 p=22465 u=root |  TASK [nfs-server : Ensure firewalld is running] ***************************************************************************************
+2018-02-02 09:59:23,239 p=22465 u=root |  fatal: [goliath.foo.bar]: FAILED! => {
+    "changed": false
+}
+
+MSG:
+
+Unable to enable service firewalld: Failed to execute operation: Cannot send after transport endpoint shutdown
+
+
+2018-02-02 09:59:23,240 p=22465 u=root |  PLAY RECAP ****************************************************************************************************************************
+2018-02-02 09:59:23,240 p=22465 u=root |  goliath.foo.bar            : ok=9    changed=2    unreachable=0    failed=1   
+2018-02-02 10:14:55,771 p=22648 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 'include_tasks'
+ for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled by setting 
+deprecation_warnings=False in ansible.cfg.
+2018-02-02 10:14:55,772 p=22648 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details page may
+ explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be disabled by setting
+ deprecation_warnings=False in ansible.cfg.
+2018-02-02 10:14:55,931 p=22648 u=root |  PLAY [Install RHEV] *******************************************************************************************************************
+2018-02-02 10:14:55,950 p=22648 u=root |  TASK [Gathering Facts] ****************************************************************************************************************
+2018-02-02 10:14:58,257 p=22648 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:14:58,289 p=22648 u=root |  TASK [Add vdsm user] ******************************************************************************************************************
+2018-02-02 10:14:59,184 p=22648 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:14:59,194 p=22648 u=root |  TASK [rhsm : Allow rhsm a longer timeout to help out with subscription-manager] *******************************************************
+2018-02-02 10:15:00,002 p=22648 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:15:00,015 p=22648 u=root |  TASK [rhsm : Check for sat config file] ***********************************************************************************************
+2018-02-02 10:15:00,822 p=22648 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:15:00,830 p=22648 u=root |  TASK [rhsm : Check for katello file] **************************************************************************************************
+2018-02-02 10:15:01,392 p=22648 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:15:01,400 p=22648 u=root |  TASK [rhsm : Remove satellite configuration if using RH CDN] **************************************************************************
+2018-02-02 10:15:01,417 p=22648 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:15:01,426 p=22648 u=root |  TASK [rhsm : Install Satellite certificate (if applicable)] ***************************************************************************
+2018-02-02 10:15:01,445 p=22648 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:15:01,455 p=22648 u=root |  TASK [rhsm : Remove satellite SSL if using RH CDN] ************************************************************************************
+2018-02-02 10:15:01,476 p=22648 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:15:01,485 p=22648 u=root |  TASK [rhsm : Is the system already registered?] ***************************************************************************************
+2018-02-02 10:15:03,787 p=22648 u=root |  changed: [goliath.foo.bar]
+2018-02-02 10:15:03,799 p=22648 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **********************************************************************
+2018-02-02 10:15:03,820 p=22648 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:15:03,839 p=22648 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **********************************************************************
+2018-02-02 10:15:03,871 p=22648 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:15:03,880 p=22648 u=root |  TASK [rhsm : Obtain currently enabled repos] ******************************************************************************************
+2018-02-02 10:15:17,712 p=22648 u=root |  changed: [goliath.foo.bar]
+2018-02-02 10:15:17,721 p=22648 u=root |  TASK [rhsm : Disable repositories that should not be enabled] *************************************************************************
+2018-02-02 10:15:17,749 p=22648 u=root |  TASK [rhsm : Enable specified repositories not already enabled] ***********************************************************************
+2018-02-02 10:15:17,777 p=22648 u=root |  TASK [rhsm : Enable satellite tools repo if required] *********************************************************************************
+2018-02-02 10:15:17,799 p=22648 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:15:17,808 p=22648 u=root |  TASK [nfs-server : Ensure everything is up-to-date] ***********************************************************************************
+2018-02-02 10:15:38,812 p=22648 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:15:38,819 p=22648 u=root |  TASK [nfs-server : Install required packages] *****************************************************************************************
+2018-02-02 10:15:55,841 p=22648 u=root |  ok: [goliath.foo.bar] => (item=nfs-utils)
+2018-02-02 10:16:12,561 p=22648 u=root |  ok: [goliath.foo.bar] => (item=lvm2)
+2018-02-02 10:16:29,357 p=22648 u=root |  ok: [goliath.foo.bar] => (item=firewalld)
+2018-02-02 10:16:46,217 p=22648 u=root |  ok: [goliath.foo.bar] => (item=python-firewall)
+2018-02-02 10:16:46,228 p=22648 u=root |  TASK [nfs-server : Ensure nfs-server is running] **************************************************************************************
+2018-02-02 10:16:47,014 p=22648 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:16:47,022 p=22648 u=root |  TASK [nfs-server : Open Firewall for NFS use] *****************************************************************************************
+2018-02-02 10:16:48,479 p=22648 u=root |  failed: [goliath.foo.bar] (item=111/tcp) => {
+    "changed": false, 
+    "item": "111/tcp", 
+    "module_stderr": "", 
+    "module_stdout": "Traceback (most recent call last):\r\n  File \"/tmp/ansible_ZPdHdD/ansible_module_firewalld.py\", line 936, in <module>\r\n    main()\r\n  File \"/tmp/ansible_ZPdHdD/ansible_module_firewalld.py\", line 788, in main\r\n    module.fail(msg='firewall is not currently running, unable to perform immediate actions without a running firewall daemon')\r\nAttributeError: 'AnsibleModule' object has no attribute 'fail'\r\n", 
+    "rc": 0
+}
+
+MSG:
+
+MODULE FAILURE
+
+2018-02-02 10:16:49,718 p=22648 u=root |  failed: [goliath.foo.bar] (item=111/udp) => {
+    "changed": false, 
+    "item": "111/udp", 
+    "module_stderr": "", 
+    "module_stdout": "Traceback (most recent call last):\r\n  File \"/tmp/ansible_kqKPiO/ansible_module_firewalld.py\", line 936, in <module>\r\n    main()\r\n  File \"/tmp/ansible_kqKPiO/ansible_module_firewalld.py\", line 788, in main\r\n    module.fail(msg='firewall is not currently running, unable to perform immediate actions without a running firewall daemon')\r\nAttributeError: 'AnsibleModule' object has no attribute 'fail'\r\n", 
+    "rc": 0
+}
+
+MSG:
+
+MODULE FAILURE
+
+2018-02-02 10:16:50,794 p=22648 u=root |  failed: [goliath.foo.bar] (item=2049/tcp) => {
+    "changed": false, 
+    "item": "2049/tcp", 
+    "module_stderr": "", 
+    "module_stdout": "Traceback (most recent call last):\r\n  File \"/tmp/ansible_756NCb/ansible_module_firewalld.py\", line 936, in <module>\r\n    main()\r\n  File \"/tmp/ansible_756NCb/ansible_module_firewalld.py\", line 788, in main\r\n    module.fail(msg='firewall is not currently running, unable to perform immediate actions without a running firewall daemon')\r\nAttributeError: 'AnsibleModule' object has no attribute 'fail'\r\n", 
+    "rc": 0
+}
+
+MSG:
+
+MODULE FAILURE
+
+2018-02-02 10:16:51,852 p=22648 u=root |  failed: [goliath.foo.bar] (item=2049/udp) => {
+    "changed": false, 
+    "item": "2049/udp", 
+    "module_stderr": "", 
+    "module_stdout": "Traceback (most recent call last):\r\n  File \"/tmp/ansible_FPkwhz/ansible_module_firewalld.py\", line 936, in <module>\r\n    main()\r\n  File \"/tmp/ansible_FPkwhz/ansible_module_firewalld.py\", line 788, in main\r\n    module.fail(msg='firewall is not currently running, unable to perform immediate actions without a running firewall daemon')\r\nAttributeError: 'AnsibleModule' object has no attribute 'fail'\r\n", 
+    "rc": 0
+}
+
+MSG:
+
+MODULE FAILURE
+
+2018-02-02 10:16:51,856 p=22648 u=root |  PLAY RECAP ****************************************************************************************************************************
+2018-02-02 10:16:51,857 p=22648 u=root |  goliath.foo.bar            : ok=10   changed=2    unreachable=0    failed=1   
+2018-02-02 10:17:50,452 p=22823 u=root |  [DEPRECATION WARNING]: The use of 'include' for tasks has been deprecated. Use 'import_tasks' for static inclusions or 'include_tasks'
+ for dynamic inclusions. This feature will be removed in a future release. Deprecation warnings can be disabled by setting 
+deprecation_warnings=False in ansible.cfg.
+2018-02-02 10:17:50,452 p=22823 u=root |  [DEPRECATION WARNING]: include is kept for backwards compatibility but usage is discouraged. The module documentation details page may
+ explain more about this rationale.. This feature will be removed in a future release. Deprecation warnings can be disabled by setting
+ deprecation_warnings=False in ansible.cfg.
+2018-02-02 10:17:50,615 p=22823 u=root |  PLAY [Install RHEV] *******************************************************************************************************************
+2018-02-02 10:17:50,635 p=22823 u=root |  TASK [Gathering Facts] ****************************************************************************************************************
+2018-02-02 10:17:52,398 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:17:52,427 p=22823 u=root |  TASK [Add vdsm user] ******************************************************************************************************************
+2018-02-02 10:17:53,369 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:17:53,377 p=22823 u=root |  TASK [rhsm : Allow rhsm a longer timeout to help out with subscription-manager] *******************************************************
+2018-02-02 10:17:54,090 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:17:54,099 p=22823 u=root |  TASK [rhsm : Check for sat config file] ***********************************************************************************************
+2018-02-02 10:17:54,786 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:17:54,794 p=22823 u=root |  TASK [rhsm : Check for katello file] **************************************************************************************************
+2018-02-02 10:17:55,390 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:17:55,415 p=22823 u=root |  TASK [rhsm : Remove satellite configuration if using RH CDN] **************************************************************************
+2018-02-02 10:17:55,452 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:17:55,460 p=22823 u=root |  TASK [rhsm : Install Satellite certificate (if applicable)] ***************************************************************************
+2018-02-02 10:17:55,486 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:17:55,496 p=22823 u=root |  TASK [rhsm : Remove satellite SSL if using RH CDN] ************************************************************************************
+2018-02-02 10:17:55,515 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:17:55,527 p=22823 u=root |  TASK [rhsm : Is the system already registered?] ***************************************************************************************
+2018-02-02 10:17:57,975 p=22823 u=root |  changed: [goliath.foo.bar]
+2018-02-02 10:17:57,986 p=22823 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **********************************************************************
+2018-02-02 10:17:58,006 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:17:58,020 p=22823 u=root |  TASK [rhsm : Register system using Red Hat Subscription Manager] **********************************************************************
+2018-02-02 10:17:58,041 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:17:58,055 p=22823 u=root |  TASK [rhsm : Obtain currently enabled repos] ******************************************************************************************
+2018-02-02 10:18:11,714 p=22823 u=root |  changed: [goliath.foo.bar]
+2018-02-02 10:18:11,723 p=22823 u=root |  TASK [rhsm : Disable repositories that should not be enabled] *************************************************************************
+2018-02-02 10:18:11,747 p=22823 u=root |  TASK [rhsm : Enable specified repositories not already enabled] ***********************************************************************
+2018-02-02 10:18:11,773 p=22823 u=root |  TASK [rhsm : Enable satellite tools repo if required] *********************************************************************************
+2018-02-02 10:18:11,791 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:18:11,801 p=22823 u=root |  TASK [nfs-server : Ensure everything is up-to-date] ***********************************************************************************
+2018-02-02 10:18:32,692 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:18:32,699 p=22823 u=root |  TASK [nfs-server : Install required packages] *****************************************************************************************
+2018-02-02 10:18:49,154 p=22823 u=root |  ok: [goliath.foo.bar] => (item=nfs-utils)
+2018-02-02 10:19:06,275 p=22823 u=root |  ok: [goliath.foo.bar] => (item=lvm2)
+2018-02-02 10:30:53,713 p=22823 u=root |  ok: [goliath.foo.bar] => (item=firewalld)
+2018-02-02 10:31:10,355 p=22823 u=root |  ok: [goliath.foo.bar] => (item=python-firewall)
+2018-02-02 10:31:10,367 p=22823 u=root |  TASK [nfs-server : Ensure firewalld is running] ***************************************************************************************
+2018-02-02 10:31:11,175 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:11,184 p=22823 u=root |  TASK [nfs-server : Ensure nfs-server is running] **************************************************************************************
+2018-02-02 10:31:11,850 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:11,857 p=22823 u=root |  TASK [nfs-server : Open Firewall for NFS use] *****************************************************************************************
+2018-02-02 10:31:12,630 p=22823 u=root |  ok: [goliath.foo.bar] => (item=111/tcp)
+2018-02-02 10:31:13,242 p=22823 u=root |  ok: [goliath.foo.bar] => (item=111/udp)
+2018-02-02 10:31:13,959 p=22823 u=root |  ok: [goliath.foo.bar] => (item=2049/tcp)
+2018-02-02 10:31:14,554 p=22823 u=root |  ok: [goliath.foo.bar] => (item=2049/udp)
+2018-02-02 10:31:14,562 p=22823 u=root |  TASK [nfs-server : Check if LV has been created and mounted] **************************************************************************
+2018-02-02 10:31:15,168 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:15,177 p=22823 u=root |  TASK [nfs-server : Set VG name] *******************************************************************************************************
+2018-02-02 10:31:15,190 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:15,198 p=22823 u=root |  TASK [nfs-server : Set LV name] *******************************************************************************************************
+2018-02-02 10:31:15,212 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:15,219 p=22823 u=root |  TASK [nfs-server : Set NFS share basename] ********************************************************************************************
+2018-02-02 10:31:15,233 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:15,240 p=22823 u=root |  TASK [nfs-server : Setup and create PV & VG] ******************************************************************************************
+2018-02-02 10:31:15,253 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:15,261 p=22823 u=root |  TASK [nfs-server : Setup LV] **********************************************************************************************************
+2018-02-02 10:31:15,302 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'}) 
+2018-02-02 10:31:15,303 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'}) 
+2018-02-02 10:31:15,303 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'}) 
+2018-02-02 10:31:15,311 p=22823 u=root |  TASK [nfs-server : Create file system on share] ***************************************************************************************
+2018-02-02 10:31:15,351 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'}) 
+2018-02-02 10:31:15,351 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'}) 
+2018-02-02 10:31:15,351 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'}) 
+2018-02-02 10:31:15,359 p=22823 u=root |  TASK [nfs-server : Ensure the base dir for NFS shares exists] *************************************************************************
+2018-02-02 10:31:15,372 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:15,380 p=22823 u=root |  TASK [nfs-server : Mount NFS base dir] ************************************************************************************************
+2018-02-02 10:31:15,417 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'}) 
+2018-02-02 10:31:15,418 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'}) 
+2018-02-02 10:31:15,418 p=22823 u=root |  skipping: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'}) 
+2018-02-02 10:31:15,425 p=22823 u=root |  TASK [nfs-server : Set share basedir] *************************************************************************************************
+2018-02-02 10:31:15,475 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:15,484 p=22823 u=root |  TASK [nfs-server : Create directories] ************************************************************************************************
+2018-02-02 10:31:16,256 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'})
+2018-02-02 10:31:16,851 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'})
+2018-02-02 10:31:17,524 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'})
+2018-02-02 10:31:17,535 p=22823 u=root |  TASK [nfs-server : Update export file to share out the directory] *********************************************************************
+2018-02-02 10:31:18,157 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'rhvm', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'rhvm'})
+2018-02-02 10:31:18,776 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,anonuid=36,anongid=36,all_squash', u'nfs_owner': u'vdsm', u'name': u'vmdata', u'nfs_group': u'kvm', u'nfs_mode': u'0777', u'nfs_lv_name': u'vmdata'})
+2018-02-02 10:31:19,367 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'nfs_share_options': u'rw,no_root_squash,no_wdelay', u'name': u'ocp-pv', u'nfs_lv_name': u'shared'})
+2018-02-02 10:31:19,384 p=22823 u=root |  TASK [nfs-server : Update /etc/sysconfig/nfs allowing nfsv3] **************************************************************************
+2018-02-02 10:31:20,083 p=22823 u=root |  changed: [goliath.foo.bar]
+2018-02-02 10:31:20,092 p=22823 u=root |  TASK [rhsm-timeout : Gather facts] ****************************************************************************************************
+2018-02-02 10:31:22,916 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:22,926 p=22823 u=root |  TASK [rhsm-timeout : Allow rhsm a longer timeout to help out with subscription-manager] ***********************************************
+2018-02-02 10:31:23,539 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:23,549 p=22823 u=root |  TASK [rhsm-subscription : Allow rhsm a longer timeout to help out with subscription-manager] ******************************************
+2018-02-02 10:31:24,180 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:24,189 p=22823 u=root |  TASK [rhsm-subscription : Check for sat config file] **********************************************************************************
+2018-02-02 10:31:24,788 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:24,803 p=22823 u=root |  TASK [rhsm-subscription : Remove satellite configuration if using RH CDN] *************************************************************
+2018-02-02 10:31:24,829 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:24,841 p=22823 u=root |  TASK [rhsm-subscription : Remove satellite SSL if using RH CDN] ***********************************************************************
+2018-02-02 10:31:24,861 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:24,870 p=22823 u=root |  TASK [rhsm-subscription : Is the host already registered?] ****************************************************************************
+2018-02-02 10:31:27,017 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:27,030 p=22823 u=root |  TASK [rhsm-subscription : Install Katello RPM if set] *********************************************************************************
+2018-02-02 10:31:27,055 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:27,067 p=22823 u=root |  TASK [rhsm-subscription : Register host via Activation key] ***************************************************************************
+2018-02-02 10:31:27,087 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:27,102 p=22823 u=root |  TASK [rhsm-subscription : Register host] **********************************************************************************************
+2018-02-02 10:31:27,122 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:27,131 p=22823 u=root |  TASK [rhsm-subscription : Check if subscription is attached] **************************************************************************
+2018-02-02 10:31:28,114 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:28,122 p=22823 u=root |  TASK [rhsm-subscription : Get pool id] ************************************************************************************************
+2018-02-02 10:31:28,143 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:28,152 p=22823 u=root |  TASK [rhsm-subscription : Fail if no pool ID is returned] *****************************************************************************
+2018-02-02 10:31:28,171 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:28,182 p=22823 u=root |  TASK [rhsm-subscription : Attach subscription] ****************************************************************************************
+2018-02-02 10:31:28,218 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:28,231 p=22823 u=root |  TASK [rhsm-subscription : Install katello-agent RPM if we are using satellite] ********************************************************
+2018-02-02 10:31:28,250 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:28,264 p=22823 u=root |  TASK [rhsm-repos : Obtain currently enabled repos] ************************************************************************************
+2018-02-02 10:31:42,202 p=22823 u=root |  changed: [goliath.foo.bar]
+2018-02-02 10:31:42,210 p=22823 u=root |  TASK [rhsm-repos : Disable repositories that should not be enabled] *******************************************************************
+2018-02-02 10:31:42,232 p=22823 u=root |  TASK [rhsm-repos : Enable specified repositories not already enabled] *****************************************************************
+2018-02-02 10:31:42,255 p=22823 u=root |  TASK [rhsm-repos : check to see if rhui exists] ***************************************************************************************
+2018-02-02 10:31:42,918 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:42,927 p=22823 u=root |  TASK [rhsm-repos : check to see if rhui client exists] ********************************************************************************
+2018-02-02 10:31:43,534 p=22823 u=root |  ok: [goliath.foo.bar]
+2018-02-02 10:31:43,543 p=22823 u=root |  TASK [rhsm-repos : disable rhui repo] *************************************************************************************************
+2018-02-02 10:31:43,561 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:43,568 p=22823 u=root |  TASK [rhsm-repos : disable rhui client repos] *****************************************************************************************
+2018-02-02 10:31:43,584 p=22823 u=root |  skipping: [goliath.foo.bar]
+2018-02-02 10:31:43,591 p=22823 u=root |  TASK [Install hosted engine deploy packages] ******************************************************************************************
+2018-02-02 10:32:04,880 p=22823 u=root |  ok: [goliath.foo.bar] => (item=[u'cockpit-ovirt-dashboard', u'ovirt-hosted-engine-setup'])
+2018-02-02 10:32:04,889 p=22823 u=root |  TASK [Enable and start services] ******************************************************************************************************
+2018-02-02 10:32:05,692 p=22823 u=root |  changed: [goliath.foo.bar] => (item={u'state': u'started', u'enable': True, u'name': u'cockpit.service'})
+2018-02-02 10:32:06,280 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'started', u'enable': True, u'name': u'cockpit.socket'})
+2018-02-02 10:32:06,869 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'stopped', u'enable': False, u'name': u'firewalld'})
+2018-02-02 10:32:06,881 p=22823 u=root |  TASK [Add NFS to iptables] ************************************************************************************************************
+2018-02-02 10:32:07,534 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 9090, u'proto': u'tcp'})
+2018-02-02 10:32:08,128 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 2049, u'proto': u'tcp'})
+2018-02-02 10:32:08,757 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32803, u'proto': u'tcp'})
+2018-02-02 10:32:09,356 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 32769, u'proto': u'tcp'})
+2018-02-02 10:32:09,971 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'tcp'})
+2018-02-02 10:32:10,584 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 892, u'proto': u'udp'})
+2018-02-02 10:32:11,202 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'tcp'})
+2018-02-02 10:32:11,816 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 875, u'proto': u'udp'})
+2018-02-02 10:32:12,428 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'tcp'})
+2018-02-02 10:32:13,043 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'present', u'port': 662, u'proto': u'udp'})
+2018-02-02 10:32:13,639 p=22823 u=root |  ok: [goliath.foo.bar] => (item={u'state': u'absent', u'port': 7070, u'proto': u'udp'})
+2018-02-02 10:32:13,643 p=22823 u=root |  PLAY RECAP ****************************************************************************************************************************
+2018-02-02 10:32:13,643 p=22823 u=root |  goliath.foo.bar            : ok=29   changed=5    unreachable=0    failed=0   

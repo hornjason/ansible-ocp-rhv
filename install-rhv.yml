@@ -11,7 +11,10 @@
       
   roles:
     - { role: rhsm, tags: rhsm }
-    - { role: nfs-server , tags: nfs }
+    - { role: nfs-server ,  tags: nfs }
+    - { role: rhsm-timeout ,tags: rhsm }
+    - { role: rhsm-subscription ,tags: rhsm }
+    - { role: rhsm-repos ,tags: rhsm }
   post_tasks:
     - name: Install hosted engine deploy packages
       yum:

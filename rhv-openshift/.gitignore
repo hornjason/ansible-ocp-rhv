@@ -1,0 +1,3 @@
+ocp-vars.yml
+**/ca.pem
+**ovirt.init
