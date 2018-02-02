@@ -4,8 +4,8 @@
   become: yes
   roles:
   - rhsm-timeout
-  - role: atomic-update
-    when: openshift.common.is_atomic
+  #- role: atomic-update
+  #  when: openshift.common.is_atomic
 
 - hosts: nodes:lb
   gather_facts: no

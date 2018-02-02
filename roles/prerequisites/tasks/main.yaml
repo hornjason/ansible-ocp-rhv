@@ -24,7 +24,7 @@
     - network
 
   - name: Determine if firewalld is installed
-    rpm_q:
+    yum:
       name: "firewalld"
       state: present
     register: firewalld_installed

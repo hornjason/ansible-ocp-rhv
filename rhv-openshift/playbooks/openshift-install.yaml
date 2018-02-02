@@ -16,7 +16,7 @@
       tags:
         - hosts
 
-- include: ../../../playbooks/prerequisite.yaml
+- include: "{{ playbook_dir }}/prerequisite.yaml"
   tags:
     - pre
     - rhsm
@@ -43,6 +43,8 @@
     - byo
   #vars_file:
   #  ocp-vars.yml
+- hosts: lb
+  
 - hosts: localhost
   connection: local
   gather_facts: no
