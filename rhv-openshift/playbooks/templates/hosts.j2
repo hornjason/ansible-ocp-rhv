@@ -48,7 +48,7 @@ ansible_become=yes
 #remote_user="{{ admin_user }}"
 
 # Networking
-os_sdn_network_plugin_name={{ openshift_sdn_netowrk_plugin_name | default('redhat/openshift-ovs-subnet') }}"
+os_sdn_network_plugin_name={{ os_sdn_netowrk_plugin_name | default('redhat/openshift-ovs-subnet') }}"
 {% if osm_cluster_network_cidr is defined %}
 osm_cluster_network_cidr={{ osm_cluster_network_cidr }}
 {% endif %}
@@ -59,7 +59,6 @@ openshift_portal_net={{ openshift_portal_net }}"
 {% if openshift_disable_check is defined %}
 openshift_disable_check={{ openshift_disable_check }}
 {% endif %}
-openshift_use_dnsmasq=true
 openshift_master_cluster_method=native
 
 # Router
