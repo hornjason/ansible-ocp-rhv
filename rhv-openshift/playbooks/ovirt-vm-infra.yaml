@@ -6,6 +6,15 @@
   vars_files:
     - vars/ovirt-infra-vars.yaml
   pre_tasks:
+    - name: "Establish rhv pre-req packages"
+      set_fact:
+        openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
+
+    - name: "Be sure all pre-req rhv packages are installed"
+      yum: name={{item}} state=installed
+      with_items:
+        - "{{ openshift_deploy_packages_by_provider }}"
+
     - name: copy dynamic inventory script to inventory dir
       copy:
         src: ovirt4.py
