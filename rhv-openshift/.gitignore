@@ -3,3 +3,5 @@ ocp-vars.yml
 **ovirt.init
 **ansible.log
 **.retry
+**inventory.hosts
+**inventory.nsupdate

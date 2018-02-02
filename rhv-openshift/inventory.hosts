@@ -1,8 +1,0 @@
-10.0.1.144 openshift-lb.foo.bar openshift-lb openshift.foo.bar
-10.0.1.114 openshift-master1.foo.bar openshift-master1
-10.0.1.109 openshift-master2.foo.bar openshift-master2
-10.0.1.101 openshift-master3.foo.bar openshift-master3
-10.0.1.128 openshift-infra1.foo.bar openshift-infra1
-10.0.1.122 openshift-infra2.foo.bar openshift-infra2
-10.0.1.142 openshift-node01.foo.bar openshift-node01
-10.0.1.136 openshift-node02.foo.bar openshift-node02
