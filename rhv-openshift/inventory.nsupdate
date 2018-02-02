@@ -1,0 +1,19 @@
+update add 114.1.0.10.in-addr.arpa 86400 PTR  openshift-master1.foo.bar
+update add 109.1.0.10.in-addr.arpa 86400 PTR  openshift-master2.foo.bar
+update add 101.1.0.10.in-addr.arpa 86400 PTR  openshift-master3.foo.bar
+update add 128.1.0.10.in-addr.arpa 86400 PTR  openshift-infra1.foo.bar
+update add 122.1.0.10.in-addr.arpa 86400 PTR  openshift-infra2.foo.bar
+update add 142.1.0.10.in-addr.arpa 86400 PTR  openshift-node01.foo.bar
+update add 136.1.0.10.in-addr.arpa 86400 PTR  openshift-node02.foo.bar
+update add 144.1.0.10.in-addr.arpa 86400 PTR  openshift-lb.foo.bar
+zone foo.bar
+update add *.apps.foo.bar 86400 A 10.0.1.144
+update add openshift.foo.bar 86400 A 10.0.1.144
+update add openshift-master1.foo.bar 86400 A 10.0.1.114
+update add openshift-master2.foo.bar 86400 A 10.0.1.109
+update add openshift-master3.foo.bar 86400 A 10.0.1.101
+update add openshift-infra1.foo.bar 86400 A 10.0.1.128
+update add openshift-infra2.foo.bar 86400 A 10.0.1.122
+update add openshift-node01.foo.bar 86400 A 10.0.1.142
+update add openshift-node02.foo.bar 86400 A 10.0.1.136
+update add openshift-lb.foo.bar 86400 A 10.0.1.144
