@@ -16,7 +16,7 @@ openshift_master_debug_level={{ master_debug_level | default(debug_level, true) 
 openshift_master_access_token_max_seconds=2419200
 
 # Cluster names  / wildcard subdomain#
-openshift_master_cluster_hostname={{ openshift_master_cluster_public_hostname }}
+openshift_master_cluster_hostname={{ load_balancer_hostname }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }} 
 openshift_master_default_subdomain={{ wildcard_zone }}
 
@@ -48,7 +48,7 @@ ansible_become=yes
 #remote_user="{{ admin_user }}"
 
 # Networking
-os_sdn_network_plugin_name={{ os_sdn_netowrk_plugin_name | default('redhat/openshift-ovs-subnet') }}"
+os_sdn_network_plugin_name={{ os_sdn_netowrk_plugin_name | default('redhat/openshift-ovs-subnet') }}
 {% if osm_cluster_network_cidr is defined %}
 osm_cluster_network_cidr={{ osm_cluster_network_cidr }}
 {% endif %}

@@ -69,8 +69,9 @@ nodes: 2
 ### DNS entries
 ## Wildcard *.{{app_dns_prefix}}.{{public_hosted_zone}} must point to IP of LB
 public_hosted_zone: foo.bar
+local_hosted_zone: foo.bar
 app_dns_prefix: apps
-load_balancer_hostname: openshift-lb.{{public_hosted_zone}}
+load_balancer_hostname: openshift-lb.{{local_hosted_zone}}
 wildcard_zone: "{{app_dns_prefix}}.{{public_hosted_zone}}"
 openshift_master_cluster_public_hostname: openshift.{{ public_hosted_zone }}
 
