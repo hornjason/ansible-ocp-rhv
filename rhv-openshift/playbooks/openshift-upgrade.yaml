@@ -16,47 +16,15 @@
       tags:
         - hosts
 
-- import_playbook: "{{ playbook_dir }}/prerequisite.yaml"
+- include: "{{ playbook_dir }}/prerequisite.yaml"
   tags:
     - pre
     - rhsm
 
-- hosts: nodes
-  roles:
-    - role: docker-storage-setup
-      docker_dev: '/dev/vdb'
-  tags:
-    - pre
-    - storage
-
-- hosts: nodes:!masters
-  roles:
-    - role: openshift-volume-quota
-      local_volumes_device: '/dev/vdc'
-  tags:
-    - pre
-    - storage
-
 - name: call openshift includes for installer
-  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml
+  include: /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/upgrades/v3_7/upgrade.yml
   tags:
     - byo
-
-- name: add firewall rules to load balancer
-  hosts: lb
-  tasks:
-    - name: Add 80/443  iptables rules
-      iptables:
-        chain: OS_FIREWALL_ALLOW
-        state: "{{ state }}"
-        protocol: tcp
-        match: state,tcp
-        ctstate: NEW
-        destination_port: "{{ item }}"
-        jump: ACCEPT
-      with_items:
-        - 80
-        - 443
   
 - hosts: localhost
   connection: local

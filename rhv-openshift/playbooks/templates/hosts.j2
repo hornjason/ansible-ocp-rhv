@@ -28,15 +28,19 @@ openshift_override_hostname_check=true
 osm_use_cockpit=false
 
 # release 
-openshift_release={{ openshift_release }}
-deployment_type=openshift-enterprise
+openshift_release=3.7
+openshift_deployment_type=openshift-enterprise
 
+# reboot masters
+openshift_rolling_restart_mode=system
 
+# disabled right now-masters don't have docker volgroup
 #openshift_node_local_quota_per_fsgroup=512Mi
 openshift_install_examples=true
 
 # Identiy
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+# admin:changeme
 openshift_master_htpasswd_users={'admin': '$apr1$zAhyA9Ko$rBxBOwAwwtRuuaw8OtCwH0'}
 
 # Select default nodes for projects
@@ -64,6 +68,15 @@ openshift_master_cluster_method=native
 # Router
 openshift_hosted_router_replicas=2
 openshift_router_selector='role=infra'
+
+# Install etcd storage
+openshift_hosted_etcd_storage_kind={{ storage_type }}
+openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
+openshift_hosted_etcd_storage_nfs_directory={{ storage_dir }}
+openshift_hosted_etcd_storage_volume_name=etcd-vol2 
+openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
+openshift_hosted_etcd_storage_volume_size={{ etcd_volume_size }}
+openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 # Install registry
 openshift_hosted_registry_storage_kind={{ storage_type }}
@@ -142,7 +155,10 @@ openshift-infra2
 {{ storage_host }}
 
 [lb]
-openshift-lb   os_firewall_allow="[{'service': 'haproxy stats','port': '9000/tcp'},{'service': 'haproxy balance','port': '{{ conole_port | default(8443) }}/tcp'},{'service': 'http','port': '80/tcp'},{'service': 'https','port': '443/tcp'}]"
+openshift-lb   
+
+[lb:vars]
+os_firewall_allow=[{"service": "haproxy stats","port": "9000/tcp"},{"service": "haproxy balance","port": "{{ conole_port | default(8443) }}/tcp"},{"service": "http","port": "80/tcp"},{"service": "https","port": "443/tcp"}]
 
 [nodes]
 openshift-master1 openshift_hostname=openshift-master1  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=false

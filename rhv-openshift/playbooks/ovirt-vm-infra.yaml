@@ -99,10 +99,10 @@
         - inventory_hostname != 'HostedEngine'
         - inventory_hostname != 'localhost'
         - inventory_hostname != storage_host
-      notify: restart network
+      notify: 
+        - restart network
       tags: 
         - ssh
-
   handlers:
     - name: restart network
       systemd:
