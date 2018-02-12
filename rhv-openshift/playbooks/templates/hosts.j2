@@ -142,7 +142,7 @@ openshift-infra2
 {{ storage_host }}
 
 [lb]
-openshift-lb   os_firewall_allow="[{'service': 'haproxy stats','port': '9000/tcp'},{'service': 'haproxy balance','port': '{{ conole_port | default(8443) }}/tcp'},{'service': 'http','port': '80/tcp'},{'service': 'https','port': '443/tcp'}]"
+openshift-lb   
 
 [nodes]
 openshift-master1 openshift_hostname=openshift-master1  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=false
