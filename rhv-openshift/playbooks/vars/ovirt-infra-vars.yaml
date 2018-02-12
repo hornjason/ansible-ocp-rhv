@@ -24,7 +24,7 @@ template_nics:
 master_vm:
   cluster: "{{ rhv_cluster }}"
   template: rhel7
-  memory: 8GiB
+  memory: 4GiB
   cores: 2
   high_availability: true
   disks:
@@ -36,7 +36,22 @@ master_vm:
 node_vm:
   cluster: "{{ rhv_cluster }}"
   template: rhel7
-  memory: 4GiB
+  memory: 8GiB
+  cores: 2
+  disks:
+    - size: 20GiB
+      storage_domain: "{{ rhv_data_storage }}"
+      name: docker_disk
+      interface: virtio
+    - size: 20GiB
+      storage_domain: "{{ rhv_data_storage }}"
+      name: localvol_disk
+      interface: virtio
+
+infra_vm:
+  cluster: "{{ rhv_cluster }}"
+  template: rhel7
+  memory: 8GiB
   cores: 2
   disks:
     - size: 20GiB

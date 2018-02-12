@@ -48,7 +48,7 @@
     - name: Add 80/443  iptables rules
       iptables:
         chain: OS_FIREWALL_ALLOW
-        state: "{{ state }}"
+        state: present
         protocol: tcp
         match: state,tcp
         ctstate: NEW
@@ -80,8 +80,8 @@
         - add cluster-admin
       tags: kube   
 
-    - name: hawkular fix adding view role
-      shell: oc adm policy add-role-to-user view system:serviceaccount:openshift-infra:hawkular -n openshift-infra
+#    - name: hawkular fix adding view role
+#      shell: oc adm policy add-role-to-user view system:serviceaccount:openshift-infra:hawkular -n openshift-infra
       
   handlers:
     - name: add cluster-admin

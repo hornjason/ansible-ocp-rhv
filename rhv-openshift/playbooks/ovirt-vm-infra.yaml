@@ -94,7 +94,7 @@
 
     - name: Set Hostnames
       hostname:
-        name: "{{ inventory_hostname }}.{{ public_hosted_zone }}"
+        name: "{{ inventory_hostname }}.{{ local_hosted_zone }}"
       when: 
         - inventory_hostname != 'HostedEngine'
         - inventory_hostname != 'localhost'
