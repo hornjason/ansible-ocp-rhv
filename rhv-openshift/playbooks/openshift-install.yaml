@@ -43,8 +43,22 @@
     - byo
   #vars_file:
   #  ocp-vars.yml
-- hosts: lb
-  
+- name: add firewall rules to load balancer
+  hosts: lb
+  tasks:
+    - name: Add 80/443  iptables rules
+      iptables:
+        chain: OS_FIREWALL_ALLOW
+        state: present
+        protocol: tcp
+        match: state,tcp
+        ctstate: NEW
+        destination_port: "{{ item }}"
+        jump: ACCEPT
+      with_items:
+        - 80
+        - 443 
+
 - hosts: localhost
   connection: local
   gather_facts: no
@@ -53,7 +67,8 @@
       yum:
         name: atomic-openshift-clients
         state: latest
-      nofity: add cluster-admin
+      notify: 
+        - add cluster-admin
       tags: kube
 
     - name: copy kube config
@@ -62,9 +77,17 @@
         dest: /root/.kube/
         flat: yes
       delegate_to: "{{ groups.masters[0] }}"
-      nofity: add cluster-admin
+      notify: 
+        - add cluster-admin
       tags: kube   
 
+    - name: add cluster-admin
+      shell: oc adm policy add-cluster-role-to-user cluster-admin admin
+      notify: 
+        - add cluster-admin
+      tags: kube
+
+  handlers:
     - name: add cluster-admin
       shell: oc adm policy add-cluster-role-to-user cluster-admin admin
       tags: kube
