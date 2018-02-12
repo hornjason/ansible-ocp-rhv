@@ -24,6 +24,7 @@
       get_url:
         url: 'http://{{ engine_hostname }}/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA'
         dest: "{{ playbook_dir }}/files/ca.pem"
+        force: yes
       register: ca_file
       tags:
         - test
