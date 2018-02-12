@@ -5,3 +5,4 @@ ocp-vars.yml
 **.retry
 **inventory.hosts
 **inventory.nsupdate
+**playbooks/inventory/hosts
