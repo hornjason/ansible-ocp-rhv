@@ -56,9 +56,11 @@ openshift_master_htpasswd_users={'admin': '$apr1$zAhyA9Ko$rBxBOwAwwtRuuaw8OtCwH0
 # Select default nodes for projects
 osm_default_node_selector={{ osm_default_node_selector  | default('role=app') }}
 
-# TSB
-template_service_broker_selector=role=infra
+# Service Broker 
+openshift_enable_service_catalog=false
+ansible_service_broker_install=false
 template_service_broker_install=false
+template_service_broker_selector=role=infra
 
 # Users
 ansible_become=yes
@@ -83,14 +85,14 @@ openshift_master_cluster_method=native
 openshift_hosted_router_replicas=2
 openshift_router_selector='role=infra'
 
-# Install etcd storage
-openshift_hosted_etcd_storage_kind={{ storage_type }}
-openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
-openshift_hosted_etcd_storage_nfs_directory={{ storage_dir }}
-openshift_hosted_etcd_storage_volume_name=etcd-vol2 
-openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
-openshift_hosted_etcd_storage_volume_size={{ etcd_volume_size }}
-openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+# Install etcd storage for ASB
+#openshift_hosted_etcd_storage_kind={{ storage_type }}
+#openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
+#openshift_hosted_etcd_storage_nfs_directory={{ storage_dir }}
+#openshift_hosted_etcd_storage_volume_name=etcd-vol2 
+#openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
+#openshift_hosted_etcd_storage_volume_size={{ etcd_volume_size }}
+#openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 # Install registry
 openshift_hosted_registry_storage_kind={{ storage_type }}
