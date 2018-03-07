@@ -53,7 +53,7 @@ root_ssh_key:
 ##############################################################################
 ### Openshift variables
 ## Choices of deployment type: openshift-enterprise, origin
-openshift_release: "3.6"
+# openshift_release is hard coded by branch version
 containerized: false
 console_port: 8443
 debug_level: 2
