@@ -85,6 +85,7 @@ openshift_master_cluster_method=native
 openshift_hosted_router_replicas=2
 openshift_router_selector='role=infra'
 
+{% if etcd_volume_size is defined %}
 # Install etcd storage for ASB
 #openshift_hosted_etcd_storage_kind={{ storage_type }}
 #openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
@@ -93,6 +94,7 @@ openshift_router_selector='role=infra'
 #openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 #openshift_hosted_etcd_storage_volume_size={{ etcd_volume_size }}
 #openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+{% endif %}
 
 # Install registry
 openshift_hosted_registry_storage_kind={{ storage_type }}
