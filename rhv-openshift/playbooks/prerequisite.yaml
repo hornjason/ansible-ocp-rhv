@@ -10,7 +10,7 @@
 - hosts: nodes:lb
   gather_facts: no
   become: yes
-  serial: 1
+  #serial: 1
   roles:
   - role: rhsm-subscription
     when: openshift_deployment_type in ["enterprise", "atomic-enterprise", "openshift-enterprise"] and
