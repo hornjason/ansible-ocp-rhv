@@ -52,7 +52,8 @@
       network: "{{ item.1.network | default(omit) }}" 
     with_subelements:
       - "{{ vms }}"
-      - "profile.nics"
+      - "nics"
+     # - "profile.nics"
       - flags:
         skip_missing: true
 
