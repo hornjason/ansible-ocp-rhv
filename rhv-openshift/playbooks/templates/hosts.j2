@@ -29,7 +29,12 @@ openshift_override_hostname_check=true
 osm_use_cockpit=false
 
 # release 
-openshift_release=3.7
+{% if openshift_release is defined %}
+openshift_release={{ openshift_release }}
+{% else %}
+openshift_release=v3.7
+{% endif %}
+
 openshift_deployment_type=openshift-enterprise
 
 # reboot masters
