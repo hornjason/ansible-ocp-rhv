@@ -1,7 +1,7 @@
 ---
-- name: Gather facts
-  openshift_facts:
-    role: common
+#- name: Gather facts
+#  openshift_facts:
+#    role: common
 
 - name: Allow rhsm a longer timeout to help out with subscription-manager
   lineinfile:

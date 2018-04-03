@@ -3,4 +3,4 @@
   package:
     name: git
     state: latest
-  when: not openshift.common.is_atomic | bool
+  when: not openshift_is_atomic | bool

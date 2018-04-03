@@ -62,6 +62,10 @@ infra_vm:
       storage_domain: "{{ rhv_data_storage }}"
       name: localvol_disk
       interface: virtio
+    - size: 100GiB
+      storage_domain: "{{ rhv_data_storage }}"
+      name: gluster_brick1
+      interface: virtio
 
 lb_vm:
   cluster: "{{ rhv_cluster }}"
@@ -99,7 +103,7 @@ vms:
   # Infra VMs
   - name: openshift-infra1
     tag: openshift_infra
-    profile: "{{ node_vm }}"
+    profile: "{{ infra_vm }}"
     cloud_init:
       host_name: "openshift-infra1.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
@@ -111,7 +115,7 @@ vms:
  
   - name: openshift-infra2
     tag: openshift_infra
-    profile: "{{ node_vm }}"
+    profile: "{{ infra_vm }}"
     cloud_init:
       host_name: "openshift-infra2.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
@@ -120,6 +124,18 @@ vms:
         profile_name: ovirtmgmt
         interface: virtio
         mac_address: 00:1a:4a:16:01:46
+
+  - name: openshift-infra3
+    tag: openshift_infra
+    profile: "{{ infra_vm }}"
+    cloud_init:
+      host_name: "openshift-infra3.{{ local_hosted_zone }}"
+      authorized_ssh_keys: "{{ root_ssh_key }}"
+    nics:
+      - name: nic1
+        profile_name: ovirtmgmt
+        interface: virtio
+        mac_address: 00:1a:4a:16:01:42
  
   # Master VMs
   - name: openshift-master1

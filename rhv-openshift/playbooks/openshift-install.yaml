@@ -16,29 +16,47 @@
       tags:
         - hosts
 
-- import_playbook: "{{ playbook_dir }}/prerequisite.yaml"
-  tags:
-    - pre
-    - rhsm
-
-- hosts: nodes
+- hosts: nodes:lb
+  gather_facts: yes
+  become: yes
+  #serial: 1
+  vars:
+    rhsm_user: "{{ rhsub_user }}"
+    rhsm_password: "{{ rhsub_password }}"
+    rhsm_pool: "{{ rhsub_pool }}"
   roles:
-    - role: docker-storage-setup
-      docker_dev: '/dev/vdb'
-  tags:
-    - pre
-    - storage
+    - role: rhsm-subscription
+      when: openshift_deployment_type in ["enterprise", "atomic-enterprise", "openshift-enterprise"] and
+            ansible_distribution == "RedHat" and ( rhsm_user is defined or rhsm_activation_key is defined)
+    - role: rhsm-repos
+      when: openshift_deployment_type in ["enterprise", "atomic-enterprise", "openshift-enterprise"] and
+            ansible_distribution == "RedHat" and ( rhsm_user is defined or rhsm_activation_key is defined)
 
 - hosts: nodes:!masters
   roles:
     - role: openshift-volume-quota
       local_volumes_device: '/dev/vdc'
-  tags:
-    - pre
-    - storage
 
+#- import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml"
+
+#- hosts: nodes
+#  roles:
+#    - role: docker-storage-setup
+#      docker_dev: '/dev/vdb'
+#  tags:
+#    - pre
+#    - storage
+#
+#- hosts: nodes:!masters
+#  roles:
+#    - role: openshift-volume-quota
+#      local_volumes_device: '/dev/vdc'
+#  tags:
+#    - pre
+#    - storage
+#
 - name: call openshift includes for installer
-  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml
+  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
   tags:
     - byo
 
