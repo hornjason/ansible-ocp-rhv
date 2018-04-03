@@ -90,7 +90,3 @@
         - add cluster-admin
       tags: kube
 
-  handlers:
-    - name: add cluster-admin
-      shell: oc adm policy add-cluster-role-to-user cluster-admin admin
-      tags: kube
