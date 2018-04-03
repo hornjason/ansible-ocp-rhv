@@ -68,7 +68,6 @@ lb_vm:
   template: rhel7
   memory: 4GiB
   cores: 1
- 
 
 vms:
   # Node VMs
