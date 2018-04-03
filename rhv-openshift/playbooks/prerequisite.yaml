@@ -10,10 +10,10 @@
 - hosts: nodes:lb
   gather_facts: no
   become: yes
-  serial: 1
+  #serial: 1
   roles:
   - role: rhsm-subscription
-    when: deployment_type in ["enterprise", "atomic-enterprise", "openshift-enterprise"] and
+    when: openshift_deployment_type in ["enterprise", "atomic-enterprise", "openshift-enterprise"] and
           ansible_distribution == "RedHat" and ( rhsm_user is defined or rhsm_activation_key is defined)
 
 - hosts: nodes:lb
@@ -21,7 +21,7 @@
   become: yes
   roles:
   - role: rhsm-repos
-    when: deployment_type in ["enterprise", "atomic-enterprise", "openshift-enterprise"] and
+    when: openshift_deployment_type in ["enterprise", "atomic-enterprise", "openshift-enterprise"] and
           ansible_distribution == "RedHat" and ( rhsm_user is defined or rhsm_activation_key is defined)
   - prerequisites
 

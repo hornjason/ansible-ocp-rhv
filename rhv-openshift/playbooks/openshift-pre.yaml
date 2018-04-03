@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Template Openshift hosts files
+      template:
+        src: hosts.j2
+        dest: "{{ playbook_dir }}/inventory/hosts"
+      run_once: true
+      tags:
+        - hosts
+
+    - local_action: meta
+        refresh_inventory
+      tags:
+        - hosts
+
+- import_playbook: "{{ playbook_dir }}/prerequisite.yaml"
+  tags:
+    - pre
+    - rhsm
+
+- hosts: nodes
+  roles:
+    - role: docker-storage-setup
+      docker_dev: '/dev/vdb'
+  tags:
+    - pre
+    - storage
+
+- hosts: nodes:!masters
+  roles:
+    - role: openshift-volume-quota
+      local_volumes_device: '/dev/vdc'
+  tags:
+    - pre
+    - storage

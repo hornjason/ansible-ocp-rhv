@@ -16,7 +16,8 @@ openshift_master_debug_level={{ master_debug_level | default(debug_level, true) 
 openshift_master_access_token_max_seconds=2419200
 
 # Cluster names  / wildcard subdomain#
-openshift_master_cluster_hostname={{ load_balancer_hostname }}
+#openshift_master_cluster_hostname={{ load_balancer_hostname }}
+openshift_master_cluster_hostname={{ openshift_master_cluster_public_hostname }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }} 
 openshift_master_default_subdomain={{ wildcard_zone }}
 
@@ -28,19 +29,43 @@ openshift_override_hostname_check=true
 osm_use_cockpit=false
 
 # release 
+{% if openshift_release is defined %}
 openshift_release={{ openshift_release }}
-deployment_type=openshift-enterprise
+{% else %}
+openshift_release=v3.7
+{% endif %}
 
+openshift_deployment_type=openshift-enterprise
 
+# reboot masters
+openshift_rolling_restart_mode=system
+
+# disabled right now-masters don't have docker volgroup
 #openshift_node_local_quota_per_fsgroup=512Mi
 openshift_install_examples=true
 
 # Identiy
+{% if openshift_master_identity_providers is defined %}
+openshift_master_identity_providers={{ openshift_master_identity_providers }}
+{% else %}
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+{% endif %}
+
+{% if openshift_master_htpasswd_users is defined %}
+openshift_master_htpasswd_users={{ openshift_master_htpasswd_users }}
+{% else %}
+# admin:changeme
 openshift_master_htpasswd_users={'admin': '$apr1$zAhyA9Ko$rBxBOwAwwtRuuaw8OtCwH0'}
+{% endif %}
 
 # Select default nodes for projects
-osm_default_node_selector={{ osm_default_node_selector }} | default('role=app') }}
+osm_default_node_selector={{ osm_default_node_selector  | default('role=app') }}
+
+# Service Broker 
+openshift_enable_service_catalog=true
+ansible_service_broker_install=false
+template_service_broker_install=false
+template_service_broker_selector=role=infra
 
 # Users
 ansible_become=yes
@@ -65,6 +90,17 @@ openshift_master_cluster_method=native
 openshift_hosted_router_replicas=2
 openshift_router_selector='role=infra'
 
+{% if etcd_volume_size is defined %}
+# Install etcd storage for ASB
+#openshift_hosted_etcd_storage_kind={{ storage_type }}
+#openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
+#openshift_hosted_etcd_storage_nfs_directory={{ storage_dir }}
+#openshift_hosted_etcd_storage_volume_name=etcd-vol2 
+#openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
+#openshift_hosted_etcd_storage_volume_size={{ etcd_volume_size }}
+#openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+{% endif %}
+
 # Install registry
 openshift_hosted_registry_storage_kind={{ storage_type }}
 openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
@@ -75,38 +111,42 @@ openshift_hosted_registry_replicas=1
 openshift_registry_selector='role=infra'
 
 # Install metrics | for NFS only one replicant supported
-#openshift_metrics_install_metrics=True
-openshift_hosted_metrics_deploy=True
-openshift_hosted_metrics_storage_kind={{ storage_type }}
-openshift_hosted_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_metrics_storage_nfs_directory={{ storage_dir }}
-openshift_hosted_metrics_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_metrics_storage_volume_name=metrics
-openshift_hosted_metrics_storage_volume_size={{ metrics_volume_size | default('10Gi') }}
+openshift_metrics_install_metrics=true
+openshift_metrics_storage_kind={{ storage_type }}
+openshift_metrics_storage_access_modes=['ReadWriteOnce']
+openshift_metrics_storage_nfs_directory={{ storage_dir }}
+openshift_metrics_storage_nfs_options='*(rw,root_squash)'
+openshift_metrics_storage_volume_name=metrics
+openshift_metrics_storage_volume_size={{ metrics_volume_size | default('10Gi') }}
 
-openshift_master_metrics_public_url="https://metrics.{{ wildcard_zone }}/hawkular/metrics"
+openshift_metrics_hawkular_hostname="metrics.{{ wildcard_zone }}"
+#openshift_master_metrics_public_url="https://metrics.{{ wildcard_zone }}/hawkular/metrics"
 #openshift_metrics_cassandra_storage_type=nfs
 #openshift_metrics_cassandra_pvc_prefix=cassandra
 openshift_metrics_cassandra_pvc_size={{ cassandra_volume_size | default('10Gi') }}
 #openshift_metrics_cassandra_pv_selector={{ '{"storage": "metrics"}' }}
-#openshift_hosted_metrics_storage_labels={{ '{"storage": "metrics"}' }}
 openshift_metrics_cassandra_replicas="1"
 openshift_metrics_hawkular_nodeselector={{ '{"role":"infra"}' }}
 openshift_metrics_cassandra_nodeselector={{ '{"role":"infra"}' }}
 openshift_metrics_heapster_nodeselector={{ '{"role":"infra"}' }}
 
-# Install logging but post install | for NFS only one replica supported"
-#openshift_logging_install_logging=True
-openshift_hosted_logging_deploy=True
-# for kibana proxy
-openshift_logging_master_public_url="https://{{ openshift_master_cluster_public_hostname }}:{{ console_port }}"
-openshift_hosted_logging_storage_kind={{ storage_type }}
-openshift_hosted_logging_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_logging_storage_nfs_directory={{ storage_dir }}
-openshift_hosted_logging_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_logging_storage_volume_name=logging
-openshift_hosted_logging_storage_volume_size={{ logging_volume_size }}
+# ES OPS
+openshift_logging_use_ops=false
 
+# ElasticSearch with more than 1 node
+#logging_elasticsearch_rollout_override=True
+
+# Install logging but post install | for NFS only one replica supported"
+openshift_logging_install_logging=True
+openshift_logging_master_public_url="https://{{ openshift_master_cluster_public_hostname }}:{{ console_port }}"
+openshift_logging_storage_kind={{ storage_type }}
+openshift_logging_storage_access_modes=['ReadWriteOnce']
+openshift_logging_storage_nfs_directory={{ storage_dir }}
+openshift_logging_storage_nfs_options='*(rw,root_squash)'
+openshift_logging_storage_volume_name=logging
+openshift_logging_storage_volume_size={{ logging_volume_size }}
+
+openshift_logging_es_pvc_storage_class_name=""
 openshift_logging_es_cpu_limit="1"
 openshift_logging_es_cpu_request="1"
 openshift_logging_es_memory_limit="1Gi"
@@ -119,6 +159,20 @@ openshift_logging_fluentd_nodeselector={{ '{"logging":"true"}' }}
 openshift_logging_es_nodeselector={{ '{"role":"infra"}' }}
 openshift_logging_kibana_nodeselector={{ '{"role":"infra"}' }}
 openshift_logging_curator_nodeselector={{ '{"role":"infra"}' }}
+
+# prometheus
+openshift_prometheus_storage_kind=nfs
+openshift_prometheus_alertmanager_storage_kind=nfs
+openshift_prometheus_alertbuffer_storage_kind=nfs
+openshift_prometheus_storage_type=pvc
+openshift_prometheus_alertmanager_storage_type=pvc
+openshift_prometheus_alertmanager_pvc_name=alertmanager
+openshift_prometheus_alertmanager_limits_memory="1Gi"
+openshift_prometheus_alertbuffer_storage_type=pvc
+openshift_prometheus_alertbuffer_pvc_size=10Gi
+openshift_prometheus_pvc_access_modes=[ReadWriteOnce]
+openshift_prometheus_oauth_proxy_cpu_requests="100m"
+openshift_prometheus_node_selector={"role":"infra"}
 
 
 [masters]
@@ -142,7 +196,9 @@ openshift-infra2
 {{ storage_host }}
 
 [lb]
-openshift-lb   os_firewall_allow="[{'service': 'haproxy stats','port': '9000/tcp'},{'service': 'haproxy balance','port': '{{ conole_port | default(8443) }}/tcp'},{'service': 'http','port': '80/tcp'},{'service': 'https','port': '443/tcp'}]"
+openshift-lb  # One Day os_firewall_allow=[{"service": "haproxy stats","port": "9000/tcp"},{"service": "haproxy balance","port": "{{ conole_port | default(8443) }}/tcp"},{"service": "http","port": "80/tcp"},{"service": "https","port": "443/tcp"}] 
+
+
 
 [nodes]
 openshift-master1 openshift_hostname=openshift-master1  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=false

@@ -40,7 +40,7 @@ rhv_data_storage: vmdata
 ## For subscriptions to Red Hat's CDN
 ## Userid/Password could be moved to a vault file and encrypted for safety, see the following link for details:
 ## http://docs.ansible.com/ansible/playbooks_vault.html
-rhsm_pool: 8a85f98c60c2c2b40160c32445b41b29
+rhsm_pool: 
 rhsm_user: 
 rhsm_password: 
 
@@ -53,7 +53,7 @@ root_ssh_key:
 ##############################################################################
 ### Openshift variables
 ## Choices of deployment type: openshift-enterprise, origin
-openshift_release: "3.6"
+# openshift_release is hard coded by branch version
 containerized: false
 console_port: 8443
 debug_level: 2

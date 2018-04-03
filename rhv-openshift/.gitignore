@@ -1,8 +1,10 @@
 ocp-vars.yml
 **/ca.pem
 **ovirt.init
-**ansible.log
+**.log
+**ansible.log*
 **.retry
+**/playbooks/inventory/hosts
 **inventory.hosts
 **inventory.nsupdate
 **playbooks/inventory/hosts
