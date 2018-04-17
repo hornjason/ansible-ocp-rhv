@@ -1,2 +1,12 @@
 ---
-openshift_required_packages: ['iptables', 'iptables-services', 'NetworkManager', 'docker']
+openshift_required_packages: 
+- wget 
+- git 
+- net-tools 
+- bind-utils 
+- iptables-services 
+- bridge-utils 
+- bash-completion 
+- kexec-tools 
+- sos 
+- psacct

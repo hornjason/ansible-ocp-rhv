@@ -24,8 +24,6 @@
         password: "{{ engine_password }}"
         ca_file: "{{ engine_cafile | default(omit) }}"
         insecure: "{{ engine_insecure | default(true) }}"
-      tags:
-        - always
 
   tasks:
     - name: Erase vms
@@ -41,8 +39,6 @@
       ovirt_auth:
         state: absent
         ovirt_auth: "{{ ovirt_auth }}"
-      tags:
-        - always
 
     - name: remove ansible hosts file
       file:

@@ -1,6 +1,6 @@
 ocp-vars.yml
 **/ca.pem
-**ovirt.init
+**ovirt.ini
 **.log
 **ansible.log*
 **.retry

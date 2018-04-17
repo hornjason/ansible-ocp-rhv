@@ -14,6 +14,11 @@
       state: latest
     with_items: "{{ openshift_required_packages }}"
 
+  - name: Update all
+    package:
+      name: "*"
+      state: latest
+ 
   - name: Start NetworkManager and network
     service:
       name: "{{ item }}"
@@ -51,35 +56,35 @@
       state: started
       enabled: true
 
-  when: not openshift_is_atomic | bool
+  #when: not openshift_is_atomic | bool
 
 # Fail as early as possible if Atomic and old version of Docker
-- block:
-  - name: Determine Atomic Host Docker Version
-    shell: 'CURLY="{"; docker version --format "$CURLY{json .Server.Version}}"'
-    register: l_atomic_docker_version
-
-  - assert:
-      msg: Installation on Atomic Host requires Docker 1.12 or later. Attempting to patch.
-      that:
-      - l_atomic_docker_version.stdout | replace('"', '') | version_compare('1.12','>=')
-
-  rescue:
-  - name: Patching Atomic instances
-    shell: atomic host upgrade
-    register: patched
-
-  - name: Reboot when patched
-    shell: sleep 5 && shutdown -r now "Reboot due to Atomic Patching"
-    async: 1
-    poll: 0
-    ignore_errors: true
-    when: patched.changed
-
-  - name: Wait for hosts to be back
-    pause:
-      seconds: 60
-    delegate_to: 127.0.0.1
-    when: patched.changed
-
-  when: openshift_is_atomic | bool
+#- block:
+#  - name: Determine Atomic Host Docker Version
+#    shell: 'CURLY="{"; docker version --format "$CURLY{json .Server.Version}}"'
+#    register: l_atomic_docker_version
+#
+#  - assert:
+#      msg: Installation on Atomic Host requires Docker 1.12 or later. Attempting to patch.
+#      that:
+#      - l_atomic_docker_version.stdout | replace('"', '') | version_compare('1.12','>=')
+#
+#  rescue:
+#  - name: Patching Atomic instances
+#    shell: atomic host upgrade
+#    register: patched
+#
+#  - name: Reboot when patched
+#    shell: sleep 5 && shutdown -r now "Reboot due to Atomic Patching"
+#    async: 1
+#    poll: 0
+#    ignore_errors: true
+#    when: patched.changed
+#
+#  - name: Wait for hosts to be back
+#    pause:
+#      seconds: 60
+#    delegate_to: 127.0.0.1
+#    when: patched.changed
+#
+#  when: openshift_is_atomic | bool

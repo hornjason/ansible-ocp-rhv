@@ -6,6 +6,15 @@
   vars_files:
     - vars/ovirt-infra-vars.yaml
   pre_tasks:
+    - name: Template Openshift hosts files
+      template:
+        src: hosts.j2
+        dest: "{{ playbook_dir }}/inventory/hosts"
+      run_once: true
+
+    - local_action: meta
+        refresh_inventory
+
     - name: "Establish rhv pre-req packages"
       set_fact:
         openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
@@ -66,48 +75,60 @@
       tags:
         - always
 
-    - pause: minutes=2
+    #- pause: minutes=2
 
     #JTH: Fix for below
     - local_action: meta 
         refresh_inventory
+
 # FIX: cloud-init on shipped with rhel7.4 qcow image
 #      has bug https://bugzilla.redhat.com/show_bug.cgi?id=1450521
-#       cloud-init 0.7.6 works not 0.7.9
+#      vm's will have new cloud-init after its run now.
 - name: Change HostNames | Cloud_Init fix
-  hosts: all 
+  hosts: nodes
   gather_facts: true
   vars_files:
     - vars/ovirt-infra-vars.yaml
   tasks:
-    - name: Wait for VM SSH
-      wait_for:
-        host: "{{ ansible_default_ipv4.address }}"
-        port: 22
-        state: started
-        # Wait for the reboot delay from the previous task plus 10 seconds.
-        # Otherwise, the SSH port would still be open because the system
-        # has not rebooted.
-        delay: 10
-      register: wait_for_reboot
-      tags: 
-        - ssh
+    - name: Wait for VM to be ready
+      block:
+        - wait_for:
+            host: "{{ ansible_default_ipv4.address }}"
+            path: /etc/sysconfig/.ready
+            delay: 120
+            timeout: 700
+          register: wait_file
 
-    - name: Set Hostnames
-      hostname:
-        name: "{{ inventory_hostname }}.{{ local_hosted_zone }}"
-      when: 
-        - inventory_hostname != 'HostedEngine'
-        - inventory_hostname != 'localhost'
-        - inventory_hostname != storage_host
-      notify: 
-        - restart network
-      tags: 
-        - ssh
+        - name: reboot host
+          shell: sleep 10 && /sbin/shutdown -r now
+          async: 300
+          poll: 0
+          become: true
+
+        - wait_for_connection:
+            delay: 60
+            timeout: 600
+          register: wait_ssh
+
+      always:
+        - name: Set Hostnames
+          hostname:
+            name: "{{ inventory_hostname }}.{{ local_hosted_zone }}"
+          when: 
+            - inventory_hostname != 'HostedEngine'
+            - inventory_hostname != 'localhost'
+            - inventory_hostname != storage_host
+          notify: 
+            - restart network
+            - restart logind
+
   handlers:
     - name: restart network
       systemd:
         state: restarted
         name: network
-      tags: 
-        - ssh
+
+    - name: restart logind
+      systemd:
+        state: restarted
+        name: systemd-logind
