@@ -1,9 +1,0 @@
-ocp-vars.yml
-**/ca.pem
-**ovirt.ini
-**.log
-**ansible.log*
-**.retry
-**/playbooks/inventory/hosts
-**inventory.hosts
-**inventory.nsupdate
