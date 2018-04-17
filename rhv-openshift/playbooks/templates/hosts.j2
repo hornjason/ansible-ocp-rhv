@@ -5,6 +5,8 @@ infra
 lb
 nfs
 etcd
+glusterfs
+glusterfs_registry
 new_nodes
 new_masters
 
@@ -17,9 +19,18 @@ openshift_master_access_token_max_seconds=2419200
 
 # Cluster names  / wildcard subdomain#
 #openshift_master_cluster_hostname={{ load_balancer_hostname }}
-openshift_master_cluster_hostname={{ openshift_master_cluster_public_hostname }}
+openshift_master_cluster_hostname={{ load_balancer_hostname }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }} 
 openshift_master_default_subdomain={{ wildcard_zone }}
+
+####################
+# custom certs
+# Router
+####################
+openshift_hosted_router_certificate={"certfile": "/vagrant/keys/letsencrypt/certbot/live/jasonhorn.io/fullchain.pem", "keyfile": "/vagrant/keys/letsencrypt/certbot/live/jasonhorn.io/privkey.pem"}
+# MASTER/API
+openshift_master_overwrite_named_certificates=true
+openshift_master_named_certificates=[{"certfile": "/vagrant/keys/letsencrypt/certbot/live/jasonhorn.io/fullchain.pem", "keyfile": "/vagrant/keys/letsencrypt/certbot/live/jasonhorn.io/privkey.pem", "names": ["openshift.jasonhorn.io"]}]
 
 # Ports
 openshift_master_api_port={{ console_port }} 
@@ -32,7 +43,7 @@ osm_use_cockpit=false
 {% if openshift_release is defined %}
 openshift_release={{ openshift_release }}
 {% else %}
-openshift_release=v3.7
+openshift_release=v3.9
 {% endif %}
 
 openshift_deployment_type=openshift-enterprise
@@ -64,8 +75,8 @@ osm_default_node_selector={{ osm_default_node_selector  | default('role=app') }}
 # Service Broker 
 openshift_enable_service_catalog=true
 ansible_service_broker_install=false
-template_service_broker_install=false
-template_service_broker_selector=role=infra
+template_service_broker_install=true
+template_service_broker_selector={{ '{"role":"infra"}' }}
 
 # Users
 ansible_become=yes
@@ -80,6 +91,9 @@ osm_cluster_network_cidr={{ osm_cluster_network_cidr }}
 {% if openshift_portal_net is defined %}
 openshift_portal_net={{ openshift_portal_net }}"
 {% endif %}
+
+# TODO: REMOVE NEXT RELEASE
+#openshift_disable_check=package_version
 
 {% if openshift_disable_check is defined %}
 openshift_disable_check={{ openshift_disable_check }}
@@ -102,9 +116,11 @@ openshift_router_selector='role=infra'
 {% endif %}
 
 # Install registry
-openshift_hosted_registry_storage_kind={{ storage_type }}
-openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
-openshift_hosted_registry_storage_nfs_directory={{ storage_dir }}
+# Specify that we want to use GlusterFS storage for a hosted registry
+openshift_hosted_registry_storage_kind=glusterfs
+#openshift_hosted_registry_storage_kind={{ storage_type }}
+#openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+#openshift_hosted_registry_storage_nfs_directory={{ storage_dir }}
 openshift_hosted_registry_storage_volume_name=registryvol
 openshift_hosted_registry_storage_volume_size={{ registry_volume_size }}
 openshift_hosted_registry_replicas=1
@@ -112,16 +128,16 @@ openshift_registry_selector='role=infra'
 
 # Install metrics | for NFS only one replicant supported
 openshift_metrics_install_metrics=true
-openshift_metrics_storage_kind={{ storage_type }}
-openshift_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_metrics_storage_nfs_directory={{ storage_dir }}
-openshift_metrics_storage_nfs_options='*(rw,root_squash)'
+#openshift_metrics_storage_kind={{ storage_type }}
+#openshift_metrics_storage_access_modes=['ReadWriteOnce']
+#openshift_metrics_storage_nfs_directory={{ storage_dir }}
+#openshift_metrics_storage_nfs_options='*(rw,root_squash)'
 openshift_metrics_storage_volume_name=metrics
 openshift_metrics_storage_volume_size={{ metrics_volume_size | default('10Gi') }}
 
 openshift_metrics_hawkular_hostname="metrics.{{ wildcard_zone }}"
 #openshift_master_metrics_public_url="https://metrics.{{ wildcard_zone }}/hawkular/metrics"
-#openshift_metrics_cassandra_storage_type=nfs
+openshift_metrics_cassandra_storage_type=dynamic
 #openshift_metrics_cassandra_pvc_prefix=cassandra
 openshift_metrics_cassandra_pvc_size={{ cassandra_volume_size | default('10Gi') }}
 #openshift_metrics_cassandra_pv_selector={{ '{"storage": "metrics"}' }}
@@ -139,20 +155,23 @@ openshift_logging_use_ops=false
 # Install logging but post install | for NFS only one replica supported"
 openshift_logging_install_logging=True
 openshift_logging_master_public_url="https://{{ openshift_master_cluster_public_hostname }}:{{ console_port }}"
-openshift_logging_storage_kind={{ storage_type }}
-openshift_logging_storage_access_modes=['ReadWriteOnce']
-openshift_logging_storage_nfs_directory={{ storage_dir }}
-openshift_logging_storage_nfs_options='*(rw,root_squash)'
+#openshift_logging_storage_kind={{ storage_type }}
+#openshift_logging_storage_access_modes=['ReadWriteOnce']
+#openshift_logging_storage_nfs_directory={{ storage_dir }}
+#openshift_logging_storage_nfs_options='*(rw,root_squash)'
 openshift_logging_storage_volume_name=logging
-openshift_logging_storage_volume_size={{ logging_volume_size }}
+openshift_logging_storage_volume_size={{ logging_volume_size | default('10Gi') }}
 
-openshift_logging_es_pvc_storage_class_name=""
+# Set retention
+openshift_logging_curator_default_days=5
+
+#openshift_logging_es_pvc_storage_class_name=""
 openshift_logging_es_cpu_limit="1"
 openshift_logging_es_cpu_request="1"
 openshift_logging_es_memory_limit="1Gi"
 openshift_logging_es_memory_request="500Mi"
-openshift_logging_es_pvc_dynamic="false"
-openshift_logging_es_pvc_size={{ logging_es_size }}
+openshift_logging_es_pvc_dynamic=true
+openshift_logging_es_pvc_size={{ logging_es_size | default('10Gi') }}
 #openshift_logging_es_pv_selector={{ '{"storage": "logging"}' }}
 openshift_logging_es_cluster_size=1
 openshift_logging_fluentd_nodeselector={{ '{"logging":"true"}' }}
@@ -161,16 +180,18 @@ openshift_logging_kibana_nodeselector={{ '{"role":"infra"}' }}
 openshift_logging_curator_nodeselector={{ '{"role":"infra"}' }}
 
 # prometheus
-openshift_prometheus_storage_kind=nfs
-openshift_prometheus_alertmanager_storage_kind=nfs
-openshift_prometheus_alertbuffer_storage_kind=nfs
+#openshift_prometheus_storage_kind={{ storage_type }}
+#openshift_prometheus_alertmanager_storage_kind=nfs
+#openshift_prometheus_alertbuffer_storage_kind=nfs
 openshift_prometheus_storage_type=pvc
+openshift_prometheus_storage_volume_size={{ prometheus_volume_size | default('10Gi') }}
 openshift_prometheus_alertmanager_storage_type=pvc
+openshift_prometheus_alertmanager_pvc_size={{ prometheus_alertmanager_size | default('10Gi') }}
 openshift_prometheus_alertmanager_pvc_name=alertmanager
 openshift_prometheus_alertmanager_limits_memory="1Gi"
 openshift_prometheus_alertbuffer_storage_type=pvc
-openshift_prometheus_alertbuffer_pvc_size=10Gi
-openshift_prometheus_pvc_access_modes=[ReadWriteOnce]
+openshift_prometheus_alertbuffer_pvc_size={{ prometheus_alertbuffer_size | default('10Gi') }}
+#openshift_prometheus_pvc_access_modes=[ReadWriteOnce]
 openshift_prometheus_oauth_proxy_cpu_requests="100m"
 openshift_prometheus_node_selector={"role":"infra"}
 
@@ -193,19 +214,27 @@ openshift-infra1
 openshift-infra2
 
 [nfs]
-{{ storage_host }}
 
 [lb]
 openshift-lb  # One Day os_firewall_allow=[{"service": "haproxy stats","port": "9000/tcp"},{"service": "haproxy balance","port": "{{ conole_port | default(8443) }}/tcp"},{"service": "http","port": "80/tcp"},{"service": "https","port": "443/tcp"}] 
 
+[glusterfs]
+openshift-infra1 glusterfs_devices='[ "/dev/vdd" ]'
+openshift-infra2 glusterfs_devices='[ "/dev/vdd" ]'
+openshift-infra3 glusterfs_devices='[ "/dev/vdd" ]'
 
+[glusterfs_registry]
+openshift-infra1 glusterfs_devices='[ "/dev/vdd" ]'
+openshift-infra2 glusterfs_devices='[ "/dev/vdd" ]'
+openshift-infra3 glusterfs_devices='[ "/dev/vdd" ]'
 
 [nodes]
-openshift-master1 openshift_hostname=openshift-master1  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=false
-openshift-master2 openshift_hostname=openshift-master2  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=false
+openshift-master1 openshift_hostname=openshift-master1  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=true
+openshift-master2 openshift_hostname=openshift-master2  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=true
 openshift-master3 openshift_hostname=openshift-master3  openshift_node_labels="{'role':'master','zone':'default','logging':'true'}" openshift_schedulable=false
 openshift-infra1 openshift_hostname=openshift-infra1    openshift_node_labels="{'role':'infra', 'zone':'default','logging':'true'}"
 openshift-infra2 openshift_hostname=openshift-infra2    openshift_node_labels="{'role':'infra', 'zone':'default','logging':'true'}"
+openshift-infra3 openshift_hostname=openshift-infra3    openshift_node_labels="{'role':'infra', 'zone':'default','logging':'true'}"
 
 {% for n in range(1,nodes+1) %}
 openshift-node{{ "0%s" |format(n) }} openshift_hostname=openshift-node{{ "0%s" |format(n) }} openshift_node_labels="{'role':'app','zone':'default','logging':'true'}"
