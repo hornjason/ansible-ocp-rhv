@@ -1,0 +1,118 @@
+---
+- name: oVirt infra
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/ovirt-infra-vars-1.yaml
+  pre_tasks:
+    - name: Template Openshift hosts files
+      template:
+        src: hosts.j2
+        dest: "{{ playbook_dir }}/inventory/hosts"
+      run_once: true
+
+    - local_action: meta
+        refresh_inventory
+
+    - name: "Establish rhv pre-req packages"
+      set_fact:
+        openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
+
+    - name: "Be sure all pre-req rhv packages are installed"
+      yum: name={{item}} state=installed
+      with_items:
+        - "{{ openshift_deploy_packages_by_provider }}"
+
+    - name: copy dynamic inventory script to inventory dir
+      copy:
+        src: ovirt4.py
+        dest: ./inventory/ovirt4.py
+
+    - name: download ca.pem from RHV Manager
+      get_url:
+        url: 'http://{{ engine_hostname }}/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA'
+        dest: "{{ playbook_dir }}/files/ca.pem"
+        force: yes
+      register: ca_file
+
+    - name: template dynamic inventory  ini (ovirt.init)
+      template:
+        src: ovirt.ini.j2
+        dest: "./inventory/ovirt.ini"
+
+- name: oVirt infra
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/ovirt-infra-vars-1.yaml
+
+  pre_tasks:
+    - name: Log in to oVirt
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+  
+  roles:
+    - oVirt.image-template
+    - oVirt.vm-infra
+
+  post_tasks:
+    - name: Logout from oVirt
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+
+    #- pause: minutes=2
+
+    #JTH: Fix for below
+    - local_action: meta 
+        refresh_inventory
+
+# FIX: cloud-init on shipped with rhel7.4 qcow image
+#      has bug https://bugzilla.redhat.com/show_bug.cgi?id=1450521
+#      vm's will have new cloud-init after its run now.
+- name: Change HostNames | Cloud_Init fix
+  hosts: nodes
+  gather_facts: true
+  vars_files:
+    - vars/ovirt-infra-vars-1.yaml
+  tasks:
+    - name: Wait for VM to be ready
+      block:
+        - wait_for:
+            host: "{{ ansible_default_ipv4.address }}"
+            path: /etc/sysconfig/.ready
+            delay: 60
+            timeout: 700
+
+        - name: reboot host
+          shell: sleep 10 && /sbin/shutdown -r now
+          async: 300
+          poll: 0
+          become: true
+
+        - wait_for_connection:
+            delay: 60
+            timeout: 600
+
+      always:
+        - name: Set Hostnames
+          hostname:
+            name: "{{ inventory_hostname }}.{{ local_hosted_zone }}"
+          when: 
+            - inventory_hostname != 'HostedEngine'
+            - inventory_hostname != 'localhost'
+            - inventory_hostname != storage_host
+          notify: 
+            - restart network
+
+  handlers:
+    - name: restart network
+      systemd:
+        state: restarted
+        name: network

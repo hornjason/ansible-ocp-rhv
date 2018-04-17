@@ -1,0 +1,57 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Template Openshift hosts files
+      template:
+        src: hosts.j2
+        dest: "{{ playbook_dir }}/inventory/hosts"
+      run_once: true      
+      tags:
+        - hosts
+
+    - local_action: meta
+        refresh_inventory
+      tags:
+        - hosts
+
+- include: "{{ playbook_dir }}/prerequisite.yaml"
+  tags:
+    - pre
+    - rhsm
+
+- name: call openshift includes for installer
+  include: /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/upgrades/v3_7/upgrade.yml
+  tags:
+    - byo
+  
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Install oc client
+      yum:
+        name: atomic-openshift-clients
+        state: latest
+      notify: 
+        - add cluster-admin
+      tags: kube
+
+    - name: copy kube config
+      fetch:
+        src: /root/.kube/config
+        dest: /root/.kube/
+        flat: yes
+      delegate_to: "{{ groups.masters[0] }}"
+      notify: 
+        - add cluster-admin
+      tags: kube   
+
+    - name: hawkular fix adding view role
+      shell: oc adm policy add-role-to-user view system:serviceaccount:openshift-infra:hawkular -n openshift-infra
+      
+  handlers:
+    - name: add cluster-admin
+      shell: oc adm policy add-cluster-role-to-user cluster-admin admin
+      tags: kube

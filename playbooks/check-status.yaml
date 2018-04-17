@@ -1,0 +1,49 @@
+---
+- name: Change HostNames | Cloud_Init fix
+  hosts: nodes
+  gather_facts: true
+  vars_files:
+    - vars/ovirt-infra-vars.yaml
+  tasks:
+    - name: Wait for VM to be ready
+      block:
+        - wait_for:
+            host: "{{ ansible_default_ipv4.address }}"
+            path: /etc/sysconfig/.ready
+            delay: 10
+            timeout: 700
+          register: wait_file
+
+        - name: reboot host
+          shell: sleep 10 && /sbin/shutdown -r now
+          async: 300
+          poll: 0
+          become: true
+
+        - wait_for_connection:
+            delay: 60
+            timeout: 600
+          register: wait_ssh
+
+      always:
+        - name: Set Hostnames
+          hostname:
+            name: "{{ inventory_hostname }}.{{ local_hosted_zone }}"
+          when:
+            - inventory_hostname != 'HostedEngine'
+            - inventory_hostname != 'localhost'
+            - inventory_hostname != storage_host
+          notify:
+            - restart network
+            - restart logind
+
+  handlers:
+    - name: restart network
+      systemd:
+        state: restarted
+        name: network
+
+    - name: restart logind
+      systemd:
+        state: restarted
+        name: systemd-logind
