@@ -1,0 +1,239 @@
+---
+##############################################################################
+# Red Hat Virtualization Engine Connection
+##############################################################################
+#engine_url: https://engine.example.com/ovirt-engine/api
+engine_hostname: rhvm.foo.bar
+engine_url: "https://{{ engine_hostname }}/ovirt-engine/api"
+engine_user: admin@internal
+engine_password: 
+# CA file copied from engine:/etc/pki/ovirt-engine/ca.pem; path is relative to playbook directory
+#curl -k 'https://engine.example.com/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA' > ca.pem
+engine_cafile: files/ca.pem
+
+##############################################################################
+# Red Hat Virtualization VM Image
+# For CentOS 7:
+##############################################################################
+#qcow_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+## For RHEL: Find KVM Guest Image in Downloads -> RHEL on https://access.redhat.com/ and use before the link expires:
+#qcow_url:https://access.cdn.redhat.com//content/origin/files/<omitted>/rhel-server-7.4-x86_64-kvm.qcow2?_auth_=<omitted>
+## Alternatively, download the above KVM image, and re-host it on a local satellite:
+#qcow_url: https://satellite.example.com/pub/rhel-server-7.4-x86_64-kvm.qcow2
+# or download and host locally on webserver accessible 
+qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.4-x86_64-kvm.qcow2
+
+# Name of cluster to install on
+rhv_cluster: Default
+# Name of Datacenter to install on
+rhv_data_center: Default
+
+## Name of RHV storage domain to create disks
+rhv_data_storage: vmdata
+
+##############################################################################
+# Red Hat Content Subscriptions
+##############################################################################
+## For subscriptions to Red Hat's CDN
+## Userid/Password could be moved to a vault file and encrypted for safety, see the following link for details:
+## http://docs.ansible.com/ansible/playbooks_vault.html
+rhsub_pool: 
+rhsub_user: 
+rhsub_password: 
+# defaults to subscription.rhsm.redhat.com
+#rhsub_server: 'subscription.rhsm.redhat.com'
+
+##############################################################################
+# PUBLIC SSH key for access to all nodes.
+# Use ssh-agent or a passwordless key in ~/.ssh/id_rsa for the PRIVATE key.
+# paste the pub key you want to inject in all nodes so you can ssh 
+##############################################################################
+root_ssh_key: "ssh-rsa AAAAB3NzaC"
+
+##############################################################################
+##############################################################################
+#    Openshift VARIABLES
+##############################################################################
+# Most defaults are sane and will result in OCP3.9 Deployed with CNS
+##############################################################################
+
+# Choices of deployment type: openshift-enterprise, origin
+containerized: false
+console_port: 8443
+debug_level: 2
+
+admin_user: root
+
+# Number of App nodes
+nodes: 2
+##############################################################################
+# DNS entries
+##############################################################################
+# Wildcard *.{{app_dns_prefix}}.{{public_hosted_zone}} must point to IP of LB
+public_hosted_zone: example.com
+local_hosted_zone: foo.bar
+app_dns_prefix: apps
+
+# Don't change unless you've re-named the LB vm
+load_balancer_hostname: openshift-lb.{{ local_hosted_zone }}
+wildcard_zone: "{{app_dns_prefix}}.{{public_hosted_zone}}"
+openshift_master_cluster_public_hostname: openshift.{{ public_hosted_zone }}
+
+##############################################################################
+# Named Certs 
+##############################################################################
+# Router Named Cert
+#router_cert: '{"cafile": "/keys/letsencrypt/ca.cer", "certfile": "/keys/letsencrypt/fullchain.cer", "keyfile": "/keys/letsencrypt/openshift.example.com.key"}'
+
+# Master Named Cert
+#master_cert: '[{"cafile": "/keys/letsencrypt/ca.cer", "certfile": "/keys/letsencrypt/fullchain.cer", "keyfile": "/keys/letsencrypt/openshift.example.com.key", "names": ["openshift.example.com"]}]'
+
+
+##############################################################################
+# Disable checking 
+##############################################################################
+openshift_disable_check: memory_availability,disk_availability
+
+# Needed to enable CNS dynamic provisioning without cloud-provider
+dynamic_volumes_check: False
+
+##############################################################################
+# Networking
+# Configure the multi-tenant SDN plugin 
+##############################################################################
+os_sdn_network_plugin_name: 'redhat/openshift-ovs-multitenant'
+#osm_cluster_network_cidr: 172.30.0.0/16
+#openshift_portal_net:
+
+# default selector
+osm_default_node_selector: "role=app"
+
+##############################################################################
+# Storage 
+##############################################################################
+# host/dir for NFS - Not used if storage_type = dynamic
+#storage_host: goliath.foo.bar
+#storage_dir: "/hosted_engine"
+
+# uses CNS by default
+# dynamic for CNS
+storage_type: dynamic
+
+# Volume Sizes
+# etcd - Ansible Service Broker if enabled | disabled by default
+#etcd_volume_size: "1Gi"
+
+# metrics
+metrics_volume_size: "10Gi"
+logging_volume_size: "10Gi"
+prometheus_volume_size: "10Gi"
+prometheus_alertmanager_size: "10Gi"
+prometheus_alertbuffer_size: "10Gi"
+cassandra_volume_size: "10Gi"
+registry_volume_size: "10Gi"
+logging_es_size: "10Gi"
+
+##############################################################################
+# Metrics  / Logging
+##############################################################################
+# Metrics url
+openshift_master_metrics_public_url: "https://metrics.{{ wildcard_zone }}/hawkular/metrics"
+
+# Only change if disabling 
+# install Grafana | default true
+#install_grafana: true
+# install prometheus | default true
+#install_prometheus: true
+# install logging | default true
+#install_logging: true
+# install metrics | default true
+#install_metrics: true
+
+##############################################################################
+# Docker Storage 
+##############################################################################
+# Defaults should be left alone
+# PRE-reqs - sets up docker storage via the openshift installer
+container_runtime_docker_storage_setup_device: /dev/vdb 
+container_runtime_docker_storage_type: 'overlay2'
+
+##############################################################################
+# Quota for emptydirs
+##############################################################################
+# Defaults should be left alone
+# setup local quotas /var/lib/origin/openshift.local.volumes
+local_volumes_device: '/dev/vdc'
+ 
+##############################################################################
+# Identity Providers
+##############################################################################
+# Use 'htpasswd -n <user>' to generate password hash. (htpasswd from httpd-tools RPM)
+# Example with admin:changeme
+openshift_master_htpasswd_users: {'admin': '$apr1$zAhyA9Ko$rBxBOwAwwtRuuaw8OtCwH0'}
+openshift_master_identity_providers: [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+
+# example with multiple identityproviders
+#openshift_master_identity_providers: [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'},{'name': 'google', 'login': 'true', 'challenge': 'false', 'kind': 'GoogleIdentityProvider', 'clientID': 'thisisaFakeTokenChange.apps.googleusercontent.com', 'clientSecret': 'FakeSecretForGoogleIdentity', 'hostedDomain': ''}]
+
+##############################################################################
+# Load Balancer 
+##############################################################################
+# add firewall rules to lb/ normally 443/80 are not added by installer
+# CNS will be unable to provision PVs until opened
+r_openshift_loadbalancer_os_firewall_allow:
+- service: haproxy stats
+  port: "9000/tcp"
+- service: haproxy balance
+  port: "{{ openshift_master_api_port | default(8443) }}/tcp"
+- service: haproxy https
+  port: "443/tcp"
+- service: haproxy http 
+  port: "80/tcp"
+
+# LoadBalancer Adding 80/443 to haproxy config
+openshift_loadbalancer_additional_frontends:
+  - name: apps-http
+    mode: tcp
+    options: 
+      - "tcplog"
+    binds:
+      - "*:80"
+    default_backend: apps-http
+  - name: apps-https
+    mode: tcp
+    options: 
+      - "tcplog"
+    binds:
+      - "*:443"
+    default_backend: apps-https
+openshift_loadbalancer_additional_backends:
+  - name: apps-http
+    balance: source
+    mode: tcp
+    servers:
+      - name: infra0
+        address: "{{ groups['infra'].0 }}:80"
+        opts: check
+      - name: infra1
+        address: "{{ groups['infra'].1 }}:80"
+        opts: check
+      - name: infra2
+        address: "{{ groups['infra'].2 }}:80"
+        opts: check
+  - name: apps-https
+    balance: source
+    mode: tcp
+    servers:
+      - name: infra0
+        address: "{{ groups['infra'].0 }}:443"
+        opts: check
+      - name: infra1
+        address: "{{ groups['infra'].1 }}:443"
+        opts: check
+      - name: infra2
+        address: "{{ groups['infra'].2 }}:443"
+        opts: check
+
+# OverRides
+vm_infra_wait_for_ip_delay: 180
+vm_infra_wait_for_ip_retries: 10
