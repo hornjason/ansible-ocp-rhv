@@ -39,7 +39,6 @@
 
 - name: call openshift includes for installer
   import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
-  tags:
 
 - name: add firewall rules to load balancer
   hosts: lb
@@ -56,7 +55,7 @@
       with_items:
         - 80
         - 443
-  
+
 - hosts: localhost
   connection: local
   gather_facts: no
@@ -86,7 +85,3 @@
         - add cluster-admin
       tags: kube
 
-  handlers:
-    - name: add cluster-admin
-      shell: oc adm policy add-cluster-role-to-user cluster-admin admin
-      tags: kube

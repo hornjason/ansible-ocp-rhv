@@ -153,6 +153,7 @@ lb_vm:
   template: rhel7
   memory: 4GiB
   cores: 1
+<<<<<<< HEAD:playbooks/vars/ovirt-infra-vars.yaml
   disks:
     - size: 1GiB
       storage_domain: "{{ rhv_data_storage }}"
@@ -163,6 +164,8 @@ lb_vm:
       name: localvol_disk
       interface: virtio
 
+=======
+>>>>>>> master:rhv-openshift/playbooks/vars/ovirt-infra-vars.yaml
 
 vms:
   # Node VMs
