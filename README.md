@@ -50,7 +50,7 @@ Ex.<br>
 &lt;&lt; ToDo: &gt;&gt;</p>
 <h2 id="usage">Usage</h2>
 <p>Edit the <code>ocp-vars.yml</code> file in this directory, and fill in any blank values.</p>
-<p>VMs are defined in  <code>playbooks/vars/ovirt-infra-vars.yaml</code><br>
+<p>VMs are defined in  <code>playbooks/vars/ovirt-infra-vars.yml</code><br>
 Edit to fit your environment as needed</p>
 <p>After installation has completed a OpenShift ansible hosts file will be provided under <code>rhev-ocp/playbooks/inventory/hosts</code>,  providing the ability to run OpenShift playbooks directly later.</p>
 <h1 id="installation">Installation</h1>
@@ -67,6 +67,10 @@ Edit to fit your environment as needed</p>
 <pre><code>ansible-playbook playbooks/ovirt-vm-infra.yaml -e@ocp-vars.yml
 </code></pre>
 <h3 id="set-up-openshift-container-platform-on-the-vms-from-the-previoius-step">Set up OpenShift Container Platform on the VMs from the previoius step</h3>
-<pre><code>ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars.yaml
+<pre><code>ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars.yml
+</code></pre>
+<h2 id="redeploy">Redeploy</h2>
+<p>To redeploy a complete environment by unsubscribing all nodes, deleting all disks , Virtual Machines and installing OpenShift again run the following.</p>
+<pre><code>ansible-playbook playbooks/redeploy.yml -e@ocp-vars.yml
 </code></pre>
 
