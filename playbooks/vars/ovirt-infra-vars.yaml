@@ -142,7 +142,6 @@ lb_vm:
       name: localvol_disk
       interface: virtio
 
-
 vms:
   # Node VMs
   - name: node01
