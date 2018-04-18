@@ -112,22 +112,6 @@ infra_vm:
   template: rhel7
   memory: 8GiB
   cores: 2
-  # disks are created alphanumeric using name:value -  vdb/vdc/vdd
-  disks:
-    - size: 20GiB
-      storage_domain: "{{ rhv_data_storage }}"
-      name: docker_disk
-      interface: virtio
-    - size: 20GiB
-      storage_domain: "{{ rhv_data_storage }}"
-      name: localvol_disk
-      interface: virtio
-
-infra_vm:
-  cluster: "{{ rhv_cluster }}"
-  template: rhel7
-  memory: 8GiB
-  cores: 2
   disks:
     - size: 20GiB
       storage_domain: "{{ rhv_data_storage }}"
@@ -141,12 +125,6 @@ infra_vm:
       storage_domain: "{{ rhv_data_storage }}"
       name: storage_gluster
       interface: virtio
-  nics:
-    - name: nic1
-      profile_name: ovirtmgmt
-      interface: virtio
-      mac_address: 00:1a:4a:16:01:50
-
 
 lb_vm:
   cluster: "{{ rhv_cluster }}"
