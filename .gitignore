@@ -1,4 +1,5 @@
 vars.yml
+**hosts
 **ocp-vars.yml
 **ca.pem
 **ovirt.ini
