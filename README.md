@@ -45,10 +45,14 @@ available, and provide that URL to the Ansible playbook, because the download li
 after a short while and need to be refreshed, or host it locally on a web server thats accessible from the ansible deployment server and update the <em>qcow_url</em> variable in <code>ocp-vars.yml</code><br>
 Ex.<br>
 <code>qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.4-x86_64-kvm.qcow2</code></p>
+<h2 id="features">Features</h2>
+<p>All customization should be handled by one variable file, <code>ocp-vars.yml</code>.   The following details describe features that can be customized for installation and used to generate a new Ansible hosts file.<br>
+&lt;&lt; ToDo: &gt;&gt;</p>
 <h2 id="usage">Usage</h2>
 <p>Edit the <code>ocp-vars.yml</code> file in this directory, and fill in any blank values.</p>
 <p>VMs are defined in  <code>playbooks/vars/ovirt-infra-vars.yaml</code><br>
 Edit to fit your environment as needed</p>
+<p>After installation has completed a OpenShift ansible hosts file will be provided under <code>rhev-ocp/playbooks/inventory/hosts</code>,  providing the ability to run OpenShift playbooks directly later.</p>
 <h1 id="installation">Installation</h1>
 <h2 id="virtual-machines--openshift">Virtual Machines + OpenShift</h2>
 <p>This will deploy all Virtual Machines using <code>rhev-ocp/playbooks/vars/ovirt-vm-infra.yaml</code></p>
