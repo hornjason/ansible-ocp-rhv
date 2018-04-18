@@ -122,21 +122,6 @@ infra_vm:
       storage_domain: "{{ rhv_data_storage }}"
       name: localvol_disk
       interface: virtio
-
-infra_vm:
-  cluster: "{{ rhv_cluster }}"
-  template: rhel7
-  memory: 8GiB
-  cores: 2
-  disks:
-    - size: 20GiB
-      storage_domain: "{{ rhv_data_storage }}"
-      name: docker_disk
-      interface: virtio
-    - size: 20GiB
-      storage_domain: "{{ rhv_data_storage }}"
-      name: localvol_disk
-      interface: virtio
     - size: 100GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: storage_gluster
@@ -153,7 +138,6 @@ lb_vm:
   template: rhel7
   memory: 4GiB
   cores: 1
-<<<<<<< HEAD:playbooks/vars/ovirt-infra-vars.yaml
   disks:
     - size: 1GiB
       storage_domain: "{{ rhv_data_storage }}"
@@ -164,8 +148,6 @@ lb_vm:
       name: localvol_disk
       interface: virtio
 
-=======
->>>>>>> master:rhv-openshift/playbooks/vars/ovirt-infra-vars.yaml
 
 vms:
   # Node VMs
