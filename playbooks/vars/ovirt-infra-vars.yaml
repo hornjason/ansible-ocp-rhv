@@ -126,12 +126,6 @@ infra_vm:
       storage_domain: "{{ rhv_data_storage }}"
       name: storage_gluster
       interface: virtio
-  nics:
-    - name: nic1
-      profile_name: ovirtmgmt
-      interface: virtio
-      mac_address: 00:1a:4a:16:01:50
-
 
 lb_vm:
   cluster: "{{ rhv_cluster }}"
