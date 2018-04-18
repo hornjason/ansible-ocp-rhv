@@ -107,29 +107,6 @@
       - wait
 
   always:
-#    - name: stop failed vms
-#      ovirt_vms:
-#        auth: "{{ ovirt_auth }}"
-#        state: stopped
-#        name: "{{ item.item.name }}"
-#      async: 60
-#      poll: 0
-#      when: item is failed
-#      register: stopped_vms
-#      tags: wait
-#      loop_control:
-#        label: "{{ item.item.name }}"
-#      with_items:
-#        - "{{ vms_ip.results }}"
-#        
-#    - debug: msg="MSG {{ item }}"
-#      with_items: stopped_vms
-#      when: item.
-#      tags: wait
-#
-#    - pause:
-#      tags: wait
-#
     - name: Logout from oVirt
       ovirt_auth:
         state: absent

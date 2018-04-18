@@ -1,10 +1,7 @@
 ---
 - name: Unregister VMs
   hosts:
-    - tag_openshift_master
-    - tag_openshift_infra
-    - tag_openshift_node
-    - tag_openshift_lb
+    - tag_test
   roles:
     - rhsm-unregister
 
@@ -14,7 +11,7 @@
   gather_facts: false
 
   vars_files:
-    - vars/ovirt-infra-vars.yaml
+    - vars/ovirt-infra-vars-1.yaml
 
   pre_tasks:
     - name: Log in to oVirt
@@ -24,8 +21,6 @@
         password: "{{ engine_password }}"
         ca_file: "{{ engine_cafile | default(omit) }}"
         insecure: "{{ engine_insecure | default(true) }}"
-      tags:
-        - always
 
   tasks:
     - name: Erase vms
@@ -41,10 +36,3 @@
       ovirt_auth:
         state: absent
         ovirt_auth: "{{ ovirt_auth }}"
-      tags:
-        - always
-
-    - name: remove ansible hosts file
-      file:
-        state: absent
-        path: inventory/hosts

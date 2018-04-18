@@ -24,7 +24,7 @@
     - name: Create NSUPDATE reverse pointer entries
       lineinfile:
         path: ../inventory.nsupdate
-        line: "update add {{ '.'.join(hostvars[item]['devices']['eth0'].0.split('.')[::-1]) }}.in-addr.arpa 86400 PTR  {{ item }}.{{public_hosted_zone}}"
+        line: "update add {{ '.'.join(hostvars[item]['devices']['eth0'].0.split('.')[::-1]) }}.in-addr.arpa 86400 PTR  {{ item }}.{{local_hosted_zone}}"
         state: present
       with_items:
         - "{{ groups['tag_openshift_master'] }}"
@@ -34,12 +34,12 @@
     - name: Create NSUPDATE entries for public hosted zone
       lineinfile:
         path: ../inventory.nsupdate
-        line: "zone {{public_hosted_zone}}"
+        line: "zone {{local_hosted_zone}}"
         state: present
     - name: Create NSUPDATE wildcard A entry
       lineinfile:
         path: ../inventory.nsupdate
-        line: "update add *.{{app_dns_prefix}}.{{public_hosted_zone}} 86400 A {{lb_ip}}"
+        line: "update add *.{{app_dns_prefix}}.{{local_hosted_zone}} 86400 A {{lb_ip}}"
         state: present
     - name: Create NSUPDATE public hostname entry
       lineinfile:
@@ -49,7 +49,7 @@
     - name: Create NSUPDATE host A entries
       lineinfile:
         path: ../inventory.nsupdate
-        line: "update add {{ item }}.{{public_hosted_zone}} 86400 A {{hostvars[item]['devices']['eth0'].0}}"
+        line: "update add {{ item }}.{{local_hosted_zone}} 86400 A {{hostvars[item]['devices']['eth0'].0}}"
         state: present
       with_items:
         - "{{ groups['tag_openshift_master'] }}"
@@ -61,12 +61,12 @@
     - name: Create HOSTS public hostname
       lineinfile:
         path: ../inventory.hosts
-        line: "{{lb_ip}} {{lb_host}}.{{public_hosted_zone}} {{lb_host}} {{openshift_master_cluster_public_hostname}}"
+        line: "{{lb_ip}} {{lb_host}}.{{local_hosted_zone}} {{lb_host}} {{openshift_master_cluster_public_hostname}}"
         state: present
     - name: Create HOSTS node entries
       lineinfile:
         path: ../inventory.hosts
-        line: "{{hostvars[item]['devices']['eth0'].0}} {{ item }}.{{ public_hosted_zone }} {{ item }}"
+        line: "{{hostvars[item]['devices']['eth0'].0}} {{ item }}.{{ local_hosted_zone }} {{ item }}"
       with_items:
         - "{{ groups['tag_openshift_master'] }}"
         - "{{ groups['tag_openshift_infra'] }}"

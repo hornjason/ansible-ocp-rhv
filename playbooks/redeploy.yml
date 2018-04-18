@@ -6,7 +6,6 @@
 
 - import_playbook: ovirt-vm-uninstall.yaml
 
-
 - import_playbook: ovirt-vm-infra.yaml
 
-#- import_playbook: openshift-install.yaml
+- import_playbook: openshift-install.yaml
