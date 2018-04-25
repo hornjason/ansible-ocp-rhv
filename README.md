@@ -1,8 +1,4 @@
 
----
-
-
----
 ----------
 
 ----------
@@ -21,29 +17,28 @@ in order to create a highly available OpenShift Container Platform environment. 
 ## Prerequisites
 
 ### Preparing the Deployment Host
+**Step 1.**
 
+**deploy-host playbook:**
 Ensure the deployment host (aka workstation host) is running Red Hat Enterprise  
-Linux 7 and is registered and subscribed to at least the following channels:
+Linux 7 and is registered and subscribed to at least the following channels: 
 
--   rhel-7-server-rpms
--   rhel-7-server-extras-rpms
--   rhel-7-server-ansible-2.4-rpms
--   ﻿rhel-7-server-rhv-4.1-rpms
+ -   rhel-7-server-rpms
+ -   rhel-7-server-extras-rpms
+ -   rhel-7-server-ansible-2.4-rpms
+ -   ﻿rhel-7-server-rhv-4.1-rpms
+
+`ovirt-ansible-roles` rpm will be installed via the **deploy-host** playbook.
 
 The following commands should be issued from the deployment host (by preference from a  
 regular user account with sudo access):
 
 ```
-$ sudo yum install -y git ansible
+$ sudo yum install -y git 
 $ mkdir -p ~/git
 $ cd ~/git/ && git clone https://github.com/hornjason/rhev-ocp.git
 $ cd ~/git/rhev-ocp && ansible-playbook playbooks/deploy-host.yaml -e provider=rhv
-
 ```
-
-### oVirt Ansible roles
-
-[oVirt Ansible](https://github.com/ovirt/ovirt-ansible) repository will installed into /usr/share/ansible/roles for use in by playbooks.
 
 ### Dynamic Inventory
 
