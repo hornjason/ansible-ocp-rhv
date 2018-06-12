@@ -1,9 +1,5 @@
 
 
-----------
-
-----------
-
 # Reference Architecture: OpenShift Container Platform on Red Hat Virtualization
 
 This repository contains the Ansible playbooks used to deploy  
@@ -13,7 +9,7 @@ an OpenShift Container Platform environment on Red Hat Virtualization
 
 This reference architecture provides a comprehensive example demonstrating how Red Hat OpenShift Container Platform  
 can be set up to take advantage of the native high availability capabilities of Kubernetes and Red Hat Virtualization  
-in order to create a highly available OpenShift Container Platform environment. Master branch is based on the latest OpenShift version, currently deployed with CNS for dynamic provisioning of Persistent Volumes. By default the installation will deploy Logging, Metrics/Prometheus, Node Exporter, Grafana and a HA-Proxy Loadbalancer for all API and Application traffic with the ability to provide a highly customized OpenShift installation.
+in order to create a highly available OpenShift Container Platform environment. Master branch is based on the latest OpenShift version, currently deployed with CNS for dynamic provisioning of Persistent Volumes. By default the installation will deploy Logging, Metrics/Prometheus, Node Exporter, Grafana and a HA-Proxy Loadbalancer for all API and Application traffic with the ability to provide a highly customized OpenShift installation.  This project closely follows the last released reference,  [OpenShift on RHV4](https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/deploying_red_hat_openshift_container_platform_3.6_on_red_hat_virtualization_4/).
 ## Topology
 
 ## Virtual Machines
@@ -26,8 +22,14 @@ in order to create a highly available OpenShift Container Platform environment. 
 | **Totals** | 10 | 19 | 56G | 180G | 180G | 300G
 
 ### Nics 
-The VMs have hard coded NICS outside of the default RHV pool to make it easier to reserve in DNS.
-
+The VMs have hard coded NICS outside the default RHV pool, This makes it easier to reserve in DHCP and DNS if needed.
+| Hostname | # | vCpus | Memory | Docker disk | Container Disk | Gluster  
+| -------- | - | ----- | ------- | ---------- | ---- | ----
+| **master#** | 3 | 2 | 4G | 20G vdb | 20G vdc |
+| **infra#** | 3 | 2 | 8G | 20G vdb | 20G vdc | 100G vde 
+| **node0#** | 2 | 2 | 8G | 20G vdb | 20G vdc |
+| **openshift-lb** | 1 | 1 | 4Gb |
+| **Totals** | 10 | 19 | 56G | 180G | 180G | 300G
 
 > master# = master1/2/3
 > infra# = infra1/2/3
@@ -35,7 +37,8 @@ The VMs have hard coded NICS outside of the default RHV pool to make it easier t
 
 
 ## Prerequisites
-
+### RHV 
+Make sure RHV is installed, [RHV 4.1 Documentation](https://access.redhat.com/documentation/en-us/red_hat_virtualization/?version=4.1)
 ### Preparing the Deployment Host
 **Step 1.**
 
