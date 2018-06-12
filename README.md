@@ -1,4 +1,5 @@
 
+
 ----------
 
 ----------
@@ -13,6 +14,25 @@ an OpenShift Container Platform environment on Red Hat Virtualization
 This reference architecture provides a comprehensive example demonstrating how Red Hat OpenShift Container Platform  
 can be set up to take advantage of the native high availability capabilities of Kubernetes and Red Hat Virtualization  
 in order to create a highly available OpenShift Container Platform environment. Master branch is based on the latest OpenShift version, currently deployed with CNS for dynamic provisioning of Persistent Volumes. By default the installation will deploy Logging, Metrics/Prometheus, Node Exporter, Grafana and a HA-Proxy Loadbalancer for all API and Application traffic with the ability to provide a highly customized OpenShift installation.
+## Topology
+
+## Virtual Machines
+| Hostname | # | vCpus | Memory | Docker disk | Container Disk | Gluster  
+| -------- | - | ----- | ------- | ---------- | ---- | ----
+| **master#** | 3 | 2 | 4G | 20G vdb | 20G vdc |
+| **infra#** | 3 | 2 | 8G | 20G vdb | 20G vdc | 100G vde 
+| **node0#** | 2 | 2 | 8G | 20G vdb | 20G vdc |
+| **openshift-lb** | 1 | 1 | 4Gb |
+| **Totals** | 10 | 19 | 56G | 180G | 180G | 300G
+
+### Nics 
+The VMs have hard coded NICS outside of the default RHV pool to make it easier to reserve in DNS.
+
+
+> master# = master1/2/3
+> infra# = infra1/2/3
+> node0# = node01/02/03
+
 
 ## Prerequisites
 
