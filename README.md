@@ -23,13 +23,7 @@ in order to create a highly available OpenShift Container Platform environment. 
 
 ### Nics 
 The VMs have hard coded NICS outside the default RHV pool, This makes it easier to reserve in DHCP and DNS if needed.
-| Hostname | # | vCpus | Memory | Docker disk | Container Disk | Gluster  
-| -------- | - | ----- | ------- | ---------- | ---- | ----
-| **master#** | 3 | 2 | 4G | 20G vdb | 20G vdc |
-| **infra#** | 3 | 2 | 8G | 20G vdb | 20G vdc | 100G vde 
-| **node0#** | 2 | 2 | 8G | 20G vdb | 20G vdc |
-| **openshift-lb** | 1 | 1 | 4Gb |
-| **Totals** | 10 | 19 | 56G | 180G | 180G | 300G
+
 
 > master# = master1/2/3
 > infra# = infra1/2/3
