@@ -1,14 +1,14 @@
 ---
-#- name: Unregister VMs
-#  hosts: nodes:lb
-#  tasks:
-  #    - name: RHSM Unregister VMs
-  #    redhat_subscription:
-    #      state: absent
-    #  register: task_result
-    #  until: task_result is success
-    #  retries: 10
-    #  delay: 30
+- name: Unregister VMs
+  hosts: nodes:lb
+  tasks:
+    - name: RHSM Unregister VMs
+      redhat_subscription:
+        state: absent
+      register: task_result
+      until: task_result is success
+      retries: 10
+      delay: 30
 
 - name: oVirt infra destroy
   hosts: localhost

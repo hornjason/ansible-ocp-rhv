@@ -16,11 +16,6 @@
 
 - name: call openshift pre-req play
   import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml"
-  vars:
-    rhsub_user: "{{ rhsm_user }}"
-    rhsub_password: "{{ rhsm_pass }}"
-    rhsub_pool: "{{ rhsm_broker_pool }}"
-
 
 - name: call openshift deploy_cluster play
   import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
