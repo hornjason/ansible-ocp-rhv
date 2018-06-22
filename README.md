@@ -43,7 +43,7 @@ Linux 7 and is registered and subscribed to at least the following channels:
  -   rhel-7-server-rpms
  -   rhel-7-server-extras-rpms
  -   rhel-7-server-ansible-2.4-rpms
- -   ﻿rhel-7-server-rhv-4.1-rpms
+ -   rhel-7-server-rhv-4.1-rpms
 
 `ovirt-ansible-roles` rpm will be installed via the **deploy-host** playbook.
 
@@ -79,9 +79,12 @@ is preferred, log in at [https://access.redhat.com/](https://access.redhat.com/)
 select the latest release (at this time, 7.5), and copy the URL for “KVM Guest Image”. It is  
 preferable to download the image to a local server, e.g. the /pub/ directory of a satellite if  
 available, and provide that URL to the Ansible playbook, because the download link will expire  
-after a short while and need to be refreshed, or host it locally on a web server thats accessible from the ansible deployment server and update the _qcow_url_ variable in `ocp-vars.yml`  
+after a short while and need to be refreshed, or host it locally on a web server or file thats accessible from the ansible deployment server and update the _qcow_url_ variable in `ocp-vars.yml`  
 Ex.  
-`qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.4-x86_64-kvm.qcow2`
+WEB
+`qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.5-x86_64-kvm.qcow2`
+FILE
+`qcow_url: file:///iso/rhel-server-7.5-x86_64-kvm.qcow2`
 
 ## Usage
 
