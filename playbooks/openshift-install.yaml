@@ -27,6 +27,7 @@
   import_playbook: /usr/share/ansible/openshift-ansible/playbooks/openshift-grafana/config.yml
   when: install_grafana  | default(true) | bool == true
 
+
 - hosts: localhost
   connection: local
   vars:
