@@ -126,3 +126,9 @@ ansible-playbook playbooks/ovirt-vm-infra.yaml -e@ocp-vars.yml
 ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars.yaml
 
 ```
+
+# Re-Deploy
+This will un-register , delete and re-create all VMs followed by re-installation of OCP
+```
+ansible-playbook playbooks/redeploy.yml -e@ocp-vars.yml
+```
