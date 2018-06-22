@@ -81,11 +81,12 @@ preferable to download the image to a local server, e.g. the /pub/ directory of 
 available, and provide that URL to the Ansible playbook, because the download link will expire  
 after a short while and need to be refreshed, or host it locally on a web server or file thats accessible from the ansible deployment server and update the _qcow_url_ variable in `ocp-vars.yml`  
 Ex.  
+```
 WEB
-`qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.5-x86_64-kvm.qcow2`
+qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.5-x86_64-kvm.qcow2
 FILE
-`qcow_url: file:///iso/rhel-server-7.5-x86_64-kvm.qcow2`
-
+qcow_url: file:///iso/rhel-server-7.5-x86_64-kvm.qcow2
+```
 ## Usage
 
 Edit the `ocp-vars.yml` file in this directory, and fill in any blank values.
