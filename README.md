@@ -53,8 +53,8 @@ regular user account with sudo access):
 ```
 $ sudo yum install -y git 
 $ mkdir -p ~/git
-$ cd ~/git/ && git clone https://github.com/hornjason/rhev-ocp.git
-$ cd ~/git/rhev-ocp && ansible-playbook playbooks/deploy-host.yaml -e provider=rhv
+$ cd ~/git/ && git clone https://github.com/hornjason/ansible-ocp-rhv.git
+$ cd ~/git/ansible-ocp-rhv && ansible-playbook playbooks/deploy-host.yaml -e provider=rhv
 ```
 
 ### Dynamic Inventory
