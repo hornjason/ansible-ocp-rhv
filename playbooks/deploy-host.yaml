@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  become: yes
+  pre_tasks:
+    - name: Check for required variables
+      fail:
+        msg: "Please pass a valid provider: vsphere,aws,gcp,rhv,osp e.g. -e provider=vsphere"
+      when: provider is not defined
+  roles:
+    - rhsm
+    - deploy-host
+  tasks:
+    # add support for hard coded mac addresses
+    - lineinfile:
+        path: /usr/share/ansible/roles/ovirt-vm-infra/tasks/main.yml
+        regexp: 'profile.nics'
+        line: '      - "nics"'

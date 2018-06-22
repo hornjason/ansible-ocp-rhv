@@ -21,7 +21,7 @@ engine_cafile: files/ca.pem
 ## Alternatively, download the above KVM image, and re-host it on a local satellite:
 #qcow_url: https://satellite.example.com/pub/rhel-server-7.4-x86_64-kvm.qcow2
 # or download and host locally on webserver accessible 
-qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.4-x86_64-kvm.qcow2
+qcow_url: file:///iso/rhel-server-7.5-x86_64-kvm.qcow2
 
 # Name of cluster to install on
 rhv_cluster: Default
