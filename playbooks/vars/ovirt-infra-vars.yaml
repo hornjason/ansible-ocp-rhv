@@ -13,7 +13,7 @@ vm_infra_wait_for_ip_retries: 10
 # VM infra
 ##########################
 template_cluster: "{{ rhv_cluster }}"
-template_name: rhel7
+template_name: rhel7_5
 template_memory: 4GiB
 template_cpu: 1
 template_disk_storage: "{{ rhv_data_storage }}"
@@ -27,24 +27,21 @@ template_nics:
 ##########################
 # Cloud Init Script
 ##########################
-# Use the following if RHEL 7.4 or below VMs are being created on a RHV 4.2 or above engine
 cloud_init_script: |
   runcmd:
-    - sed -i 's@^# device =.*@device = /dev/virtio-ports/ovirt-guest-agent.0@' /etc/ovirt-guest-agent.conf
-    - sed -i 's@com.redhat.rhevm.vdsm@ovirt-guest-agent.0@' /etc/udev/rules.d/55-ovirt-guest-agent.rules
-    - 'udevadm trigger --subsystem-match="virtio-ports"'
     - mkdir -p '/var/lib/origin/openshift.local.volumes'
     - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
+    - mount -a
     - sleep "$(($RANDOM % 60))"
     - sync
     - echo "cloud-init finished" > /etc/sysconfig/.ready
   mounts:
     - [ '{{ local_volumes_device }}', '/var/lib/origin/openshift.local.volumes', 'xfs', 'defaults,gquota' ]
   rh_subscription:
-    username: {{ rhsub_user }}
-    password: {{ rhsub_password }}
-    add-pool: [{{ rhsub_pool }}]
-    server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
+    username: {{ rhsm_user }}
+    password: {{ rhsm_pass }}
+    add-pool: [{{ rhsm_broker_pool }}]
+    #server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
     disable-repo: 
       - rhel-7-server-rt-rpms
       - rhel-7-server-nfv-rpms
@@ -77,7 +74,7 @@ cloud_init_script: |
 
 master_vm:
   cluster: "{{ rhv_cluster }}"
-  template: rhel7
+  template: "{{ template_name }}"
   memory: 4GiB
   cores: 2
   high_availability: true
@@ -94,7 +91,7 @@ master_vm:
 
 node_vm:
   cluster: "{{ rhv_cluster }}"
-  template: rhel7
+  template: "{{ template_name }}"
   memory: 8GiB
   cores: 2
   disks:
@@ -109,7 +106,7 @@ node_vm:
 
 infra_vm:
   cluster: "{{ rhv_cluster }}"
-  template: rhel7
+  template: "{{ template_name }}"
   memory: 8GiB
   cores: 2
   # disks are created alphanumeric using name:value -  vdb/vdc/vdd
@@ -129,7 +126,7 @@ infra_vm:
 
 lb_vm:
   cluster: "{{ rhv_cluster }}"
-  template: rhel7
+  template: "{{ template_name }}"
   memory: 4GiB
   cores: 1
   disks:

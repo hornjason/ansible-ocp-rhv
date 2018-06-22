@@ -64,8 +64,8 @@
         - always
   
   roles:
-    - oVirt.image-template
-    - oVirt.vm-infra
+    - ovirt-image-template
+    - ovirt-vm-infra
 
   post_tasks:
     - name: Logout from oVirt
@@ -84,51 +84,45 @@
 # FIX: cloud-init on shipped with rhel7.4 qcow image
 #      has bug https://bugzilla.redhat.com/show_bug.cgi?id=1450521
 #      vm's will have new cloud-init after its run now.
-- name: Change HostNames | Cloud_Init fix
-  hosts: nodes
-  gather_facts: true
-  vars_files:
-    - vars/ovirt-infra-vars.yaml
-  tasks:
-    - name: Wait for VM to be ready
-      block:
-        - wait_for:
-            host: "{{ ansible_default_ipv4.address }}"
-            path: /etc/sysconfig/.ready
-            delay: 120
-            timeout: 700
-          register: wait_file
-
-        - name: reboot host
-          shell: sleep 10 && /sbin/shutdown -r now
-          async: 300
-          poll: 0
-          become: true
-
-        - wait_for_connection:
-            delay: 60
-            timeout: 600
-          register: wait_ssh
-
-      always:
-        - name: Set Hostnames
-          hostname:
-            name: "{{ inventory_hostname }}.{{ local_hosted_zone }}"
-          when: 
-            - inventory_hostname != 'HostedEngine'
-            - inventory_hostname != 'localhost'
-            - inventory_hostname != storage_host
-          notify: 
-            - restart network
-            - restart logind
-
-  handlers:
-    - name: restart network
-      systemd:
-        state: restarted
-        name: network
-
-    - name: restart logind
-      systemd:
-        state: restarted
-        name: systemd-logind
+#- name: Change HostNames | Cloud_Init fix
+#  hosts: nodes
+#  gather_facts: true
+#  vars_files:
+#    - vars/ovirt-infra-vars.yaml
+#  tasks:
+#    - name: Wait for VM to be ready
+#      block:
+#        - wait_for:
+#            host: "{{ ansible_default_ipv4.address }}"
+#            path: /etc/sysconfig/.ready
+#            delay: 120
+#            timeout: 700
+#          register: wait_file
+#
+#        - name: reboot host
+#          shell: sleep 10 && /sbin/shutdown -r now
+#          async: 300
+#          poll: 0
+#          become: true
+#
+#        - wait_for_connection:
+#            delay: 120
+#            timeout: 600
+#          register: wait_ssh
+#
+#      always:
+#        - name: Set Hostnames
+#          hostname:
+#            name: "{{ inventory_hostname }}.{{ local_hosted_zone }}"
+#          when: 
+#            - inventory_hostname != 'HostedEngine'
+#            - inventory_hostname != 'localhost'
+#            #- inventory_hostname != storage_host
+#          notify: 
+#            - restart network
+#
+#  handlers:
+#    - name: restart network
+#      systemd:
+#        state: restarted
+#        name: network

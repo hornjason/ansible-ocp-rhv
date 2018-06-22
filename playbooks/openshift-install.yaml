@@ -12,13 +12,18 @@
     - local_action: meta
         refresh_inventory
 
+- import_playbook: subscribe.yml
+
 - name: call openshift pre-req play
   import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml"
+  vars:
+    rhsub_user: "{{ rhsm_user }}"
+    rhsub_password: "{{ rhsm_pass }}"
+    rhsub_pool: "{{ rhsm_broker_pool }}"
 
 
 - name: call openshift deploy_cluster play
   import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
-  
  
 # opens up node exporter and router stats for prometheus to scrape
 - import_playbook: firewall.yml
@@ -27,14 +32,12 @@
   import_playbook: /usr/share/ansible/openshift-ansible/playbooks/openshift-grafana/config.yml
   when: install_grafana  | default(true) | bool == true
 
-
 - hosts: localhost
   connection: local
   vars:
     admin_user: "{{ openshift_master_htpasswd_users.keys() }}"
     local_home: "{{ lookup('env','HOME') }}"
   tasks:
-
     - name: Install oc client
       yum:
         name: atomic-openshift-clients

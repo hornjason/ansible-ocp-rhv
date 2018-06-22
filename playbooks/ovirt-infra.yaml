@@ -19,7 +19,7 @@
         - always
 
   roles:
-    - ovirt.infra
+    - ovirt-infra
 
   post_tasks:
     - name: Logout from oVirt
