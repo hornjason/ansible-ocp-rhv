@@ -24,54 +24,6 @@ template_nics:
     interface: virtio
 
 
-##########################
-# Cloud Init Script
-##########################
-cloud_init_script: |
-  runcmd:
-    - mkdir -p '/var/lib/origin/openshift.local.volumes'
-    - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
-    - mount -a
-    - sleep "$(($RANDOM % 60))"
-    - sync
-    - echo "cloud-init finished" > /etc/sysconfig/.ready
-  mounts:
-    - [ '{{ local_volumes_device }}', '/var/lib/origin/openshift.local.volumes', 'xfs', 'defaults,gquota' ]
-  rh_subscription:
-    username: {{ rhsm_user }}
-    password: {{ rhsm_pass }}
-    add-pool: [{{ rhsm_broker_pool }}]
-    #server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
-    disable-repo: 
-      - rhel-7-server-rt-rpms
-      - rhel-7-server-nfv-rpms
-      - rhel-7-server-aus-rpms
-      - rhel-7-server-rt-rpms
-      - rhel-7-server-tus-rpms
-      - rhel-7-server-htb-rpms
-    enable-repo:
-      - rhel-7-server-rpms
-      - rhel-7-server-extras-rpms
-      - rhel-7-fast-datapath-rpms
-      - rhel-7-server-ose-3.9-rpms
-  packages:
-    - cloud-init
-    - wget
-    - git
-    - net-tools
-    - bind-utils
-    - iptables-services
-    - bridge-utils
-    - bash-completion
-    - kexec-tools
-    - sos
-    - psacct
-    - vim
-  package_update: true
-  package_upgrade: false
-  package_reboot_if_required: false
-
-
 master_vm:
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
@@ -86,6 +38,10 @@ master_vm:
     - size: 20GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: localvol_disk
+      interface: virtio
+    - size: 20GiB
+      storage_domain: "{{ rhv_data_storage }}"
+      name: etcd_disk
       interface: virtio
 
 
@@ -147,7 +103,7 @@ vms:
     cloud_init:
       host_name: "node01.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
@@ -160,7 +116,7 @@ vms:
     cloud_init:
       host_name: "node02.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
@@ -174,7 +130,7 @@ vms:
     cloud_init:
       host_name: "infra1.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
@@ -187,7 +143,7 @@ vms:
     cloud_init:
       host_name: "infra2.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
@@ -200,7 +156,7 @@ vms:
     cloud_init:
       host_name: "infra3.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
@@ -214,7 +170,7 @@ vms:
     cloud_init:
       host_name: "master1.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
@@ -227,7 +183,7 @@ vms:
     cloud_init:
       host_name: "master2.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
@@ -254,7 +210,7 @@ vms:
     cloud_init:
       host_name: "openshift-lb.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
     nics:
       - name: nic1
         profile_name: ovirtmgmt
