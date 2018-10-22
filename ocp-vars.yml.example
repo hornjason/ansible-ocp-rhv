@@ -37,9 +37,18 @@ rhv_data_storage: vmdata
 ## For subscriptions to Red Hat's CDN
 ## Userid/Password could be moved to a vault file and encrypted for safety, see the following link for details:
 ## http://docs.ansible.com/ansible/playbooks_vault.html
-rhsub_pool: 
-rhsub_user: 
-rhsub_password: 
+#rhsm_user: ""
+#rhsm_pass: ""
+#rhsm_key: ""
+#rhsm_org: ""
+
+## Can specify separate pools so only Application nodes use paid subs
+## or keep the same if only using one pool
+#rhsm_broker_pool: ""
+#rhsm_node_pool: ""
+## For Openshift Container Storage
+#rhsm_ocs_pool: ""
+
 # defaults to subscription.rhsm.redhat.com
 #rhsub_server: 'subscription.rhsm.redhat.com'
 
