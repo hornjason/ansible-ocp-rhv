@@ -1,0 +1,85 @@
+#cloud-config
+cloud_config_modules:
+{% if 'bastion' in item.name %}
+- rh_subscription
+- runcmd
+{% else %}
+- rh_subscription
+- runcmd
+- disk_setup
+- mounts
+- cc_write_files
+{% endif %}
+
+cloud_final_modules:
+- package-update-upgrade-install
+
+rh_subscription:
+{% if rhsm_key is defined %}
+    activation-key: {{ rhsm_key }}
+    org: {{ rhsm_org }}
+{% else %}
+    username: {{ rhsm_username }}
+    password: {{ rhsm_password }}
+{% endif %}
+    add-pool:
+{% if 'node' in item.name %}
+      - {{ rhsm_node_pool }}
+{% elif 'cns' in item.name %}
+      - {{ rhsm_ocs_pool }}
+{% else %}
+      - {{ rhsm_broker_pool }}
+{% endif %}
+    disable-repo:
+      - rhel-7-server-rt-rpms
+      - rhel-7-server-nfv-rpms
+      - rhel-7-server-aus-rpms
+      - rhel-7-server-rt-rpms
+      - rhel-7-server-tus-rpms
+      - rhel-7-server-htb-rpms
+    enable-repo:
+      - rhel-7-server-rpms
+      - rhel-7-server-extras-rpms
+      - rhel-7-fast-datapath-rpms
+      - rhel-7-server-ose-3.9-rpms
+    enable-repo:
+{% for repo in rhsm_repos %}
+      - {{ repo }}
+{% endfor %}
+
+
+runcmd:
+  - rm -f  "/etc/yum.repos.d/redhat-rhui*"
+  - echo "TEST" > /home/ec2-user/test.txt
+
+packages:
+{% if 'bastion' in item.name -%}
+{% for pkg in bastion_pkgs %}
+- {{ pkg }}
+{% endfor %}
+{% else -%}
+- lvm2
+{% endif %}
+
+{% if 'bastion' not in item.name %}
+fs_setup:
+- label: ocp_emptydir
+  filesystem: xfs
+  device: /dev/vdc
+  partition: auto
+
+{% if 'master' in item.name %}
+- label: etcd
+  filesystem: xfs
+  device: /dev/vdd
+  partition: auto
+{% endif %}
+
+mounts:
+- [ "LABEL=ocp_emptydir", "/var/lib/origin/openshift.local.volumes", xfs, "defaults,gquota" ]
+  {% if 'master' in item.name %}
+
+- [ "LABEL=etcd", "/var/lib/etcd", xfs, "defaults,gquota" ]
+  {% endif %}
+{%- endif %}
+

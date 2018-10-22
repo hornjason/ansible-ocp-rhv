@@ -1,0 +1,12 @@
+---
+
+- name: "Check if LV has been created and mounted"
+  shell: "lsblk {{ nfs_storage_device }} | egrep 'lvm.*{{ nfs_share_basedir |default(default_nfs_share_basedir) }}'"
+  changed_when: false
+  register: lvm_check
+  ignore_errors: yes
+  tags: nfs_lvm
+
+- include: configure_lvm.yml
+  when: lvm_check.rc != 0
+  tags: nfs_lvm
