@@ -1,0 +1,6 @@
+{% if deploy_ocs is defined and deploy_ocs | bool and ( infra_nodes + app_nodes >= 5)  %}
+    - size: 100GiB
+      storage_domain: "{{ rhv_data_storage }}"
+      name: storage_gluster
+      interface: virtio
+{% endif %}

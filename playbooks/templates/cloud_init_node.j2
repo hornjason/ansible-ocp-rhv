@@ -1,0 +1,46 @@
+runcmd:
+  - mkdir -p '/var/lib/origin/openshift.local.volumes'
+  - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
+  - sleep "$(($RANDOM % 60))"
+  - sync
+  - reboot
+mounts:
+  - [ '{{ local_volumes_device }}', '/var/lib/origin/openshift.local.volumes', 'xfs', 'defaults,gquota' ]
+rh_subscription:
+{% if rhsm_user is defined %}
+  username: {{ rhsm_user }}
+  password: {{ rhsm_pass }}
+{% elif rhsm_key is defined %}
+  activation-key: {{ rhsm_key }}
+  org: {{ rhsm_org }}
+{% endif %}
+  add-pool: [{{ rhsm_broker_pool }}]
+  #server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
+  disable-repo:
+    - rhel-7-server-rt-rpms
+    - rhel-7-server-nfv-rpms
+    - rhel-7-server-aus-rpms
+    - rhel-7-server-rt-rpms
+    - rhel-7-server-tus-rpms
+    - rhel-7-server-htb-rpms
+  enable-repo:
+    - rhel-7-server-rpms
+    - rhel-7-server-extras-rpms
+    - rhel-7-fast-datapath-rpms
+    - rhel-7-server-ose-3.10-rpms
+packages:
+  - cloud-init
+  - wget
+  - git
+  - net-tools
+  - bind-utils
+  - iptables-services
+  - bridge-utils
+  - bash-completion
+  - kexec-tools
+  - sos
+  - psacct
+  - vim
+package_update: true
+package_upgrade: false
+package_reboot_if_required: false

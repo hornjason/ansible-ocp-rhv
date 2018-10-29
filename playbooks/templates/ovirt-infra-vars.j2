@@ -1,0 +1,115 @@
+---
+###########################
+# Common
+###########################
+compatibility_version: 4.2
+
+# Data center
+data_center_name: {{ rhv_data_center | default('Default') }}
+
+vm_infra_wait_for_ip_delay: {{ vm_infra_wait_for_ip_delay | default('180') }}
+vm_infra_wait_for_ip_retries: {{ vm_infra_wait_for_ip_retries | default('10') }}
+
+vms:
+{% for i in range(1, (app_nodes +1) ) %}
+  - name: ocp-node0{{ i }}
+    tag: openshift_node
+    profile:
+      {{ node_vm | to_nice_yaml | indent(6,false)  }}
+    cloud_init:
+      host_name: ocp-node0{{ i }}.{{ local_hosted_zone }}"
+      authorized_ssh_keys: {{ root_ssh_key }}
+      custom_script:
+        {{ lookup('template', 'templates/cloud_init_node.j2')| indent(8,false) }}
+    nics:
+      - name: nic1
+        profile_name: {{ rhv_vm_network }}
+        interface: virtio
+        #mac_address: 00:1a:4a:16:01:49
+{% endfor %}
+ 
+{% for i in range(1, (infra_nodes +1) ) %}
+  # Infra VMs
+  - name: ocp-infra0{{ i }}
+    tag: openshift_infra
+    profile: 
+      {{ infra_vm | to_nice_yaml | indent(6,false)  }}
+    cloud_init:
+      host_name: ocp-infra0{{ i }}.{{ local_hosted_zone }}"
+      authorized_ssh_keys: {{ root_ssh_key }}
+      custom_script: 
+        {{ lookup('template', 'templates/cloud_init_node.j2')| indent(8,false) }}
+    nics:
+      - name: nic1
+        profile_name: {{ rhv_vm_network }}
+        interface: virtio
+        #mac_address: 00:1a:4a:16:01:47
+{% endfor %}
+  
+{% for i in range(1, (master_nodes +1) ) %}
+  # Master VMs
+  - name: ocp-master0{{ i }}
+    profile: 
+      {{ master_vm | to_nice_yaml| indent(6,false) }}
+    tag: openshift_master
+    is_master: true
+    cloud_init:
+      host_name: ocp-master0{{ i }}.{{ local_hosted_zone }}
+      authorized_ssh_keys: {{ root_ssh_key }}
+      custom_script:
+        {{ lookup('template', 'templates/cloud_init_master.j2')| indent(8,false) }}
+    nics:
+      - name: nic1
+        profile_name: {{ rhv_vm_network }}
+        interface: virtio
+        #mac_address: 00:1a:4a:16:01:45
+{% endfor %}
+
+{% if software_lb is defined and software_lb | bool %}
+  # Load balancer
+  - name: openshift-lb
+    tag: openshift_lb
+    profile: {{ lb_vm }}
+    cloud_init:
+      host_name: openshift-lb.{{ local_hosted_zone }}
+      authorized_ssh_keys: {{ root_ssh_key }}
+      #custom_script: "{{ cloud_init_script_master }}"
+      #    nics:
+        #- name: nic1
+        #profile_name: VM-Network
+        #interface: virtio
+        ##        mac_address: 00:1a:4a:16:01:50
+{% endif %}
+
+affinity_groups:
+  - name: masters_ag
+    cluster: {{ rhv_cluster }}
+    vm_enforcing: false
+    vm_rule: negative
+    vms:
+{% for i in range(1, (master_nodes +1) ) %}
+      - ocp-master0{{ i }}
+{% endfor %}
+    wait: true
+
+  - name: infra_ag
+    cluster: "{{ rhv_cluster }}"
+    vm_enforcing: false
+    vm_rule: negative
+    vms:
+{% for i in range(1, (infra_nodes +1) ) %}
+      - ocp-infra0{{ i }}
+{% endfor %}
+{% if software_lb is defined and software_lb | bool %}
+      - openshift-lb
+{% endif %}
+    wait: true
+
+  - name: app_ag
+    cluster: "{{ rhv_cluster }}"
+    vm_enforcing: false
+    vm_rule: negative
+    vms:
+{% for i in range(1, (app_nodes +1) ) %}
+      - ocp-node0{{ i }}
+{% endfor %}

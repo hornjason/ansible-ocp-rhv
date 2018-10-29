@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: Ondra Machacek
   description: Role to manage virtual machine infrastructure in oVirt.
@@ -5,7 +6,7 @@ galaxy_info:
 
   license: Apache License 2.0
 
-  min_ansible_version: 2.3
+  min_ansible_version: 2.5
 
   platforms:
   - name: EL
@@ -13,8 +14,7 @@ galaxy_info:
     - 7
   - name: Fedora
     versions:
-    - 24
-    - 25
+    - all
 
   galaxy_tags: [ovirt, rhv, rhev, virtualization]
 

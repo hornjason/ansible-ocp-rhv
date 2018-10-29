@@ -2,7 +2,7 @@
 ###########################
 # Common
 ###########################
-compatibility_version: 4.1
+compatibility_version: 4.2
 
 # Data center
 data_center_name: "{{ rhv_data_center | default('Default') }}"
@@ -20,26 +20,141 @@ template_disk_storage: "{{ rhv_data_storage }}"
 template_disk_size: 30GiB
 template_nics:
   - name: nic1
-    profile_name: ovirtmgmt
+    profile_name: VM-Network
     interface: virtio
 
 
+##########################
+# Cloud Init Script
+##########################
+# Use the following if RHEL 7.4 or below VMs are being created on a RHV 4.2 or above engine
+#    - sed -i 's@^# device =.*@device = /dev/virtio-ports/ovirt-guest-agent.0@' /etc/ovirt-guest-agent.conf
+#    - sed -i 's@com.redhat.rhevm.vdsm@ovirt-guest-agent.0@' /etc/udev/rules.d/55-ovirt-guest-agent.rules
+#    - 'udevadm trigger --subsystem-match="virtio-ports"'
+
+cloud_init_script_master: |
+  runcmd:
+    - mkdir -p '/var/lib/origin/openshift.local.volumes'
+    - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
+  {% if is_master is defined and is_master | bool %}
+    - mkdir -p '/var/lib/etcd'
+    - /usr/sbin/mkfs.xfs -L etcd /dev/vdd
+  {% endif %}
+    - sleep "$(($RANDOM % 60))"
+    - sync
+    - reboot
+  mounts:
+    - [ '{{ local_volumes_device }}', '/var/lib/origin/openshift.local.volumes', 'xfs', 'defaults,gquota' ]
+  {% if is_master is defined and is_master | bool %}
+    - [ '/dev/vdd', '/var/lib/etcd', 'xfs', 'defaults' ]
+  {% endif %}
+  rh_subscription:
+  {% if rhsm_user is defined %}
+    username: {{ rhsm_user }}
+    password: {{ rhsm_pass }}
+  {% elif rhsm_key is defined %}
+    activation-key: {{ rhsm_key }}
+    org: {{ rhsm_org }}
+  {% endif %}
+    add-pool: [{{ rhsm_broker_pool }}]
+    #server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
+    disable-repo: 
+      - rhel-7-server-rt-rpms
+      - rhel-7-server-nfv-rpms
+      - rhel-7-server-aus-rpms
+      - rhel-7-server-rt-rpms
+      - rhel-7-server-tus-rpms
+      - rhel-7-server-htb-rpms
+    enable-repo:
+      - rhel-7-server-rpms
+      - rhel-7-server-extras-rpms
+      - rhel-7-fast-datapath-rpms
+      - rhel-7-server-ose-3.10-rpms
+  packages:
+    - cloud-init
+    - wget
+    - git
+    - net-tools
+    - bind-utils
+    - iptables-services
+    - bridge-utils
+    - bash-completion
+    - kexec-tools
+    - sos
+    - psacct
+    - vim
+  package_update: true
+  package_upgrade: false
+  package_reboot_if_required: false
+
+cloud_init_script_node: |
+  runcmd:
+    - mkdir -p '/var/lib/origin/openshift.local.volumes'
+    - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
+    - mount -a
+    - sleep "$(($RANDOM % 60))"
+    - sync
+    - echo "cloud-init finished" > /etc/sysconfig/.ready
+    - reboot
+  mounts:
+    - [ '{{ local_volumes_device }}', '/var/lib/origin/openshift.local.volumes', 'xfs', 'defaults,gquota' ]
+  rh_subscription:
+  {% if rhsm_user is defined %}
+    username: {{ rhsm_user }}
+    password: {{ rhsm_pass }}
+  {% elif rhsm_key is defined %}
+    activation-key: {{ rhsm_key }}
+    org: {{ rhsm_org }}
+  {% endif %}
+    add-pool: [{{ rhsm_broker_pool }}]
+    #server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
+    disable-repo: 
+      - rhel-7-server-rt-rpms
+      - rhel-7-server-nfv-rpms
+      - rhel-7-server-aus-rpms
+      - rhel-7-server-rt-rpms
+      - rhel-7-server-tus-rpms
+      - rhel-7-server-htb-rpms
+    enable-repo:
+      - rhel-7-server-rpms
+      - rhel-7-server-extras-rpms
+      - rhel-7-fast-datapath-rpms
+      - rhel-7-server-ose-3.10-rpms
+  packages:
+    - cloud-init
+    - wget
+    - git
+    - net-tools
+    - bind-utils
+    - iptables-services
+    - bridge-utils
+    - bash-completion
+    - kexec-tools
+    - sos
+    - psacct
+    - vim
+  package_update: true
+  package_upgrade: false
+  package_reboot_if_required: false
+
+
 master_vm:
+  is_master: true
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
   memory: 4GiB
   cores: 2
   high_availability: true
   disks:
-    - size: 20GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: docker_disk
       interface: virtio
-    - size: 20GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: localvol_disk
       interface: virtio
-    - size: 20GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: etcd_disk
       interface: virtio
@@ -51,14 +166,19 @@ node_vm:
   memory: 8GiB
   cores: 2
   disks:
-    - size: 20GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: docker_disk
       interface: virtio
-    - size: 20GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: localvol_disk
       interface: virtio
+    - size: 10GiB
+      storage_domain: "{{ rhv_data_storage }}"
+      name: storage_gluster
+      interface: virtio
+
 
 infra_vm:
   cluster: "{{ rhv_cluster }}"
@@ -67,15 +187,15 @@ infra_vm:
   cores: 2
   # disks are created alphanumeric using name:value -  vdb/vdc/vdd
   disks:
-    - size: 20GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: docker_disk
       interface: virtio
-    - size: 20GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: localvol_disk
       interface: virtio
-    - size: 100GiB
+    - size: 10GiB
       storage_domain: "{{ rhv_data_storage }}"
       name: storage_gluster
       interface: virtio
@@ -96,32 +216,44 @@ lb_vm:
       interface: virtio
 
 vms:
-  # Node VMs
   - name: node01
     tag: openshift_node
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "node01.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:49
-  
+        #mac_address: 00:1a:4a:16:01:49
+
   - name: node02
+    tag: openshift_node
+    profile: "{{ node_vm }}"
+    cloud_init:
+      host_name: "node01.{{ local_hosted_zone }}"
+      authorized_ssh_keys: "{{ root_ssh_key }}"
+      custom_script: "{{ cloud_init_script_master }}"
+    nics:
+      - name: nic1
+        profile_name: VM-Network
+        interface: virtio
+        #mac_address: 00:1a:4a:16:01:49
+  
+  - name: node03
     tag: openshift_node
     profile: "{{ node_vm }}"
     cloud_init:
       host_name: "node02.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:48
+        #mac_address: 00:1a:4a:16:01:48
  
   # Infra VMs
   - name: infra1
@@ -130,12 +262,12 @@ vms:
     cloud_init:
       host_name: "infra1.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:47
+        #mac_address: 00:1a:4a:16:01:47
  
   - name: infra2
     tag: openshift_infra
@@ -143,12 +275,12 @@ vms:
     cloud_init:
       host_name: "infra2.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:46
+        #mac_address: 00:1a:4a:16:01:46
 
   - name: infra3
     tag: openshift_infra
@@ -156,12 +288,12 @@ vms:
     cloud_init:
       host_name: "infra3.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:42
+        #mac_address: 00:1a:4a:16:01:42
  
   # Master VMs
   - name: master1
@@ -170,12 +302,12 @@ vms:
     cloud_init:
       host_name: "master1.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:45
+        #mac_address: 00:1a:4a:16:01:45
  
   - name: master2
     tag: openshift_master
@@ -183,12 +315,12 @@ vms:
     cloud_init:
       host_name: "master2.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:44
+        #mac_address: 00:1a:4a:16:01:44
  
   - name: master3
     tag: openshift_master
@@ -196,13 +328,13 @@ vms:
     cloud_init:
       host_name: "master3.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ cloud_init_script }}"
+      custom_script: "{{ cloud_init_script_master }}"
     nics:
       - name: nic1
-        profile_name: ovirtmgmt
+        profile_name: VM-Network
         interface: virtio
-        mac_address: 00:1a:4a:16:01:43
- 
+        #mac_address: 00:1a:4a:16:01:43
+
   # Load balancer
   - name: openshift-lb
     tag: openshift_lb
@@ -210,12 +342,12 @@ vms:
     cloud_init:
       host_name: "openshift-lb.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
-      custom_script: "{{ lookup('template', ( playbook_dir + templates/cloud_init.j2 }}"
-    nics:
-      - name: nic1
-        profile_name: ovirtmgmt
-        interface: virtio
-        mac_address: 00:1a:4a:16:01:50
+      #custom_script: "{{ cloud_init_script_master }}"
+      #    nics:
+        #- name: nic1
+        #profile_name: VM-Network
+        #interface: virtio
+        ##        mac_address: 00:1a:4a:16:01:50
 
 
 affinity_groups:

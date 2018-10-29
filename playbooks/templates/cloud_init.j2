@@ -1,6 +1,6 @@
 #cloud-config
 cloud_config_modules:
-{% if 'bastion' in item.name %}
+{% if 'bastion' in current_vm.name %}
 - rh_subscription
 - runcmd
 {% else %}
@@ -23,9 +23,9 @@ rh_subscription:
     password: {{ rhsm_password }}
 {% endif %}
     add-pool:
-{% if 'node' in item.name %}
+{% if 'node' in current_vm.name %}
       - {{ rhsm_node_pool }}
-{% elif 'cns' in item.name %}
+{% elif 'ocs' in current_vm.name %}
       - {{ rhsm_ocs_pool }}
 {% else %}
       - {{ rhsm_broker_pool }}
@@ -50,10 +50,10 @@ rh_subscription:
 
 runcmd:
   - rm -f  "/etc/yum.repos.d/redhat-rhui*"
-  - echo "TEST" > /home/ec2-user/test.txt
+  - echo "TEST" > /home/cloud-user/test.txt
 
 packages:
-{% if 'bastion' in item.name -%}
+{% if 'bastion' in current_vm.name -%}
 {% for pkg in bastion_pkgs %}
 - {{ pkg }}
 {% endfor %}
@@ -61,14 +61,14 @@ packages:
 - lvm2
 {% endif %}
 
-{% if 'bastion' not in item.name %}
+{% if 'bastion' not in current_vm.name %}
 fs_setup:
 - label: ocp_emptydir
   filesystem: xfs
   device: /dev/vdc
   partition: auto
 
-{% if 'master' in item.name %}
+{% if 'master' in current_vm.name %}
 - label: etcd
   filesystem: xfs
   device: /dev/vdd
@@ -77,7 +77,7 @@ fs_setup:
 
 mounts:
 - [ "LABEL=ocp_emptydir", "/var/lib/origin/openshift.local.volumes", xfs, "defaults,gquota" ]
-  {% if 'master' in item.name %}
+  {% if 'master' in current_vm.name %}
 
 - [ "LABEL=etcd", "/var/lib/etcd", xfs, "defaults,gquota" ]
   {% endif %}

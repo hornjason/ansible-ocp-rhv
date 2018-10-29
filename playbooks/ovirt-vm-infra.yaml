@@ -1,11 +1,27 @@
 ---
 - name: oVirt infra
   hosts: localhost
+  become: true
   connection: local
   gather_facts: false
   vars_files:
-    - vars/ovirt-infra-vars.yaml
+    - ../ocp-vars.yml
   tasks:
+    - name: template vm configs
+      template:
+        src: templates/vm_configs.j2
+        dest: vars/vm_config_vars.yml
+
+    - include_vars: 'vars/vm_config_vars.yml'
+
+    - name: template ovirt infra
+      template:
+        src: templates/ovirt-infra-vars.j2
+        dest: vars/vars.yml
+
+    - include_vars:
+        dir: vars/
+
     - name: Template Openshift hosts files
       template:
         src: hosts.j2
@@ -19,10 +35,10 @@
       set_fact:
         openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
 
-    - name: "Be sure all pre-req rhv packages are installed"
-      yum: name={{item}} state=installed
-      with_items:
-        - "{{ openshift_deploy_packages_by_provider }}"
+        #    - name: "Be sure all pre-req rhv packages are installed"
+        #yum: name={{item}} state=installed
+        #with_items:
+          #- "{{ openshift_deploy_packages_by_provider }}"
 
     - name: copy dynamic inventory script to inventory dir
       copy:
@@ -49,10 +65,11 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  vars_files:
-    - vars/ovirt-infra-vars.yaml
 
   pre_tasks:
+    - include_vars:
+        dir: vars/
+
     - name: Log in to oVirt
       ovirt_auth:
         url: "{{ engine_url }}"
@@ -64,8 +81,8 @@
         - always
   
   roles:
-    - ovirt-image-template
-    - ovirt-vm-infra
+    - oVirt.image-template
+    - oVirt.vm-infra
 
   post_tasks:
     - name: Logout from oVirt

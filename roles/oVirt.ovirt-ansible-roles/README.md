@@ -6,14 +6,17 @@ oVirt maintains multiple Ansible roles that can be deployed to easily configure 
 
 Currently we have implemented following Ansible roles:
 
-* [oVirt.cluster-upgrade]
-* [oVirt.disaster-recovery]
-* [oVirt.engine-setup]
-* [oVirt.infra]
-* [oVirt.image-template]
-* [oVirt.manageiq]
-* [oVirt.repositories]
-* [oVirt.vm-infra]
+* [oVirt.cluster-upgrade] - easily upgrade your oVirt clusters, host by host.
+* [oVirt.disaster-recovery] - plan, failover and failback oVirt in Disaster Recovery scenarios.
+* [oVirt.engine-setup] - setup your oVirt Engine via Ansible.
+* [oVirt.hosted-engine-setup] - setup your oVirt Hosted-Engine via Ansible.
+* [oVirt.infra] - setup a complete oVirt setup (data centers, clusters, hosts, networks...) via this role.
+* [oVirt.image-template] - easily create VM templates (via Glance or QCOW2 download)
+* [oVirt.manageiq] - install and configure a ManageIQ (or CloudForms) VM appliance on your oVirt!
+* [oVirt.repositories] - set up the required oVirt repositories on your hosts.
+* [oVirt.vm-infra] - configure a complete VM setup (create and configure VMs and their properties)
+* [oVirt.v2v-conversion-host] - define a host as a target for VMware to oVirt migration.
+* [oVirt.shutdown-env] - shutdown the whole environment in a clean and ordered way.
 
 ## Installing the oVirt Roles
 
@@ -27,7 +30,7 @@ The Ansible roles are packaged into an RPM file that can be installed from the c
 
 Run the following command to install all roles:
 ```
-# yum install ovirt-ansible-roles 
+# yum install ovirt-ansible-roles
 ```
 Run the following command to install specific role:
 ```
@@ -83,12 +86,12 @@ engine_password: youruserpassword
 2) Encrypt the user password. You will be asked for a vault password.
 ```
 $ ansible-vault encrypt passwords.yml
-New Vault password: 
-Confirm New Vault password: 
+New Vault password:
+Confirm New Vault password:
 ```
 3) Create a file that contains engine details such as the url, certificate, and user.
 ```
-$ cat engine_vars.yml 
+$ cat engine_vars.yml
 ---
 engine_url: https://example.engine.redhat.com/ovirt-engine/api
 engine_user: admin@internal
@@ -148,7 +151,7 @@ After the ansible-playbook playbook completes you will have a new data center na
 
 [oVirt.infra]: https://github.com/oVirt/ovirt-ansible-infra/blob/master/README.md
 [oVirt.image-template]: https://github.com/oVirt/ovirt-ansible-image-template/blob/master/README.md
-[oVirt.vm-infra]: https://github.com/oVirt/ovirt-ansible-vm-infra/blob/master/README.md 
+[oVirt.vm-infra]: https://github.com/oVirt/ovirt-ansible-vm-infra/blob/master/README.md
 [oVirt.cluster-upgrade]: https://github.com/oVirt/ovirt-ansible-cluster-upgrade/blob/master/README.md
 [oVirt.manageiq]: https://github.com/oVirt/ovirt-ansible-manageiq/blob/master/README.md
 [Creating Reusable Playbooks]: http://docs.ansible.com/ansible/latest/playbooks_reuse.html
@@ -158,3 +161,6 @@ After the ansible-playbook playbook completes you will have a new data center na
 [oVirt.disaster-recovery]: https://github.com/oVirt/ovirt-ansible-disaster-recovery/blob/master/README.md
 [oVirt.engine-setup]: https://github.com/oVirt/ovirt-ansible-engine-setup/blob/master/README.md
 [oVirt.repositories]: https://github.com/oVirt/ovirt-ansible-repositories/blob/master/README.md
+[oVirt.v2v-conversion-host]: https://github.com/oVirt/ovirt-ansible-v2v-conversion-host/blob/master/README.md
+[oVirt.hosted-engine-setup]: https://github.com/oVirt/ovirt-ansible-hosted-engine-setup/blob/master/README.md
+[oVirt.shutdown-env]: https://github.com/oVirt/ovirt-ansible-shutdown-env/blob/master/README.md
