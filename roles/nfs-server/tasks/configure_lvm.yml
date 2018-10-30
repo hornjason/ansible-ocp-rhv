@@ -1,0 +1,48 @@
+---
+- name: "Set VG name"
+  set_fact:
+    nfs_vg_name: "{{ nfs_vg_name | default(default_nfs_vg_name) }}"
+
+- name: "Set LV name"
+  set_fact:
+    nfs_lv_name: "{{ nfs_lv_name | default(default_nfs_lv_name) }}"
+
+- name: "Set NFS share basename"
+  set_fact:
+    nfs_share_basedir: "{{ nfs_share_basedir | default(default_nfs_share_basedir) }}"
+
+- name: "Setup and create PV & VG"
+  lvg:
+    vg: "{{ nfs_vg_name }}"
+    pvs: "{{ nfs_storage_device }}"
+    force: yes
+
+- name: "Setup LV"
+  lvol: 
+    vg: "{{ nfs_vg_name }}"
+    lv: "{{ item.nfs_lv_name }}"
+    force: yes
+    size: "100%VG"
+  with_items:
+    - "{{ nfs_shares }}"
+
+- name: "Create file system on share"
+  filesystem:
+    fstype: xfs
+    dev: "/dev/mapper/{{ nfs_vg_name }}-{{ item.nfs_lv_name }}"
+  with_items:
+    - "{{ nfs_shares }}"
+
+- name: "Ensure the base dir for NFS shares exists" 
+  file:
+    path: "{{ nfs_share_basedir }}"
+    state: directory
+
+- name: "Mount NFS base dir"
+  mount:
+    src: "/dev/mapper/{{ nfs_vg_name }}-{{ item.nfs_lv_name }}" 
+    path: "{{ nfs_share_basedir }}"
+    fstype: xfs 
+    state: mounted
+  with_items:
+    - "{{ nfs_shares }}"
