@@ -4,4 +4,3 @@
 output/
 ovirt-ansible-image-template.spec
 exported-artifacts/
-*pyc

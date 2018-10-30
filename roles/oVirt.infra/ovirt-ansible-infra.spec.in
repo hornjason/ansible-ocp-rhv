@@ -13,7 +13,7 @@ Group:          Virtualization/Management
 BuildArch:      noarch
 Url:            http://www.ovirt.org
 
-Requires: ansible >= 2.5
+Requires: ansible >= 2.4
 
 %description
 This Ansible role provide funtionality to oVirt infrastructure.
@@ -49,38 +49,6 @@ sh build.sh install
 %license LICENSE
 
 %changelog
-* Tue Oct 16 2018 Ondra Machacek <omachace@redhat.com> - 1.1.9-1
-- Workaround to fix async tasks of PR #44726. gh#46
-- Add missing library dir to RPM. gh#45
-- Adding authentication_keys option to os_volume EP. gh#33
-
-* Tue Sep 18 2018 Ondra Machacek <omachace@redhat.com> - 1.1.8-1
-- Support using engine_fqdn instead of url.
-- Check for empty ovirt_auth dict.
-- Support AWX credentials. gh#38
-
-* Wed Jul 10 2018 Ondra Machacek <omachace@redhat.com> - 1.1.7-1
-- Don't return ID as list rhbz#1599055.
-
-* Tue Jun 19 2018 Ondra Machacek <omachace@redhat.com> - 1.1.6-1
-- Add support to set external network providers rhbz#1509235.
-
-* Tue Apr 10 2018 Ondra Machacek <omachace@redhat.com> - 1.1.5-1
-- Require Ansible 2.5.
-- Add hosted_engine parameter.
-
-* Thu Mar 1 2018 Ondra Machacek <omachace@redhat.com> - 1.1.4-1
-- Don't fail when hosts var is not passed.
-- Add login support within role.
-
-* Wed Jan 17 2018 Ondra Machacek <omachace@redhat.com> - 1.1.3-1
-- Print only host names while looping hosts.
-- oVirt.datacenters: use import_role instead of include_role.
-- Use skip_missing flag for subelements in oVirt.storages.
-
-* Mon Dec 04 2017 Ondra Machacek <omachace@redhat.com> - 1.1.2-1
-- Add %pretrans scriplet to remove legacy role name.
-
 * Mon Nov 27 2017 Ondra Machacek <omachace@redhat.com> - 1.1.1-1
 - Fix role names to be in sync with Ansible Galaxy.
 

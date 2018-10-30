@@ -6,7 +6,7 @@
   gather_facts: false
   vars_files:
     - ../ocp-vars.yml
-  tasks:
+  pre_tasks:
     - name: template vm configs
       template:
         src: templates/vm_configs.j2
@@ -20,7 +20,7 @@
         dest: vars/vars.yml
 
     - include_vars:
-        dir: vars/
+        dir: "{{ playbook_dir}}/vars/"
 
     - name: Template Openshift hosts files
       template:
@@ -35,6 +35,8 @@
       set_fact:
         openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
 
+        ###############
+        # TODO: uncomment when not testing
         #    - name: "Be sure all pre-req rhv packages are installed"
         #yum: name={{item}} state=installed
         #with_items:
@@ -61,15 +63,15 @@
       tags:
         - ca
 
-- name: oVirt infra
-  hosts: localhost
-  connection: local
-  gather_facts: false
-
-  pre_tasks:
-    - include_vars:
-        dir: vars/
-
+        #- name: oVirt infra
+        #  hosts: localhost
+        #  connection: local
+        #  gather_facts: false
+        #
+        #  pre_tasks:
+        #    - include_vars:
+        #        dir: vars/
+        #
     - name: Log in to oVirt
       ovirt_auth:
         url: "{{ engine_url }}"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="1.1.12"
+VERSION="1.1.4"
 MILESTONE=
 RPM_RELEASE="1"
 
@@ -44,11 +44,9 @@ install() {
   ln -f -s $PKG_DATA_DIR_ORIG $ROLENAME_LEGACY 
   
   cp -pR defaults/ $PKG_DATA_DIR
-  cp -pR filter_plugins/ $PKG_DATA_DIR
   cp -pR library/ $PKG_DATA_DIR
   cp -pR tasks/ $PKG_DATA_DIR
   cp -pR templates/ $PKG_DATA_DIR
-  cp -pR vars/ $PKG_DATA_DIR
 
   echo "Installation done."
 }

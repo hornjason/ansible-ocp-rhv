@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="1.1.11"
+VERSION="1.1.3"
 MILESTONE=
 RPM_RELEASE="1"
 
@@ -46,7 +46,6 @@ install() {
   cp -pR defaults/ $PKG_DATA_DIR
   cp -pR library/ $PKG_DATA_DIR
   cp -pR tasks/ $PKG_DATA_DIR
-  cp -pR filter_plugins/ $PKG_DATA_DIR
 
   echo "Installation done."
 }

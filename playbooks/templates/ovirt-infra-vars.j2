@@ -17,13 +17,13 @@ vms:
     profile:
       {{ node_vm | to_nice_yaml | indent(6,false)  }}
     cloud_init:
-      host_name: ocp-node0{{ i }}.{{ local_hosted_zone }}"
-      authorized_ssh_keys: {{ root_ssh_key }}
-      custom_script:
+      host_name: "ocp-node0{{ i }}.{{ local_hosted_zone }}"
+      authorized_ssh_keys: "{{ root_ssh_key }}"
+      custom_script: |
         {{ lookup('template', 'templates/cloud_init_node.j2')| indent(8,false) }}
     nics:
       - name: nic1
-        profile_name: {{ rhv_vm_network }}
+        profile_name: "{{ rhv_vm_network }}"
         interface: virtio
         #mac_address: 00:1a:4a:16:01:49
 {% endfor %}
@@ -35,13 +35,13 @@ vms:
     profile: 
       {{ infra_vm | to_nice_yaml | indent(6,false)  }}
     cloud_init:
-      host_name: ocp-infra0{{ i }}.{{ local_hosted_zone }}"
-      authorized_ssh_keys: {{ root_ssh_key }}
-      custom_script: 
+      host_name: "ocp-infra0{{ i }}.{{ local_hosted_zone }}"
+      authorized_ssh_keys: "{{ root_ssh_key }}"
+      custom_script: |
         {{ lookup('template', 'templates/cloud_init_node.j2')| indent(8,false) }}
     nics:
       - name: nic1
-        profile_name: {{ rhv_vm_network }}
+        profile_name: "{{ rhv_vm_network }}"
         interface: virtio
         #mac_address: 00:1a:4a:16:01:47
 {% endfor %}
@@ -54,13 +54,13 @@ vms:
     tag: openshift_master
     is_master: true
     cloud_init:
-      host_name: ocp-master0{{ i }}.{{ local_hosted_zone }}
-      authorized_ssh_keys: {{ root_ssh_key }}
-      custom_script:
+      host_name: "ocp-master0{{ i }}.{{ local_hosted_zone }}"
+      authorized_ssh_keys: "{{ root_ssh_key }}"
+      custom_script: |
         {{ lookup('template', 'templates/cloud_init_master.j2')| indent(8,false) }}
     nics:
       - name: nic1
-        profile_name: {{ rhv_vm_network }}
+        profile_name: "{{ rhv_vm_network }}"
         interface: virtio
         #mac_address: 00:1a:4a:16:01:45
 {% endfor %}
@@ -71,8 +71,8 @@ vms:
     tag: openshift_lb
     profile: {{ lb_vm }}
     cloud_init:
-      host_name: openshift-lb.{{ local_hosted_zone }}
-      authorized_ssh_keys: {{ root_ssh_key }}
+      host_name: "openshift-lb.{{ local_hosted_zone }}"
+      authorized_ssh_keys: "{{ root_ssh_key }}"
       #custom_script: "{{ cloud_init_script_master }}"
       #    nics:
         #- name: nic1
@@ -83,7 +83,7 @@ vms:
 
 affinity_groups:
   - name: masters_ag
-    cluster: {{ rhv_cluster }}
+    cluster: "{{ rhv_cluster }}"
     vm_enforcing: false
     vm_rule: negative
     vms:
