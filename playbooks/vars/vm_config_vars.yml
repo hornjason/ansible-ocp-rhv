@@ -1,0 +1,59 @@
+# OverRides
+vm_infra_wait_for_ip_delay: 180
+vm_infra_wait_for_ip_retries: 10
+
+# Master VM
+
+master_vm:
+  is_master: true
+  cluster: "ODFL-LAB"
+  template: "rhel7_5"
+  memory: "8GiB"
+  cores: "2"
+  high_availability: true
+  disks:
+    - size: "10GiB"
+      storage_domain: "groot_data_iscsi"
+      name: docker_disk
+      interface: virtio
+    - size: "10GiB"
+      storage_domain: "groot_data_iscsi"
+      name: localvol_disk
+      interface: virtio
+    - size: "10GiB"
+      storage_domain: "groot_data_iscsi"
+      name: etcd_disk
+      interface: virtio
+
+
+node_vm:
+  cluster: "ODFL-LAB"
+  template: "rhel7_5"
+  memory: "8GiB"
+  cores: "2"
+  disks:
+    - size: "10GiB"
+      storage_domain: "groot_data_iscsi"
+      name: docker_disk
+      interface: virtio
+    - size: "10GiB"
+      storage_domain: "groot_data_iscsi"
+      name: localvol_disk
+      interface: virtio
+  
+infra_vm:
+  cluster: "ODFL-LAB"
+  template: "rhel7_5"
+  memory: "8GiB"
+  cores: "2"
+  # disks are created alphanumeric using name:value -  vdb/vdc/vdd
+  disks:
+    - size: "10GiB"
+      storage_domain: "groot_data_iscsi"
+      name: docker_disk
+      interface: virtio
+    - size: "10GiB"
+      storage_domain: "groot_data_iscsi"
+      name: localvol_disk
+      interface: virtio
+

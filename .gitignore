@@ -4,3 +4,4 @@ vars.yml
 **ca.pem
 **ovirt.ini
 **.log
+**.retry

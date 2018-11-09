@@ -2,7 +2,10 @@
 - hosts: localhost
   connection: local
   gather_facts: no 
+  vars_files:
+    - ../ocp-vars.yml
   tasks:
+
     - name: Template Openshift hosts files
       template:
         src: hosts.j2
@@ -12,13 +15,11 @@
     - local_action: meta
         refresh_inventory
 
-- import_playbook: subscribe.yml
-
 - name: call openshift pre-req play
   import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml"
 
 - name: call openshift deploy_cluster play
-  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
+  import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"
  
 # opens up node exporter and router stats for prometheus to scrape
 - import_playbook: firewall.yml

@@ -27,7 +27,6 @@
   - debug: msg="==========  ALL VMS {{ item }} ======"
     with_items:
       - "{{ all_vms }}"
-  - pause: 
 
   - name: Manage disks
     ovirt_disks:
@@ -110,6 +109,7 @@
       - "item.profile.state | default('present') != 'stopped'"
     tags:
       - wait
+
 
   always:
 #    - name: stop failed vms

@@ -2,43 +2,35 @@
 masters
 etcd
 nodes
+{% if groups['lb'] is defined %}
+lb
+{% endif %}
 {% if deploy_ocs | default('true') | bool %}
 glusterfs
 glusterfs_registry
 {% endif %}
 
 [OSEv3:vars]
+### REGISTRY ###
 # fix for bug
 # https://access.redhat.com/solutions/3480921
 #ereg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
 #oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
+openshift_hosted_registry_replicas={{ infra_nodes }}
 
+### MASTER/CLUSTER ###
 openshift_examples_modify_imagestreams=true
-
+openshift_master_dynamic_provisioning_enabled=True
 ansible_ssh_user="{{ admin_user }}"
 ansible_become=true
 openshift_deployment_type=openshift-enterprise
 openshift_release=v3.10
 openshift_master_api_port=443
 openshift_master_console_port=443
-
-openshift_hosted_router_replicas={{ infra_nodes }}
-openshift_hosted_registry_replicas={{ infra_nodes }}
-
-openshift_node_local_quota_per_fsgroup=512Mi
 openshift_master_cluster_method=native
 openshift_master_cluster_hostname={{ load_balancer_hostname }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }}
-
-# Wildcard domain
 openshift_master_default_subdomain={{ wildcard_zone |default('apps.change.me') }}
-
-
-{% if openshift_disable_check is defined %}
-openshift_disable_check={{ openshift_disable_check }}
-{% endif %}
-
-# Networking
 {% if osm_cluster_network_cidr is defined %}
 osm_cluster_network_cidr={{ osm_cluster_network_cidr }}
 {% endif %}
@@ -46,19 +38,12 @@ osm_cluster_network_cidr={{ osm_cluster_network_cidr }}
 openshift_portal_net={{ openshift_portal_net }}
 {% endif %}
 os_sdn_network_plugin_name={{ os_sdn_network_plugin_name | default('redhat/openshift-ovs-multitenant') }}
-
-
-{% if router_cert is defined %}
-####################
-## custom certs
-## Router
-#####################
-openshift_hosted_router_certificate={{ router_cert }}
+{% if openshift_disable_check is defined %}
+openshift_disable_check={{ openshift_disable_check }}
 {% endif %}
-
 {% if master_cert is defined %}
 # MASTER/API
-openshift_master_overwrite_named_certificates=true
+#openshift_master_overwrite_named_certificates=true
 openshift_master_named_certificates={{ master_cert }}
 {% endif %}
 {% if openshift_master_identity_providers is defined %}
@@ -73,36 +58,19 @@ openshift_master_htpasswd_users={{ openshift_master_htpasswd_users }}
 openshift_master_htpasswd_users={'admin': '$apr1$VZeARzoK$zYM/4c82PKDeYmw6/RvOV/'}
 {% endif %}
 openshift_master_manage_htpasswd=true
-
-# Docker
-container_runtime_docker_storage_setup_device=/dev/vdb
-container_runtime_docker_storage_type=overlay2
-
-# disable cockpit
-osm_use_cockpit=false
-
 {% if osm_project_request_message is defined %}
 osm_project_request_message="{{ osm_project_request_message }}"
 {% endif %}
+os_firewall_use_firewalld=True
 
 
-{% if deploy_ocs | default(true) | bool %}
-# CNS Cnfiguration
-# Container image to use for glusterfs pods
-openshift_storage_glusterfs_image="registry.access.redhat.com/rhgs3/rhgs-server-rhel7:v3.10"
-
-# Container image to use for glusterblock-provisioner pod
-openshift_storage_glusterfs_block_image="registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7:v3.10"
-
-# Container image to use for heketi pods
-openshift_storage_glusterfs_heketi_image="registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7:v3.10"
-
-# Container image to user for S3
-openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-gluster-s3-server-rhel7:v3.10"
-
-
-# logging
+### INFRA ###
+{% if router_cert is defined %}
+openshift_hosted_router_certificate={{ router_cert }}
+{% endif %}
+openshift_hosted_router_replicas={{ infra_nodes }}
 {% if deploy_logging | default('True') | bool %}
+# Logging
 openshift_logging_install_logging=True
 openshift_logging_es_pvc_dynamic=True
 openshift_logging_es_pvc_size={{ logging_volume_size }}
@@ -112,10 +80,10 @@ openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra": "true"}
 openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra": "true"}
 openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra": "true"}
 {% else %}
-openshift_logging_install_logging=True
+openshift_logging_install_logging=False
 {% endif %}
 
-# metrics
+# Metrics
 {% if deploy_logging | default('True') | bool %}
 openshift_metrics_install_metrics=True
 openshift_metrics_storage_kind=dynamic
@@ -128,7 +96,7 @@ openshift_metrics_heapster_nodeselector={"node-role.kubernetes.io/infra": "true"
 openshift_metrics_install_metrics=False
 {% endif %}
 
-# prometheus
+# Prometheus
 {% if deploy_prometheus | default(True) | bool %}
 openshift_hosted_prometheus_deploy=True
 openshift_prometheus_storage_kind=dynamic
@@ -139,7 +107,7 @@ openshift_prometheus_storage_class='glusterfs-registry-block'
 openshift_hosted_prometheus_deploy=False
 {% endif %}
 
-# grafana
+# Grafana
 {% if deploy_grafana | default(true) | bool %}
 openshift_grafana_state=present
 openshift_grafana_node_exporter=True
@@ -152,6 +120,24 @@ openshift_grafana_prometheus_route='prometheus'
 openshift_grafana_state=absent
 {% endif %}
 
+
+### NODES ###
+openshift_node_local_quota_per_fsgroup=512Mi
+container_runtime_docker_storage_setup_device=/dev/vdb
+container_runtime_docker_storage_type=overlay2
+osm_use_cockpit=false
+
+### OCS ###
+{% if deploy_ocs | default(true) | bool %}
+# CNS Cnfiguration
+# Container image to use for glusterfs pods
+openshift_storage_glusterfs_image="registry.access.redhat.com/rhgs3/rhgs-server-rhel7:v3.10"
+# Container image to use for glusterblock-provisioner pod
+openshift_storage_glusterfs_block_image="registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7:v3.10"
+# Container image to use for heketi pods
+openshift_storage_glusterfs_heketi_image="registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7:v3.10"
+# Container image to user for S3
+openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-gluster-s3-server-rhel7:v3.10"
 # Cluster 1
 # Total Storage allocated (GB) = {{ ocs_infra_cluster_allocated_storage }}
 # Total Storage available (GB) = {{ ocs_infra_cluster_usable_storage }}
@@ -180,21 +166,24 @@ openshift_storage_glusterfs_registry_block_storageclass=true
 openshift_storage_glusterfs_registry_block_storageclass_default=false
 
 {% else %}
-
 # StorageClass if not OCS
 openshift_storageclass_default=true
 {% endif %}
 
-
 [masters]
 {% for i in range(1, master_nodes +1) %}
-ocp-master-{{ i }}
+master0{{ i }}.{{ local_hosted_zone }}
 {% endfor %}
 
 [infra]
 {% for i in range(1, infra_nodes +1) %}
-ocp-infra-{{ i }}
+infra0{{ i }}.{{ local_hosted_zone }}
 {% endfor %}
+
+{% if groups['lb'] is defined %}
+[lb]
+ocp-lb-1
+{% endif %}
 
 [etcd]
 
@@ -203,31 +192,31 @@ masters
 
 [nodes]
 {% for i in range(1, master_nodes +1) %}
-ocp-master-{{ i }} openshift_node_group_name='node-config-master' openshift_schedulable=true
+master0{{ i }}.{{ local_hosted_zone }} openshift_node_group_name='node-config-master' openshift_schedulable=true
 {% endfor %}
 {% for i in range(1, infra_nodes +1) %}
-ocp-infra-{{ i }}  openshift_node_group_name='node-config-infra'
+infra0{{ i }}.{{ local_hosted_zone }}  openshift_node_group_name='node-config-infra'
 {% endfor %}
 {% for i in range(1, app_nodes +1) %}
-ocp-app-{{ i }}    openshift_node_group_name='node-config-compute'
+app0{{ i }}.{{ local_hosted_zone }}    openshift_node_group_name='node-config-compute'
 {% endfor %}
 
 {% if deploy_ocs | default(true) | bool  and deploy_ocs is defined %}
 {% if ( infra_nodes + app_nodes ) >= 6 %}
 [glusterfs_registry]
 {% for i in range(1, infra_nodes+1) %}
-ocp-infra-{{ i }} glusterfs_zone={{ i }}  glusterfs_devices='[ "" ]'
+infra0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }}  glusterfs_devices='[ "" ]'
 {% endfor %}
 
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-ocp-app-{{ i }} glusterfs_zone={{ i }} glusterfs_devices='[ "" ]'
+app0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }} glusterfs_devices='[ "" ]'
 {% endfor %}
 {% else %}
 [glusterfs_registry]
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-ocp-infra-{{ i }}  glusterfs_zone={{ i }} glusterfs_devices='[ "" ]'
+infra0{{ i }}.{{ local_hosted_zone }}  glusterfs_zone={{ i }} glusterfs_devices='[ "" ]'
 {% endfor %}
 {% endif %}
 {% endif %}

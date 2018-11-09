@@ -35,12 +35,11 @@
       set_fact:
         openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
 
-        ###############
-        # TODO: uncomment when not testing
-        #    - name: "Be sure all pre-req rhv packages are installed"
-        #yum: name={{item}} state=installed
-        #with_items:
-          #- "{{ openshift_deploy_packages_by_provider }}"
+    # TODO Uncomment when out of testing. takes too long to run repeatedly
+    #- name: "Be sure all pre-req rhv packages are installed"
+    #  yum: name={{item}} state=installed
+    #  with_items:
+    #    - "{{ openshift_deploy_packages_by_provider }}"
 
     - name: copy dynamic inventory script to inventory dir
       copy:
@@ -87,6 +86,7 @@
     - oVirt.vm-infra
 
   post_tasks:
+
     - name: Logout from oVirt
       ovirt_auth:
         state: absent

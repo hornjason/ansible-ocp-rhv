@@ -15,7 +15,7 @@ rh_subscription:
   org: {{ rhsm_org }}
 {% endif %}
   add-pool: [{{ rhsm_broker_pool }}]
-  #server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
+  server-hostname: {{ rhsub_server | default('subscription.rhsm.redhat.com') }}
   disable-repo:
     - rhel-7-server-rt-rpms
     - rhel-7-server-nfv-rpms

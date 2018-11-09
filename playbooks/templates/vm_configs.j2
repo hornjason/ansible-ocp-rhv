@@ -69,6 +69,8 @@ infra_vm:
       interface: virtio 
 {% endif %}
 
+{% if lbs is defined %}
+{% for i in range(1, lbs +1) %}
 lb_vm:
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
@@ -83,4 +85,5 @@ lb_vm:
       storage_domain: "{{ rhv_data_storage }}"
       name: localvol_disk
       interface: virtio
-
+{% endfor %}
+{% endif %}
