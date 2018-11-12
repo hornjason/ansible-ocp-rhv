@@ -36,10 +36,6 @@
       register: subscribed
       ignore_errors: yes
 
-    - debug: var=subscribed
-      when:
-        - "'not registered' in subscribed.stdout"
-    - pause:
     - name: Register system using Red Hat Subscription Manager
       redhat_subscription:
         state: present
@@ -49,9 +45,9 @@
       when:
         - "'not registered' in subscribed.stdout"
         - rhsm_user is defined
-        - rhsm_user != ''
+        - rhsm_user|trim != ''
       register: rhn
-      until: rhn is success
+      until: rhn|success
       retries: 5
 
     - name: Register system using Red Hat Subscription Manager
@@ -63,16 +59,16 @@
         org_id: "{{ rhsm_org_id | default(omit) }}"
       when:
         - "'not registered' in subscribed.stdout"
-        - rhsm_activation_key is defined
-        - rhsm_org_id is defined
+        - rhsm_satellite is defined
+        - rhsm_satellite|trim != ''
       register: rhn
-      until: rhn is success
+      until: rhn|success
       retries: 5
 
     - name: Obtain currently enabled repos
       shell: 'subscription-manager repos --list-enabled | sed -ne "s/^Repo ID:[^a-zA-Z0-9]*\(.*\)/\1/p"'
       register: enabled_repos
-
+    - debug: var=enabled_repos.stdout_lines
     - name: Disable repositories that should not be enabled
       shell: "subscription-manager repos --disable={{ item }}"
       with_items:
@@ -86,6 +82,6 @@
 
     - name: Enable satellite tools repo if required
       command: "subscription-manager repos --enable=rhel-7-server-satellite-tools-6.2-rpms"
-      when: rhsm_activation_key is defined and rhsm_activation_key|trim != ''
+      when: rhsm_satellite is defined and rhsm_satellite != ''
 
   when: ansible_distribution == "RedHat"

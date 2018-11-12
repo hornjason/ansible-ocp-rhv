@@ -1,6 +1,7 @@
 ---
 - name: Unregister VMs
   hosts: nodes:lb
+  gather_facts: False
   tasks:
     - name: RHSM Unregister VMs
       redhat_subscription:
@@ -9,6 +10,7 @@
       until: task_result is success
       retries: 10
       delay: 30
+      ignore_errors: True
 
 - name: oVirt infra destroy
   hosts: localhost
@@ -16,7 +18,7 @@
   gather_facts: false
 
   vars_files:
-    - vars/ovirt-infra-vars.yaml
+    - vars/vars.yml
 
   pre_tasks:
     - name: Log in to oVirt

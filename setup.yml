@@ -1,0 +1,38 @@
+---
+- name: Setup Ansible deployment host for OCP on RHV
+  hosts: localhost
+  become: true
+  vars:
+    message: |
+      This host is now setup, next steps are
+    required_repos:
+      - rhel-7-server-rpms
+      - rhel-7-server-extras-rpms
+      - rhel-7-server-ose-3.11-rpms
+      - rhel-7-server-ansible-2.6-rpms
+    rhsm_activation_key: 'jason-horn-key1'
+    rhsm_org_id: '5318211'
+    rhsm_pool: '8a85f98c60c2c2b40160c32445b41b29'
+  # rhsm_katello_url: "RPM URL"
+  # rhsm_satellite: 'satellite server name/url'
+  roles:
+    - rhsm
+  tasks:
+    - name: Setup | Install required packages 
+      yum: 
+         name: "{{ item }}" 
+         state: latest 
+      loop: 
+         - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
+         - python2-pip 
+         - atomic-openshift-clients
+         - openshift-ansible
+         - python-ovirt-engine-sdk4
+
+    - name: Setup | Remove epel
+      yum:
+        name: epel-release
+        state: absent
+
+    - name: Setup | Ansible Galaxy install oVirt roles
+      shell: ansible-galaxy install install oVirt.ovirt-ansible-roles -p "{{ playbook_dir }}/roles/"

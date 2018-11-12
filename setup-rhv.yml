@@ -1,0 +1,21 @@
+---
+- name: Setup RHV
+  hosts: rhv
+  vars:
+    required_repos:
+      - rhel-7-server-rpms
+      - rhel-7-server-rhv-4-mgmt-agent-rpms
+      - rhel-7-server-ansible-2-rpms
+    rhsm_activation_key: 'jason-horn-key1'
+    rhsm_org_id: '5318211'
+    rhsm_pool: '8a85f98c60c2c2b40160c32445b41b29'
+  # rhsm_katello_url: "RPM URL"
+  # rhsm_satellite: 'satellite server name/url'
+  roles:
+    - rhsm
+  tasks:
+    #yum update all 
+    # reboot
+    # wait_for
+    # enable / start firewalld
+    #yum install ovirt-hosted-engine-setup

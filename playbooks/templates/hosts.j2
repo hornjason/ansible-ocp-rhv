@@ -17,6 +17,9 @@ glusterfs_registry
 #ereg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
 #oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
 openshift_hosted_registry_replicas={{ infra_nodes }}
+# Registry auth token/password
+oreg_auth_user={{  oreg_auth_user }}
+oreg_auth_password={{  oreg_auth_password }}
 
 ### MASTER/CLUSTER ###
 openshift_examples_modify_imagestreams=true
@@ -24,7 +27,7 @@ openshift_master_dynamic_provisioning_enabled=True
 ansible_ssh_user="{{ admin_user }}"
 ansible_become=true
 openshift_deployment_type=openshift-enterprise
-openshift_release=v3.10
+openshift_release=v3.11
 openshift_master_api_port=443
 openshift_master_console_port=443
 openshift_master_cluster_method=native
@@ -43,7 +46,7 @@ openshift_disable_check={{ openshift_disable_check }}
 {% endif %}
 {% if master_cert is defined %}
 # MASTER/API
-#openshift_master_overwrite_named_certificates=true
+openshift_master_overwrite_named_certificates=true
 openshift_master_named_certificates={{ master_cert }}
 {% endif %}
 {% if openshift_master_identity_providers is defined %}
@@ -69,6 +72,13 @@ os_firewall_use_firewalld=True
 openshift_hosted_router_certificate={{ router_cert }}
 {% endif %}
 openshift_hosted_router_replicas={{ infra_nodes }}
+
+# Operator Lifecycle Manager ( Tech Preview )
+{% if deploy_olm | default('True') | bool %}
+openshift_enable_olm=true
+openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'{{ oreg_auth_user }}','password':'{{ oreg_auth_password }}','test_image':'mongodb/enterprise-operator:0.3.2'}]
+{% endif %}
+
 {% if deploy_logging | default('True') | bool %}
 # Logging
 openshift_logging_install_logging=True
@@ -96,29 +106,28 @@ openshift_metrics_heapster_nodeselector={"node-role.kubernetes.io/infra": "true"
 openshift_metrics_install_metrics=False
 {% endif %}
 
-# Prometheus
+# Cluster Monitoring using Prometheus
 {% if deploy_prometheus | default(True) | bool %}
-openshift_hosted_prometheus_deploy=True
-openshift_prometheus_storage_kind=dynamic
-openshift_prometheus_storage_type=pvc
-openshift_prometheus_storage_volume_size={{ prometheus_volume_size | default('25Gi') }}
-openshift_prometheus_storage_class='glusterfs-registry-block'
+# enabled by default
+openshift_cluster_monitoring_operator_install=True 
+openshift_cluster_monitoring_operator_prometheus_storage_capacity={{ prometheus_volume_size | default('50Gi') }}
+openshift_cluster_monitoring_operator_prometheus_storage_class_name='glusterfs-registry-block'
 {% else %}
-openshift_hosted_prometheus_deploy=False
+openshift_cluster_monitoring_operator_install=False
 {% endif %}
 
 # Grafana
-{% if deploy_grafana | default(true) | bool %}
-openshift_grafana_state=present
-openshift_grafana_node_exporter=True
-openshift_grafana_storage_type=pvc
-openshift_grafana_storage_class='glusterfs-registry-block'
-openshift_grafana_prometheus_namespace='openshift-metrics'
-openshift_grafana_prometheus_serviceaccount='prometheus'
-openshift_grafana_prometheus_route='prometheus'
-{% else %}
-openshift_grafana_state=absent
-{% endif %}
+#{% if deploy_grafana | default(true) | bool %}
+#openshift_grafana_state=present
+#openshift_grafana_node_exporter=True
+#openshift_grafana_storage_type=pvc
+#openshift_grafana_storage_class='glusterfs-registry-block'
+#openshift_grafana_prometheus_namespace='openshift-metrics'
+#openshift_grafana_prometheus_serviceaccount='prometheus'
+#openshift_grafana_prometheus_route='prometheus'
+#{% else %}
+#openshift_grafana_state=absent
+#{% endif %}
 
 
 ### NODES ###
@@ -205,18 +214,18 @@ app0{{ i }}.{{ local_hosted_zone }}    openshift_node_group_name='node-config-co
 {% if ( infra_nodes + app_nodes ) >= 6 %}
 [glusterfs_registry]
 {% for i in range(1, infra_nodes+1) %}
-infra0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }}  glusterfs_devices='[ "" ]'
+infra0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }}  glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-app0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }} glusterfs_devices='[ "" ]'
+app0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 {% else %}
 [glusterfs_registry]
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-infra0{{ i }}.{{ local_hosted_zone }}  glusterfs_zone={{ i }} glusterfs_devices='[ "" ]'
+infra0{{ i }}.{{ local_hosted_zone }}  glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 {% endif %}
 {% endif %}

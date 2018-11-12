@@ -31,16 +31,6 @@
     - local_action: meta
         refresh_inventory
 
-    - name: "Establish rhv pre-req packages"
-      set_fact:
-        openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
-
-    # TODO Uncomment when out of testing. takes too long to run repeatedly
-    #- name: "Be sure all pre-req rhv packages are installed"
-    #  yum: name={{item}} state=installed
-    #  with_items:
-    #    - "{{ openshift_deploy_packages_by_provider }}"
-
     - name: copy dynamic inventory script to inventory dir
       copy:
         src: ovirt4.py
@@ -62,15 +52,6 @@
       tags:
         - ca
 
-        #- name: oVirt infra
-        #  hosts: localhost
-        #  connection: local
-        #  gather_facts: false
-        #
-        #  pre_tasks:
-        #    - include_vars:
-        #        dir: vars/
-        #
     - name: Log in to oVirt
       ovirt_auth:
         url: "{{ engine_url }}"
@@ -86,7 +67,6 @@
     - oVirt.vm-infra
 
   post_tasks:
-
     - name: Logout from oVirt
       ovirt_auth:
         state: absent
