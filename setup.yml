@@ -27,7 +27,7 @@
          - python2-pip 
          - atomic-openshift-clients
          - openshift-ansible
-         - python-ovirt-engine-sdk4
+         #- python-ovirt-engine-sdk4
 
     - name: Setup | Remove epel
       yum:

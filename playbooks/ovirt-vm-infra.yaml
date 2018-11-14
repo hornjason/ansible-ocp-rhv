@@ -15,8 +15,7 @@
     - include_vars: 'vars/vm_config_vars.yml'
 
     - name: template ovirt infra
-      template:
-        src: templates/ovirt-infra-vars.j2
+      template: src: templates/ovirt-infra-vars.j2
         dest: vars/vars.yml
 
     - include_vars:
