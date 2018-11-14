@@ -27,7 +27,10 @@
          - python2-pip 
          - atomic-openshift-clients
          - openshift-ansible
-         #- python-ovirt-engine-sdk4
+         - ovirt-engine-sdk-python
+         - gcc
+         - python-devel
+         - libxml2-devel
 
     - name: Setup | Remove epel
       yum:
@@ -35,4 +38,4 @@
         state: absent
 
     - name: Setup | Ansible Galaxy install oVirt roles
-      shell: ansible-galaxy install install oVirt.ovirt-ansible-roles -p "{{ playbook_dir }}/roles/"
+      shell: ansible-galaxy install -r requirements.yml -p "{{ playbook_dir }}/roles/"
