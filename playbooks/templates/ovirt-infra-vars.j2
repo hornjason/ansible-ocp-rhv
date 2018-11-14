@@ -18,7 +18,7 @@ vms:
     profile:
       {{ node_vm | to_nice_yaml | indent(6,false)  }}
     cloud_init:
-      host_name: "app0{{ i }}.{{ local_hosted_zone }}"
+      host_name: "app0{{ i }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
       custom_script: |
         {{ lookup('template', 'templates/cloud_init_node.j2')| indent(8,false) }}
@@ -38,7 +38,7 @@ vms:
     profile: 
       {{ infra_vm | to_nice_yaml | indent(6,false)  }}
     cloud_init:
-      host_name: "infra0{{ i }}.{{ local_hosted_zone }}"
+      host_name: "infra0{{ i }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
       custom_script: |
         {{ lookup('template', 'templates/cloud_init_node.j2')| indent(8,false) }}
@@ -59,7 +59,7 @@ vms:
       {{ master_vm | to_nice_yaml| indent(6,false) }}
     is_master: true
     cloud_init:
-      host_name: "master0{{ i }}.{{ local_hosted_zone }}"
+      host_name: "master0{{ i }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
       custom_script: |
         {{ lookup('template', 'templates/cloud_init_master.j2')| indent(8,false) }}
@@ -79,7 +79,7 @@ vms:
     profile:
       {{ lb_vm | to_nice_yaml| indent(6,false) }}
     cloud_init:
-      host_name: "openshift-lb.{{ local_hosted_zone }}"
+      host_name: "openshift-lb"
       authorized_ssh_keys: "{{ root_ssh_key }}"
       custom_script: |
         {{ lookup('template', 'templates/cloud_init_master.j2')| indent(8,false) }}
