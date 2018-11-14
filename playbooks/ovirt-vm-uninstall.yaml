@@ -19,6 +19,7 @@
 
   vars_files:
     - vars/vars.yml
+    - ../ocp-vars.yml
 
   pre_tasks:
     - name: Log in to oVirt
