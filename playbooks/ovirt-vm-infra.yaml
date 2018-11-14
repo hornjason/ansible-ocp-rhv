@@ -5,36 +5,57 @@
   connection: local
   gather_facts: false
   vars_files:
-    - ../ocp-vars.yml
+    - ../vars.yml
   pre_tasks:
     - name: template vm configs
       template:
         src: templates/vm_configs.j2
         dest: vars/vm_config_vars.yml
+      tags:
+        - ca
+        - template
 
     - include_vars: 'vars/vm_config_vars.yml'
+      tags:
+        - ca
+        - template
 
     - name: template ovirt infra
       template:
         src: templates/ovirt-infra-vars.j2
         dest: vars/vars.yml
+      tags:
+        - ca
+        - template
 
     - include_vars:
         dir: "{{ playbook_dir}}/vars/"
+      tags:
+        - ca
+        - template
 
     - name: Template Openshift hosts files
       template:
         src: hosts.j2
         dest: "{{ playbook_dir }}/inventory/hosts"
       run_once: true
+      tags:
+        - ca
+        - template
 
     - local_action: meta
         refresh_inventory
+      tags:
+        - ca
+        - template
 
     - name: copy dynamic inventory script to inventory dir
       copy:
         src: ovirt4.py
         dest: ./inventory/ovirt4.py
+      tags:
+        - ca
+        - template
 
     - name: download ca.pem from RHV Manager
       get_url:
@@ -44,6 +65,7 @@
       register: ca_file
       tags:
         - ca
+        - template
 
     - name: template dynamic inventory  ini (ovirt.init)
       template:
@@ -51,6 +73,7 @@
         dest: "./inventory/ovirt.ini"
       tags:
         - ca
+        - template
 
     - name: Log in to oVirt
       ovirt_auth:
@@ -63,7 +86,7 @@
         - always
   
   roles:
-    - oVirt.image-template
+  #  - oVirt.image-template
     - oVirt.vm-infra
 
   post_tasks:

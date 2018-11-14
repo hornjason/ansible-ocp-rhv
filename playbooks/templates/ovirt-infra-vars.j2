@@ -14,6 +14,7 @@ vms:
 {% for i in range(1, (app_nodes +1) ) %}
   - name: ocp-app0{{ i }}.{{ local_hosted_zone }}
     tag: openshift_node
+    state: {{ vm_state | default('running') }}
     profile:
       {{ node_vm | to_nice_yaml | indent(6,false)  }}
     cloud_init:
@@ -33,6 +34,7 @@ vms:
   # Infra VMs
   - name: ocp-infra0{{ i }}.{{ local_hosted_zone }}
     tag: openshift_infra
+    state: {{ vm_state | default('running') }}
     profile: 
       {{ infra_vm | to_nice_yaml | indent(6,false)  }}
     cloud_init:
@@ -51,9 +53,10 @@ vms:
 {% for i in range(1, (master_nodes +1) ) %}
   # Master VMs
   - name: ocp-master0{{ i }}.{{ local_hosted_zone }}
+    tag: openshift_master
+    state: {{ vm_state | default('running') }}
     profile: 
       {{ master_vm | to_nice_yaml| indent(6,false) }}
-    tag: openshift_master
     is_master: true
     cloud_init:
       host_name: "master0{{ i }}.{{ local_hosted_zone }}"
@@ -72,6 +75,7 @@ vms:
   # Load balancer
   - name: openshift-lb
     tag: openshift_lb
+    state: {{ vm_state | default('running') }}
     profile:
       {{ lb_vm | to_nice_yaml| indent(6,false) }}
     cloud_init:

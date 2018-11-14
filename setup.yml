@@ -15,6 +15,7 @@
     rhsm_pool: '8a85f98c60c2c2b40160c32445b41b29'
   # rhsm_katello_url: "RPM URL"
   # rhsm_satellite: 'satellite server name/url'
+    provider: 'rhv'
   roles:
     - rhsm
   tasks:
@@ -35,4 +36,4 @@
         state: absent
 
     - name: Setup | Ansible Galaxy install oVirt roles
-      shell: ansible-galaxy install install oVirt.ovirt-ansible-roles -p "{{ playbook_dir }}/roles/"
+      shell: ansible-galaxy install --ignore-errors oVirt.ovirt-ansible-roles -p "{{ playbook_dir }}/roles/"

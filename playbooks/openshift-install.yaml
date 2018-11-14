@@ -3,7 +3,7 @@
   connection: local
   gather_facts: no 
   vars_files:
-    - ../ocp-vars.yml
+    - ../vars.yml
   tasks:
 
     - name: Template Openshift hosts files
@@ -22,11 +22,11 @@
   import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"
  
 # opens up node exporter and router stats for prometheus to scrape
-- import_playbook: firewall.yml
+#- import_playbook: firewall.yml
 
-- name: install Grafana
-  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/openshift-grafana/config.yml
-  when: install_grafana  | default(true) | bool == true
+#- name: install Grafana
+#  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/openshift-grafana/config.yml
+#  when: install_grafana  | default(true) | bool == true
 
 
 - hosts: localhost
