@@ -21,8 +21,7 @@
         - template
 
     - name: template ovirt infra
-      template:
-        src: templates/ovirt-infra-vars.j2
+      template: src: templates/ovirt-infra-vars.j2
         dest: vars/vars.yml
       tags:
         - ca
@@ -48,6 +47,16 @@
       tags:
         - ca
         - template
+
+    - name: "Establish rhv pre-req packages"
+      set_fact:
+        openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
+
+    # TODO Uncomment when out of testing. takes too long to run repeatedly
+    #- name: "Be sure all pre-req rhv packages are installed"
+    #  yum: name={{item}} state=installed
+    #  with_items:
+    #    - "{{ openshift_deploy_packages_by_provider }}"
 
     - name: copy dynamic inventory script to inventory dir
       copy:
@@ -86,10 +95,11 @@
         - always
   
   roles:
-  #  - oVirt.image-template
+#    - oVirt.image-template
     - oVirt.vm-infra
 
   post_tasks:
+
     - name: Logout from oVirt
       ovirt_auth:
         state: absent

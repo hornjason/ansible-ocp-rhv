@@ -17,21 +17,23 @@ glusterfs_registry
 #ereg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
 #oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
 openshift_hosted_registry_replicas={{ infra_nodes }}
-# Registry auth token/password
-oreg_auth_user="{{ oreg_auth_user }}"
-oreg_auth_password="{{ oreg_auth_password }}"
+oreg_auth_user={{ oreg_auth_user | default('') }}
+oreg_auth_password={{ oreg_auth_password | default('') }}
 
 ### MASTER/CLUSTER ###
 openshift_examples_modify_imagestreams=true
+{% if storage_type == 'dynamic' %}
 openshift_master_dynamic_provisioning_enabled=True
+{% endif %}
 ansible_ssh_user="{{ admin_user }}"
 ansible_become=true
 openshift_deployment_type=openshift-enterprise
 openshift_release='3.11'
-openshift_master_api_port=8443
-openshift_master_console_port=8443
+ansible_become=true
+openshift_master_api_port=443
+openshift_master_console_port=443
 openshift_master_cluster_method=native
-openshift_master_cluster_hostname={{ load_balancer_hostname }}
+openshift_master_cluster_hostname={{ load_balancer_hostname }}.{{ local_zone }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }}
 openshift_master_default_subdomain={{ wildcard_zone |default('apps.change.me') }}
 {% if osm_cluster_network_cidr is defined %}
@@ -46,7 +48,7 @@ openshift_disable_check={{ openshift_disable_check }}
 {% endif %}
 {% if master_cert is defined %}
 # MASTER/API
-openshift_master_overwrite_named_certificates=true
+#openshift_master_overwrite_named_certificates=true
 openshift_master_named_certificates={{ master_cert }}
 {% endif %}
 {% if openshift_master_identity_providers is defined %}
@@ -68,6 +70,8 @@ os_firewall_use_firewalld=True
 
 
 ### INFRA ###
+# Routers
+openshift_node_open_ports=[{"service":"router_health","port":"1936/tcp"}]
 {% if router_cert is defined %}
 openshift_hosted_router_certificate={{ router_cert }}
 {% endif %}
@@ -82,10 +86,15 @@ openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com'
 {% if deploy_logging | default('True') | bool %}
 # Logging
 openshift_logging_install_logging=True
+openshift_logging_es_memory_limit={{ logging_es_mem }}
+{% if storage_type == 'dynamic' %}
 openshift_logging_es_pvc_dynamic=True
 openshift_logging_es_pvc_size={{ logging_volume_size }}
+{% endif %}
 openshift_logging_es_cluster_size={{ infra_nodes }}
+{% if deploy_ocs | default('true') | bool %}
 openshift_logging_es_pvc_storage_class_name='glusterfs-registry-block'
+{% endif %}
 openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra": "true"}
 openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra": "true"}
 openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra": "true"}
@@ -96,9 +105,13 @@ openshift_logging_install_logging=False
 # Metrics
 {% if deploy_logging | default('True') | bool %}
 openshift_metrics_install_metrics=True
+{% if storage_type == 'dynamic' %}
 openshift_metrics_storage_kind=dynamic
 openshift_metrics_storage_volume_size={{ metrics_volume_size }}
+{% endif %}
+{% if deploy_ocs | default('true') | bool %}
 openshift_metrics_cassandra_pvc_storage_class_name='glusterfs-registry-block'
+{% endif %}
 openshift_metrics_hawkular_nodeselector={"node-role.kubernetes.io/infra": "true"}
 openshift_metrics_cassandra_nodeselector={"node-role.kubernetes.io/infra": "true"}
 openshift_metrics_heapster_nodeselector={"node-role.kubernetes.io/infra": "true"}
@@ -106,14 +119,20 @@ openshift_metrics_heapster_nodeselector={"node-role.kubernetes.io/infra": "true"
 openshift_metrics_install_metrics=False
 {% endif %}
 
-# Cluster Monitoring using Prometheus
+# Prometheus
 {% if deploy_prometheus | default(True) | bool %}
-# enabled by default
 openshift_cluster_monitoring_operator_install=True 
+{% if storage_type == 'dynamic' %}
 openshift_cluster_monitoring_operator_prometheus_storage_capacity={{ prometheus_volume_size | default('50Gi') }}
+openshift_cluster_monitoring_operator_prometheus_storage_enabled=True
+openshift_cluster_monitoring_operator_alertmanager_enabled=True
+openshift_cluster_monitoring_operator_prometheus_enabled=True
+{% endif %}
+{% if deploy_ocs | default('true') | bool %}
 openshift_cluster_monitoring_operator_prometheus_storage_class_name='glusterfs-registry-block'
+{% endif %}
 {% else %}
-openshift_cluster_monitoring_operator_install=False
+openshift_cluster_monitoring_operator_install=True 
 {% endif %}
 
 # Grafana
@@ -128,7 +147,6 @@ openshift_cluster_monitoring_operator_install=False
 #{% else %}
 #openshift_grafana_state=absent
 #{% endif %}
-
 
 ### NODES ###
 openshift_node_local_quota_per_fsgroup=512Mi

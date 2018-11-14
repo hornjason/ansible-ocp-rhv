@@ -24,16 +24,12 @@
          name: "{{ item }}" 
          state: latest 
       loop: 
-         - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
-         - python2-pip 
          - atomic-openshift-clients
          - openshift-ansible
-         - python-ovirt-engine-sdk4
-
-    - name: Setup | Remove epel
-      yum:
-        name: epel-release
-        state: absent
+         - ovirt-engine-sdk-python
+         - gcc
+         - python-devel
+         - libxml2-devel
 
     - name: Setup | Ansible Galaxy install oVirt roles
-      shell: ansible-galaxy install --ignore-errors oVirt.ovirt-ansible-roles -p "{{ playbook_dir }}/roles/"
+      shell: ansible-galaxy install -r requirements.yml -p "{{ playbook_dir }}/roles/"
