@@ -33,7 +33,7 @@ ansible_become=true
 openshift_master_api_port=443
 openshift_master_console_port=443
 openshift_master_cluster_method=native
-openshift_master_cluster_hostname={{ load_balancer_hostname }}.{{ local_zone }}
+openshift_master_cluster_hostname={{ load_balancer_hostname }}.{{ local_hosted_zone }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }}
 openshift_master_default_subdomain={{ wildcard_zone |default('apps.change.me') }}
 {% if osm_cluster_network_cidr is defined %}
@@ -55,14 +55,14 @@ openshift_master_named_certificates={{ master_cert }}
 openshift_master_identity_providers={{ openshift_master_identity_providers }}
 {% else %}
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
-{% endif %}
+openshift_master_manage_htpasswd=true
 {% if openshift_master_htpasswd_users is defined %}
 openshift_master_htpasswd_users={{ openshift_master_htpasswd_users }}
 {% else %}
 # admin:changeme
 openshift_master_htpasswd_users={'admin': '$apr1$VZeARzoK$zYM/4c82PKDeYmw6/RvOV/'}
 {% endif %}
-openshift_master_manage_htpasswd=true
+{% endif %}
 {% if osm_project_request_message is defined %}
 osm_project_request_message="{{ osm_project_request_message }}"
 {% endif %}

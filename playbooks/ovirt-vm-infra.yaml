@@ -5,7 +5,7 @@
   connection: local
   gather_facts: false
   vars_files:
-    - ../vars.yml
+    - ../ocp-vars.yml
   pre_tasks:
     - name: template vm configs
       template:
@@ -21,7 +21,8 @@
         - template
 
     - name: template ovirt infra
-      template: src: templates/ovirt-infra-vars.j2
+      template: 
+        src: templates/ovirt-infra-vars.j2
         dest: vars/vars.yml
       tags:
         - ca
