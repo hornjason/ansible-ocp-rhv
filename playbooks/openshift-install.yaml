@@ -3,7 +3,7 @@
   connection: local
   gather_facts: no 
   vars_files:
-    - ../vars.yml
+    - ../ocp-vars.yml
   tasks:
 
     - name: Template Openshift hosts files
