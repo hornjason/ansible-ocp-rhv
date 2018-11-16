@@ -2,7 +2,7 @@
 masters
 etcd
 nodes
-{% if groups['lb'] is defined %}
+{% if software_lb is defined %}
 lb
 {% endif %}
 {% if deploy_ocs | default('true') | bool %}
@@ -33,7 +33,7 @@ ansible_become=true
 openshift_master_api_port=443
 openshift_master_console_port=443
 openshift_master_cluster_method=native
-openshift_master_cluster_hostname={{ load_balancer_hostname }}.{{ local_zone }}
+openshift_master_cluster_hostname={{ load_balancer_hostname }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }}
 openshift_master_default_subdomain={{ wildcard_zone |default('apps.change.me') }}
 {% if osm_cluster_network_cidr is defined %}
@@ -207,9 +207,9 @@ master0{{ i }}
 infra0{{ i }}
 {% endfor %}
 
-{% if groups['lb'] is defined %}
+{% if software_lb is defined %}
 [lb]
-ocp-lb-1
+openshift-lb
 {% endif %}
 
 [etcd]

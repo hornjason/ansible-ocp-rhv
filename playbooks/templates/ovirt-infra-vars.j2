@@ -27,7 +27,7 @@ vms:
         profile: "{{ rhv_vm_network }}"
         interface: virtio
         network: "{{ rhv_vm_network }}"
-        #mac_address: 00:1a:4a:16:01:{{ 46 + i }}
+        mac_address: 00:1a:4a:16:01:{{ 46 + i }}
 {% endfor %}
  
 {% for i in range(1, (infra_nodes +1) ) %}
@@ -47,7 +47,7 @@ vms:
         profile: "{{ rhv_vm_network }}"
         interface: virtio
         network: "{{ rhv_vm_network }}"
-        #mac_address: 00:1a:4a:16:01:{{ 43 + i }}
+        mac_address: 00:1a:4a:16:01:{{ 43 + i }}
 {% endfor %}
   
 {% for i in range(1, (master_nodes +1) ) %}
@@ -68,12 +68,12 @@ vms:
         profile: "{{ rhv_vm_network }}"
         interface: virtio
         network: "{{ rhv_vm_network }}"
-        #mac_address: 00:1a:4a:16:01:{{ 40 + i }}
+        mac_address: 00:1a:4a:16:01:{{ 40 + i }}
 {% endfor %}
 
 {% if software_lb is defined and software_lb | bool %}
   # Load balancer
-  - name: openshift-lb
+  - name: openshift-lb.{{ local_hosted_zone }}
     tag: openshift_lb
     state: {{ vm_state | default('running') }}
     profile:
@@ -111,7 +111,7 @@ affinity_groups:
       - ocp-infra0{{ i }}.{{ local_hosted_zone }}
 {% endfor %}
 {% if software_lb is defined and software_lb | bool %}
-      - openshift-lb
+      - openshift-lb.{{ local_hosted_zone }}
 {% endif %}
     wait: true
 

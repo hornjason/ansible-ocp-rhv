@@ -219,6 +219,7 @@ prometheus_alertbuffer_size: '10'
 cassandra_volume_size: '10'
 registry_volume_size: '10'
 logging_es_size: '10'
+logging_es_mem: '8'
 
 # OpenShift Container StorageClass
 # Sizes in Gi
