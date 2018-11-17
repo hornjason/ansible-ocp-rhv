@@ -1,0 +1,40 @@
+rh_subscription:
+{% if rhsm_user is defined %}
+  username: {{ rhsm_user }}
+  password: {{ rhsm_pass }}
+{% elif rhsm_key is defined %}
+  activation-key: {{ rhsm_key }}
+  org: {{ rhsm_org }}
+{% endif %}
+  add-pool: [{{ rhsm_broker_pool }}]
+{% if rhsm_satellite is defined and rhsm_satellite != "" %}
+  server-hostname: {{ rhsm_satellite }}
+  rhsm-baseurl: {{ rhsm_satellite }}
+{% endif %}
+  disable-repo:
+    - rhel-7-server-rt-rpms
+    - rhel-7-server-nfv-rpms
+    - rhel-7-server-aus-rpms
+    - rhel-7-server-rt-rpms
+    - rhel-7-server-tus-rpms
+    - rhel-7-server-htb-rpms
+  enable-repo:
+    - rhel-7-server-rpms
+    - rhel-7-server-extras-rpms
+    - rhel-7-server-ose-3.11-rpms
+    - rhel-7-server-ansible-2.6.rpms
+packages:
+  - wget
+  - git
+  - net-tools
+  - bind-utils
+  - iptables-services
+  - bridge-utils
+  - bash-completion
+  - kexec-tools
+  - sos
+  - psacct
+  - vim
+package_update: true
+package_upgrade: false
+package_reboot_if_required: false

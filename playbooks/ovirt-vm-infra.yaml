@@ -6,109 +6,17 @@
   gather_facts: false
   vars_files:
     - ../ocp-vars.yml
-  pre_tasks:
-    - name: template vm configs
-      template:
-        src: templates/vm_configs.j2
-        dest: vars/vm_config_vars.yml
-      tags:
-        - ca
-        - template
-
-    - include_vars: 'vars/vm_config_vars.yml'
-      tags:
-        - ca
-        - template
-
-    - name: template ovirt infra
-      template: 
-        src: templates/ovirt-infra-vars.j2
-        dest: vars/vars.yml
-      tags:
-        - ca
-        - template
-
-    - include_vars:
-        dir: "{{ playbook_dir}}/vars/"
-      tags:
-        - ca
-        - template
-
-    - name: Template Openshift hosts files
-      template:
-        src: hosts.j2
-        dest: "{{ playbook_dir }}/inventory/hosts"
-      run_once: true
-      tags:
-        - ca
-        - template
-
-    - local_action: meta
-        refresh_inventory
-      tags:
-        - ca
-        - template
-
-    - name: "Establish rhv pre-req packages"
-      set_fact:
-        openshift_deploy_packages_by_provider: ['python-ovirt-engine-sdk4']
-
-    # TODO Uncomment when out of testing. takes too long to run repeatedly
-    #- name: "Be sure all pre-req rhv packages are installed"
-    #  yum: name={{item}} state=installed
-    #  with_items:
-    #    - "{{ openshift_deploy_packages_by_provider }}"
-
-    - name: copy dynamic inventory script to inventory dir
-      copy:
-        src: ovirt4.py
-        dest: ./inventory/ovirt4.py
-      tags:
-        - ca
-        - template
-
-    - name: download ca.pem from RHV Manager
-      get_url:
-        url: 'http://{{ engine_hostname }}/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA'
-        dest: "{{ playbook_dir }}/files/ca.pem"
-        force: yes
-      register: ca_file
-      tags:
-        - ca
-        - template
-
-    - name: template dynamic inventory  ini (ovirt.init)
-      template:
-        src: ovirt.ini.j2
-        dest: "./inventory/ovirt.ini"
-      tags:
-        - ca
-        - template
-
+  tasks:
     - name: Log in to oVirt
       ovirt_auth:
         url: "{{ engine_url }}"
         username: "{{ engine_user }}"
         password: "{{ engine_password }}"
         ca_file: "{{ engine_cafile | default(omit) }}"
-        insecure: "{{ engine_insecure | default(true) }}"
-      tags:
-        - always
-  
-  roles:
-#    - oVirt.image-template
-    - oVirt.vm-infra
+        insecure: "{{ engine_insecure | default(true) }}" 
 
-  post_tasks:
-
-    - name: Logout from oVirt
-      ovirt_auth:
-        state: absent
-        ovirt_auth: "{{ ovirt_auth }}"
-      tags:
-        - always
-
-    #JTH: Fix for below
-    - local_action: meta 
-        refresh_inventory
-
+    - name: gather vm facts
+      ovirt_vm_facts:
+        pattern:d cluster={{ rhv_cluster }}
+    - debug:
+        var: ovirt_vms

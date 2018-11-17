@@ -18,7 +18,7 @@
   gather_facts: false
   vars_files:
     - vars/vars.yml
-    - ../vars.yml
+    - ../ocp-vars.yml
 
   pre_tasks:
     - name: Log in to oVirt

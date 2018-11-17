@@ -80,8 +80,8 @@ lb_vm:
       storage_domain: "{{ rhv_data_storage }}"
       name: docker_disk
       interface: virtio
-    - size: 1GiB
-      storage_domain: "{{ rhv_data_storage }}"
-      name: localvol_disk
-      interface: virtio
+#    - size: 1GiB
+#      storage_domain: "{{ rhv_data_storage }}"
+#      name: localvol_disk
+#      interface: virtio
 {% endif %}

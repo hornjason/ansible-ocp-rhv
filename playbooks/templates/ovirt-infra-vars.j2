@@ -82,7 +82,7 @@ vms:
       host_name: "openshift-lb"
       authorized_ssh_keys: "{{ root_ssh_key }}"
       custom_script: |
-        {{ lookup('template', 'templates/cloud_init_master.j2')| indent(8,false) }}
+        {{ lookup('template', 'templates/cloud_init_lb.j2')| indent(8,false) }}
     nics:
       - name: nic1
         profile: "{{ rhv_vm_network }}"

@@ -6,7 +6,7 @@
 engine_hostname: rhvm.foo.bar
 engine_url: "https://{{ engine_hostname }}/ovirt-engine/api"
 engine_user: admin@internal
-engine_password: ''
+engine_password: 'redhat'
 # CA file copied from engine:/etc/pki/ovirt-engine/ca.pem; path is relative to playbook directory
 #curl -k 'https://engine.example.com/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA' > ca.pem
 engine_cafile: files/ca.pem
@@ -98,8 +98,8 @@ rhsm_ocs_pool: ""
 #rhsm_katello_url: 'url for to download katello from local satellite'
 
 ## registry authentication when using registry.redhat.io
-oreg_auth_user: ''
-oreg_auth_password: ''
+oreg_auth_user: ""
+oreg_auth_password: ""
 rhsm_repos:
   - rhel-7-server-rpms
   - rhel-7-server-extras-rpms
@@ -141,7 +141,7 @@ software_lb: True
 # DNS entries
 ##############################################################################
 # Wildcard *.{{app_dns_prefix}}.{{public_hosted_zone}} must point to IP of LB
-public_hosted_zone: example.com
+public_hosted_zone: jasonhorn.io
 local_hosted_zone: foo.bar
 app_dns_prefix: apps
 
@@ -219,7 +219,7 @@ prometheus_alertbuffer_size: '10'
 cassandra_volume_size: '10'
 registry_volume_size: '10'
 logging_es_size: '10'
-logging_es_mem: '8'
+logging_es_mem: '8Gi'
 
 # OpenShift Container StorageClass
 # Sizes in Gi
