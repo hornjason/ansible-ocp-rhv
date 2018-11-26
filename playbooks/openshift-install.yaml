@@ -21,13 +21,6 @@
 - name: call openshift deploy_cluster play
   import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"
  
-# opens up node exporter and router stats for prometheus to scrape
-#- import_playbook: firewall.yml
-
-#- name: install Grafana
-#  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/openshift-grafana/config.yml
-#  when: install_grafana  | default(true) | bool == true
-
 
 - hosts: localhost
   connection: local
@@ -39,6 +32,7 @@
       yum:
         name: atomic-openshift-clients
         state: latest
+      become: true
       notify: 
         - add cluster-admin
 

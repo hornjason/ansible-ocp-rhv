@@ -30,8 +30,8 @@ ansible_become=true
 openshift_deployment_type=openshift-enterprise
 openshift_release='3.11'
 ansible_become=true
-openshift_master_api_port=443
-openshift_master_console_port=443
+openshift_master_api_port={{ console_port }}
+openshift_master_console_port={{ console_port }}
 openshift_master_cluster_method=native
 openshift_master_cluster_hostname={{ load_balancer_hostname }}
 openshift_master_cluster_public_hostname={{ openshift_master_cluster_public_hostname }}
@@ -48,20 +48,20 @@ openshift_disable_check={{ openshift_disable_check }}
 {% endif %}
 {% if master_cert is defined %}
 # MASTER/API
-#openshift_master_overwrite_named_certificates=true
+openshift_master_overwrite_named_certificates=true
 openshift_master_named_certificates={{ master_cert }}
 {% endif %}
 {% if openshift_master_identity_providers is defined %}
 openshift_master_identity_providers={{ openshift_master_identity_providers }}
 {% else %}
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+{% endif %}
 openshift_master_manage_htpasswd=true
 {% if openshift_master_htpasswd_users is defined %}
 openshift_master_htpasswd_users={{ openshift_master_htpasswd_users }}
 {% else %}
 # admin:changeme
 openshift_master_htpasswd_users={'admin': '$apr1$VZeARzoK$zYM/4c82PKDeYmw6/RvOV/'}
-{% endif %}
 {% endif %}
 {% if osm_project_request_message is defined %}
 osm_project_request_message="{{ osm_project_request_message }}"
@@ -123,7 +123,7 @@ openshift_metrics_install_metrics=False
 {% if deploy_prometheus | default(True) | bool %}
 openshift_cluster_monitoring_operator_install=True 
 {% if storage_type == 'dynamic' %}
-openshift_cluster_monitoring_operator_prometheus_storage_capacity={{ prometheus_volume_size | default('50Gi') }}
+openshift_cluster_monitoring_operator_prometheus_storage_capacity="{{ prometheus_volume_size | default('50') }}Gi"
 openshift_cluster_monitoring_operator_prometheus_storage_enabled=True
 openshift_cluster_monitoring_operator_alertmanager_enabled=True
 openshift_cluster_monitoring_operator_prometheus_enabled=True
@@ -176,19 +176,21 @@ openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-glust
 # CNS storage cluster
 openshift_storage_glusterfs_namespace=app-storage
 openshift_storage_glusterfs_storageclass=true
-openshift_storage_glusterfs_storageclass_default=True
-openshift_storage_glusterfs_block_deploy=True
+openshift_storage_glusterfs_storageclass_default=true
+openshift_storage_glusterfs_block_deploy=true
 openshift_storage_glusterfs_block_host_vol_create=false
 openshift_storage_glusterfs_block_host_vol_size=100
-openshift_storage_glusterfs_block_storageclass=false
+openshift_storage_glusterfs_block_storageclass=true
 openshift_storage_glusterfs_block_storageclass_default=false
 {% endif %}
+
 # CNS storage for OpenShift infrastructure
 openshift_storage_glusterfs_registry_namespace=infra-storage
-openshift_storage_glusterfs_registry_storageclass=false
+openshift_storage_glusterfs_registry_storageclass=true
+openshift_storage_glusterfs_registry_default=false
 openshift_storage_glusterfs_registry_block_deploy=true
 openshift_storage_glusterfs_registry_block_host_vol_create=true
-openshift_storage_glusterfs_registry_block_host_vol_size={{ ocs_infra_cluster_allocated_storage }}
+openshift_storage_glusterfs_registry_block_host_vol_size=150
 openshift_storage_glusterfs_registry_block_storageclass=true
 openshift_storage_glusterfs_registry_block_storageclass_default=false
 

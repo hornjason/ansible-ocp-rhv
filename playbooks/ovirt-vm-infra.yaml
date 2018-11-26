@@ -100,6 +100,41 @@
     - oVirt.vm-infra
 
   post_tasks:
+    - local_action: meta 
+        refresh_inventory
+   
+    - name: Wait for Cloud-Init to finish
+      wait_for:
+        path: /etc/sysconfig/.finished
+        sleep: 10
+        #delay: 300
+        timeout: 600
+      delegate_to: "{{ item }}"
+      loop:  "{{ groups['nodes'] + groups['lb'] }}"
+      register: task_result
+
+    - name: Reboot immediately if there was a change.
+      shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+      when: task_result is succeeded
+      delegate_to: "{{ item }}"
+      loop:  "{{ groups['nodes'] + groups['lb'] }}"
+    
+    - name: Wait for the reboot to complete if there was a change.
+      wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 5
+        timeout: 300
+      when: task_result is succeeded
+      delegate_to: "{{ item }}"
+      loop:  "{{ groups['nodes'] + groups['lb'] }}"
+    #    - name: Reboot
+    #      reboot
+    #        test_command: whoami
+    #      delegate_to: "{{ item }}"
+    #      loop:  "{{ groups['nodes'] + groups['lb'] }}"
 
     - name: Logout from oVirt
       ovirt_auth:
@@ -108,7 +143,6 @@
       tags:
         - always
 
+
     #JTH: Fix for below
-    - local_action: meta 
-        refresh_inventory
 

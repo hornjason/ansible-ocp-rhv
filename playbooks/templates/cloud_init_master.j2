@@ -3,9 +3,9 @@ runcmd:
   - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
   - mkdir -p '/var/lib/etcd'
   - /usr/sbin/mkfs.xfs -L etcd /dev/vdd
+  - touch /etc/sysconfig/.finished
   - sleep "$(($RANDOM % 60))"
   - sync
-  - reboot
 mounts:
   - [ '{{ local_volumes_device }}', '/var/lib/origin/openshift.local.volumes', 'xfs', 'defaults,gquota' ]
   - [ '/dev/vdd', '/var/lib/etcd', 'xfs', 'defaults' ]
@@ -30,11 +30,20 @@ rh_subscription:
     - rhel-7-server-tus-rpms
     - rhel-7-server-htb-rpms
   enable-repo:
+{% if rhsm_repos is defined %}
+{% for repo in rhsm_repos %}
+    - {{ repo }}
+{% endfor %}
+{% else %}
     - rhel-7-server-rpms
-    - rhel-7-server-extras-rpms
-    - rhel-7-server-ose-3.11-rpms
-    - rhel-7-server-ansible-2.6-rpms
+    - rhel-7-server-exras-rpms
+{% endif %}
 packages:
+{% if pkgs is defined %}
+{% for pkg in pkgs %}
+  - {{ pkg }}
+{% endfor %}
+{% endif %}
   - wget
   - git
   - net-tools

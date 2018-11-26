@@ -1,3 +1,5 @@
+runcmd:
+  - touch /etc/sysconfig/.finished
 rh_subscription:
 {% if rhsm_user is defined %}
   username: {{ rhsm_user }}
@@ -19,11 +21,20 @@ rh_subscription:
     - rhel-7-server-tus-rpms
     - rhel-7-server-htb-rpms
   enable-repo:
+{% if rhsm_repos is defined %}
+{% for repo in rhsm_repos %}
+    - {{ repo }}
+{% endfor %}
+{% else %}
     - rhel-7-server-rpms
-    - rhel-7-server-extras-rpms
-    - rhel-7-server-ose-3.11-rpms
-    - rhel-7-server-ansible-2.6.rpms
+    - rhel-7-server-exras-rpms
+{% endif %}
 packages:
+{% if pkgs is defined %}
+{% for pkg in pkgs %}
+  - {{ pkg }} 
+{% endfor %}
+{% endif %}
   - wget
   - git
   - net-tools
