@@ -130,6 +130,7 @@
       when: task_result is succeeded
       delegate_to: "{{ item }}"
       loop:  "{{ groups['nodes'] + groups['lb'] }}"
+    # TODO: ANSIBLE 2.7 introduced
     #    - name: Reboot
     #      reboot
     #        test_command: whoami
