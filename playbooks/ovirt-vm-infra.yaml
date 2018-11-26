@@ -4,6 +4,8 @@
   become: true
   connection: local
   gather_facts: false
+  vars:
+    env: "{{ lookup('env','ENV') }}"
   vars_files:
     - ../ocp-vars.yml
   pre_tasks:
@@ -37,11 +39,12 @@
     - name: Template Openshift hosts files
       template:
         src: hosts.j2
-        dest: "{{ playbook_dir }}/inventory/hosts"
+        dest: "{{ playbook_dir }}/inventory/{{ env }}/hosts"
       run_once: true
       tags:
         - ca
         - template
+      failed_when: env == ''
 
     - local_action: meta
         refresh_inventory
