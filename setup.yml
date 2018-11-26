@@ -10,9 +10,9 @@
       - rhel-7-server-extras-rpms
       - rhel-7-server-ose-3.11-rpms
       - rhel-7-server-ansible-2.6-rpms
-    rhsm_activation_key: 'jason-horn-key1'
-    rhsm_org_id: '5318211'
-    rhsm_pool: '8a85f98c60c2c2b40160c32445b41b29'
+    rhsm_activation_key: ''
+    rhsm_org_id: ''
+    rhsm_pool: ''
   # rhsm_katello_url: "RPM URL"
   # rhsm_satellite: 'satellite server name/url'
     provider: 'rhv'
