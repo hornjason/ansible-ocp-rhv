@@ -2,10 +2,4 @@
 
 - import_playbook: ovirt-vm-infra.yaml
 
-- hosts: localhost
-  tasks:
-    - name: "Wait for cloud-init to run"
-      pause: 
-        seconds: 420
-
 - import_playbook: openshift-install.yaml

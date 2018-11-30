@@ -7,17 +7,17 @@
   vars:
     env: "{{ lookup('env','ENV') }}"
   vars_files:
-    - ../ocp-vars.yml
+    - "../ocp-vars-{{ env }}.yml"
   pre_tasks:
     - name: template vm configs
       template:
         src: templates/vm_configs.j2
-        dest: vars/vm_config_vars.yml
+        dest: vars/{{ env }}/vm_config_vars.yml
       tags:
         - ca
         - template
 
-    - include_vars: 'vars/vm_config_vars.yml'
+    - include_vars: 'vars/{{ env }}/vm_config_vars.yml'
       tags:
         - ca
         - template
@@ -25,13 +25,13 @@
     - name: template ovirt infra
       template: 
         src: templates/ovirt-infra-vars.j2
-        dest: vars/vars.yml
+        dest: vars/{{ env }}/vars.yml
       tags:
         - ca
         - template
 
     - include_vars:
-        dir: "{{ playbook_dir}}/vars/"
+        dir: "{{ playbook_dir}}/vars/{{ env }}/"
       tags:
         - ca
         - template
@@ -111,9 +111,9 @@
         path: /etc/sysconfig/.finished
         sleep: 10
         #delay: 300
-        timeout: 600
+        #timeout: 600
       delegate_to: "{{ item }}"
-      loop:  "{{ groups['nodes'] + groups['lb'] }}"
+      loop:  "{{ groups['nodes'] }}" # TODO + groups['lb'] }}"
       register: task_result
 
     - name: Reboot immediately if there was a change.
@@ -122,7 +122,7 @@
       poll: 0
       when: task_result is succeeded
       delegate_to: "{{ item }}"
-      loop:  "{{ groups['nodes'] + groups['lb'] }}"
+      loop:  "{{ groups['nodes'] }}" # TODO+ groups['lb'] }}"
     
     - name: Wait for the reboot to complete if there was a change.
       wait_for_connection:
@@ -132,7 +132,8 @@
         timeout: 300
       when: task_result is succeeded
       delegate_to: "{{ item }}"
-      loop:  "{{ groups['nodes'] + groups['lb'] }}"
+      loop:  "{{ groups['nodes'] }}" #`TODO groups['lb'] }}"
+      
     # TODO: ANSIBLE 2.7 introduced
     #    - name: Reboot
     #      reboot

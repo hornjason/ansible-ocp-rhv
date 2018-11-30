@@ -5,7 +5,7 @@
   vars:
     env: "{{ lookup('env','ENV') }}"
   vars_files:
-    - ../ocp-vars.yml
+    - "../ocp-vars-{{ env }}.yml"
   tasks:
 
     - name: Template Openshift hosts files
@@ -26,29 +26,29 @@
   import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"
  
 
-- hosts: localhost
-  connection: local
-  vars:
-    admin_user: "{{ openshift_master_htpasswd_users.keys() }}"
-    local_home: "{{ lookup('env','HOME') }}"
-  tasks:
-    - name: Install oc client
-      yum:
-        name: atomic-openshift-clients
-        state: latest
-      become: true
-      notify: 
-        - add cluster-admin
-
-    - name: copy kube config
-      fetch:
-        src: ~/.kube/config
-        dest: "{{ local_home }}/.kube/"
-        flat: yes
-      delegate_to: "{{ groups.masters[0] }}"
-      notify: 
-        - add cluster-admin
-
-  handlers:
-    - name: add cluster-admin
-      shell: oc adm policy add-cluster-role-to-user cluster-admin "{{ admin_user }}"
+#- hosts: localhost
+#  connection: local
+#  vars:
+#    admin_user: "{{ openshift_master_htpasswd_users.keys() }}"
+#    local_home: "{{ lookup('env','HOME') }}"
+#  tasks:
+#    - name: Install oc client
+#      yum:
+#        name: atomic-openshift-clients
+#        state: latest
+#      become: true
+#      notify: 
+#        - add cluster-admin
+#
+#    - name: copy kube config
+#      fetch:
+#        src: ~/.kube/config
+#        dest: "{{ local_home }}/.kube/"
+#        flat: yes
+#      delegate_to: "{{ groups.masters[0] }}"
+#      notify: 
+#        - add cluster-admin
+#
+#  handlers:
+#    - name: add cluster-admin
+#      shell: oc adm policy add-cluster-role-to-user cluster-admin "{{ admin_user }}"

@@ -10,6 +10,7 @@
       - rhel-7-server-extras-rpms
       - rhel-7-server-ose-3.11-rpms
       - rhel-7-server-ansible-2.6-rpms
+      - rhel-7-server-rh-common-rpms
     rhsm_activation_key: ''
     rhsm_org_id: ''
     rhsm_pool: ''
@@ -24,12 +25,23 @@
          name: "{{ item }}" 
          state: latest 
       loop: 
+         - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+         - ptyhon2-pip
          - atomic-openshift-clients
          - openshift-ansible
          - ovirt-engine-sdk-python
          - gcc
          - python-devel
          - libxml2-devel
+
+    - name: Setup | Remove epel
+      yum:
+        name: epel-release
+        state: absent
+
+    - name: Setup | Install Azure ansible pip modules
+      pip:
+        name: ovirt-engine-sdk-python
 
     - name: Setup | Ansible Galaxy install oVirt roles
       shell: ansible-galaxy install -r requirements.yml -p "{{ playbook_dir }}/roles/"
