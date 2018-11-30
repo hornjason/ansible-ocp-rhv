@@ -1,3 +1,7 @@
+{% if rhsm_satellite is defined and rhsm_satellite != "" %}
+bootcmd:
+  - yum -y install {{ rhsm_satellite }}/pub/katello-ca-consumer-latest.noarch.rpm
+{% endif %}
 runcmd:
   - mkdir -p '/var/lib/origin/openshift.local.volumes'
   - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
@@ -13,11 +17,13 @@ rh_subscription:
 {% if rhsm_user is defined %}
   username: {{ rhsm_user }}
   password: {{ rhsm_pass }}
-{% elif rhsm_key is defined %}
-  activation-key: {{ rhsm_key }}
-  org: {{ rhsm_org }}
+{% elif rhsm_master_key is defined %}
+  activation-key: {{ rhsm_master_key }}
+  org: {{ rhsm_master_org }}
 {% endif %}
+{% if rhsm_broker_pool is defined and rhsm_broker_pool != '' %}
   add-pool: [{{ rhsm_broker_pool }}]
+{% endif %}
 {% if rhsm_satellite is defined and rhsm_satellite != "" %}
   server-hostname: {{ rhsm_satellite }}
   rhsm-baseurl: {{ rhsm_satellite }}

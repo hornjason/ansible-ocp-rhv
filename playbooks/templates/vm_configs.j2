@@ -3,7 +3,6 @@ vm_infra_wait_for_ip_delay: 180
 vm_infra_wait_for_ip_retries: 10
 
 # Master VM
-
 master_vm:
   is_master: true
   cluster: "{{ rhv_cluster }}"
@@ -11,41 +10,12 @@ master_vm:
   memory: "{{ master_vm_mem }}GiB"
   cores: "{{ master_vm_vcpu }}"
   high_availability: true
-  disks:
-    - size: "{{ master_docker_volume_size }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: docker_disk
-      interface: virtio
-    - size: "{{ master_local_volume_size }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: localvol_disk
-      interface: virtio
-    - size: "{{ master_etcd_volume_size }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: etcd_disk
-      interface: virtio
-
 
 node_vm:
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
   memory: "{{ node_vm_mem }}GiB"
   cores: "{{ node_vm_vcpu }}"
-  disks:
-    - size: "{{ node_docker_volume_size }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: docker_disk
-      interface: virtio
-    - size: "{{ node_local_volume_size }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: localvol_disk
-      interface: virtio
-  {% if deploy_ocs|bool and ( infra_nodes | int + app_nodes | int >= 6 ) %} 
-    - size: "{{ ocs_app_cluster_usable_storage }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: storage_gluster
-      interface: virtio
-  {% endif %}
 
 infra_vm:
   cluster: "{{ rhv_cluster }}"
@@ -53,21 +23,6 @@ infra_vm:
   memory: "{{ infra_vm_mem }}GiB"
   cores: "{{ infra_vm_vcpu }}"
   # disks are created alphanumeric using name:value -  vdb/vdc/vdd
-  disks:
-    - size: "{{ infra_docker_volume_size }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: docker_disk
-      interface: virtio
-    - size: "{{ infra_local_volume_size }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: localvol_disk
-      interface: virtio
-{% if deploy_ocs|bool and deploy_ocs is defined %}
-    - size: "{{ ocs_infra_cluster_usable_storage }}GiB"
-      storage_domain: "{{ rhv_data_storage }}"
-      name: storage_gluster
-      interface: virtio 
-{% endif %}
 
 {% if software_lb is defined %}
 lb_vm:
