@@ -15,7 +15,7 @@ rh_subscription:
   org: {{ rhsm_master_org }}
 {% endif %}
 {% if rhsm_node_pool is defined and rhsm_node_pool != '' %}
-  add-pool: [{{ rhsm_master_pool }}]
+  add-pool: [{{ rhsm_node_pool }}]
 {% endif %}
 {% if rhsm_satellite is defined and rhsm_satellite != "" %}
   server-hostname: {{ rhsm_satellite }}

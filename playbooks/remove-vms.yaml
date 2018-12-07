@@ -16,10 +16,11 @@
   hosts: localhost
   connection: local
   gather_facts: false
+  vars:
+    env: "{{ lookup('env','ENV') }}"
   vars_files:
-    - vars/vars.yml
-    - ../ocp-vars.yml
-
+    - vars/{{ env }}/vars.yml
+    - ../ocp-vars-{{ env }}.yml
   pre_tasks:
     - name: Log in to oVirt
       ovirt_auth:

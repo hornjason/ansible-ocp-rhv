@@ -22,13 +22,31 @@ vms:
       {{ node_vm | to_nice_yaml | indent(6,false)  }}
       disks:
         - size: "{{ node_docker_volume_size }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: docker_disk
           interface: virtio
         - size: "{{ node_local_volume_size }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: localvol_disk
           interface: virtio
+{% if deploy_ocs|bool and ( infra_nodes | int + app_nodes | int >= 6 ) %}
+        - size: "{{ ocs_app_cluster_usable_storage }}GiB"
+{% if rhv_data_storage | length > 1 %}
+          storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
+          name: storage_gluster
+          interface: virtio
+{% endif %}
     cloud_init:
       host_name: "app0{{ i }}.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
@@ -39,7 +57,9 @@ vms:
         profile: "{{ rhv_vm_network }}"
         interface: virtio
         network: "{{ rhv_vm_network }}"
-        #mac_address: 00:1a:4a:16:01:{{ 46 + i }}
+{% if custom_mac is defined %}
+        mac_address: 00:1a:4a:16:01:{{ 46 + i }}
+{% endif %}
 {% endfor %}
  
 {% for i in range(1, (infra_nodes +1) ) %}
@@ -52,20 +72,37 @@ vms:
       {{ infra_vm | to_nice_yaml | indent(6,false)  }}
       disks:
         - size: "{{ infra_docker_volume_size }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: docker_disk
           interface: virtio
         - size: "{{ infra_local_volume_size }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: localvol_disk
           interface: virtio
- {% if deploy_ocs|bool and ( infra_nodes | int + app_nodes | int >= 6 ) %}
-        - size: "{{ ocs_app_cluster_usable_storage }}GiB"
+{% if deploy_ocs|bool and ( infra_nodes | int + app_nodes | int >= 6 ) %}
+        - size: "{{ ocs_infra_cluster_usable_storage }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: storage_gluster
           interface: virtio
- {% endif %}
-   cloud_init:
+{% elif deploy_ocs|bool %}
+        # TODO: this will be the ONLY OCS cluster if we hit this point, Change variable name?
+        - size: "{{ ocs_infra_cluster_usable_storage }}GiB"
+          name: storage_gluster
+          interface: virtio
+{% endif %}
+    cloud_init:
       host_name: "infra0{{ i }}.{{ local_hosted_zone }}"
       authorized_ssh_keys: "{{ root_ssh_key }}"
       custom_script: |
@@ -75,7 +112,9 @@ vms:
         profile: "{{ rhv_vm_network }}"
         interface: virtio
         network: "{{ rhv_vm_network }}"
-        #mac_address: 00:1a:4a:16:01:{{ 43 + i }}
+{% if custom_mac is defined %}
+        mac_address: 00:1a:4a:16:01:{{ 43 + i }}
+{% endif %}
 {% endfor %}
   
 {% for i in range(1, (master_nodes +1) ) %}
@@ -88,15 +127,27 @@ vms:
       {{ master_vm | to_nice_yaml| indent(6,false) }}
       disks:
         - size: "{{ master_docker_volume_size }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: docker_disk
           interface: virtio
         - size: "{{ master_local_volume_size }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: localvol_disk
           interface: virtio
         - size: "{{ master_etcd_volume_size }}GiB"
+{% if rhv_data_storage | length > 1 %}
           storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: etcd_disk
           interface: virtio
     is_master: true
@@ -110,7 +161,9 @@ vms:
         profile: "{{ rhv_vm_network }}"
         interface: virtio
         network: "{{ rhv_vm_network }}"
-        #mac_address: 00:1a:4a:16:01:{{ 40 + i }}
+{% if custom_mac is defined %}
+        mac_address: 00:1a:4a:16:01:{{ 40 + i }}
+{% endif %}
 {% endfor %}
 
 {% if software_lb is defined and software_lb | bool %}
@@ -118,6 +171,7 @@ vms:
   - name: openshift-lb.{{ local_hosted_zone }}
     tag: openshift_lb
     state: {{ vm_state | default('running') }}
+    clone: true
     profile:
       {{ lb_vm | to_nice_yaml| indent(6,false) }}
     cloud_init:
@@ -130,7 +184,9 @@ vms:
         profile: "{{ rhv_vm_network }}"
         interface: virtio
         network: "{{ rhv_vm_network }}"
-        #mac_address: 00:1a:4a:16:01:50
+{% if custom_mac is defined %}
+        mac_address: 00:1a:4a:16:01:50
+{% endif %}
 {% endif %}
 
 affinity_groups:

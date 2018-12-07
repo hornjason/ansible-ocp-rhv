@@ -11,14 +11,19 @@ glusterfs_registry
 {% endif %}
 
 [OSEv3:vars]
-### REGISTRY ###
-# fix for bug
-# https://access.redhat.com/solutions/3480921
-#ereg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
-#oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
 openshift_hosted_registry_replicas={{ infra_nodes }}
+
+{% if oreg_auth_user is defined and oreg_auth_password is defined %}
 oreg_auth_user={{ oreg_auth_user | default('') }}
 oreg_auth_password={{ oreg_auth_password | default('') }}
+{% endif %}
+
+{% if oreg_url is defined and oreg_url != '' %}
+oreg_url={{ oreg_url }}
+openshift_docker_insecure_registries={{ registry }}
+openshift_docker_additional_registries={{ registry }}
+openshift_examples_modify_imagestreams=true
+{% endif %}
 
 ### MASTER/CLUSTER ###
 openshift_examples_modify_imagestreams=true
@@ -44,7 +49,11 @@ openshift_portal_net={{ openshift_portal_net }}
 {% endif %}
 os_sdn_network_plugin_name={{ os_sdn_network_plugin_name | default('redhat/openshift-ovs-multitenant') }}
 {% if openshift_disable_check is defined %}
+{% if oreg_url is defined %}
+openshift_disable_check={{ openshift_disable_check }},docker_image_availability
+{% else %}
 openshift_disable_check={{ openshift_disable_check }}
+{% endif %}
 {% endif %}
 {% if master_cert is defined %}
 # MASTER/API
@@ -80,7 +89,6 @@ openshift_hosted_router_replicas={{ infra_nodes }}
 # Operator Lifecycle Manager ( Tech Preview )
 {% if deploy_olm | default('True') | bool %}
 openshift_enable_olm=true
-openshift_additional_registry_credentials=[{'host':'registry.connect.redhat.com','user':'{{ oreg_auth_user }}','password':'{{ oreg_auth_password }}','test_image':'mongodb/enterprise-operator:0.3.2'}]
 {% endif %}
 
 {% if deploy_logging | default('True') | bool %}
@@ -158,13 +166,13 @@ osm_use_cockpit=false
 {% if deploy_ocs | default(true) | bool %}
 # CNS Cnfiguration
 # Container image to use for glusterfs pods
-openshift_storage_glusterfs_image="registry.access.redhat.com/rhgs3/rhgs-server-rhel7:v3.11"
+openshift_storage_glusterfs_image="registry.access.redhat.com/rhgs3/rhgs-server-rhel7:v3.10"
 # Container image to use for glusterblock-provisioner pod
-openshift_storage_glusterfs_block_image="registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7:v3.11"
+openshift_storage_glusterfs_block_image="registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7:v3.10"
 # Container image to use for heketi pods
-openshift_storage_glusterfs_heketi_image="registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7:v3.11"
+openshift_storage_glusterfs_heketi_image="registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7:v3.10"
 # Container image to user for S3
-openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-gluster-s3-server-rhel7:v3.11"
+openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-gluster-s3-server-rhel7:v3.10"
 # Cluster 1
 # Total Storage allocated (GB) = {{ ocs_infra_cluster_allocated_storage }}
 # Total Storage available (GB) = {{ ocs_infra_cluster_usable_storage }}
@@ -201,12 +209,12 @@ openshift_storageclass_default=true
 
 [masters]
 {% for i in range(1, master_nodes +1) %}
-master0{{ i }}.{{ public_hosted_zone }}
+master0{{ i }}.{{ local_hosted_zone }}
 {% endfor %}
 
 [infra]
 {% for i in range(1, infra_nodes +1) %}
-infra0{{ i }}.{{ public_hosted_zone }}
+infra0{{ i }}.{{ local_hosted_zone }}
 {% endfor %}
 
 {% if software_lb is defined %}
@@ -221,31 +229,31 @@ masters
 
 [nodes]
 {% for i in range(1, master_nodes +1) %}
-master0{{ i }}.{{ public_hosted_zone }} openshift_node_group_name='node-config-master' openshift_schedulable=true
+master0{{ i }}.{{ local_hosted_zone }} openshift_node_group_name='node-config-master' openshift_schedulable=true
 {% endfor %}
 {% for i in range(1, infra_nodes +1) %}
-infra0{{ i }}.{{ public_hosted_zone }}  openshift_node_group_name='node-config-infra'
+infra0{{ i }}.{{ local_hosted_zone }}  openshift_node_group_name='node-config-infra'
 {% endfor %}
 {% for i in range(1, app_nodes +1) %}
-app0{{ i }}.{{ public_hosted_zone }}    openshift_node_group_name='node-config-compute'
+app0{{ i }}.{{ local_hosted_zone }}    openshift_node_group_name='node-config-compute'
 {% endfor %}
 
 {% if deploy_ocs | default(true) | bool  and deploy_ocs is defined %}
 {% if ( infra_nodes + app_nodes ) >= 6 %}
 [glusterfs_registry]
 {% for i in range(1, infra_nodes+1) %}
-infra0{{ i }}.{{ public_hosted_zone }} glusterfs_zone={{ i }}  glusterfs_devices='[ "/dev/vdd" ]'
+infra0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }}  glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-app0{{ i }}.{{ public_hosted_zone }}  glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
+app0{{ i }}.{{ local_hosted_zone }}  glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 {% else %}
 [glusterfs_registry]
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-infra0{{ i }}.{{ public_hosted_zone }} glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
+infra0{{ i }}.{{ local_hosted_zone }} glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 {% endif %}
 {% endif %}

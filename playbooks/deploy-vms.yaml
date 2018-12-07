@@ -9,6 +9,14 @@
   vars_files:
     - "../ocp-vars-{{ env }}.yml"
   pre_tasks:
+    - name: Ensure dir for {{ env }}
+      file:
+        path: "{{ item }}/{{ env }}"
+        state: directory
+      loop: 
+        - vars
+        - inventory
+     
     - name: template vm configs
       template:
         src: templates/vm_configs.j2
@@ -44,7 +52,6 @@
       tags:
         - ca
         - template
-      failed_when: env == ''
 
     - local_action: meta
         refresh_inventory
@@ -111,7 +118,7 @@
         path: /etc/sysconfig/.finished
         sleep: 10
         #delay: 300
-        #timeout: 600
+        timeout: 600
       delegate_to: "{{ item }}"
       loop:  "{{ groups['nodes'] }}" # TODO + groups['lb'] }}"
       register: task_result

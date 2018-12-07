@@ -26,10 +26,9 @@
          state: latest 
       loop: 
          - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-         - ptyhon2-pip
          - atomic-openshift-clients
+         - python2-pip
          - openshift-ansible
-         - ovirt-engine-sdk-python
          - gcc
          - python-devel
          - libxml2-devel

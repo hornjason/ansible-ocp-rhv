@@ -32,7 +32,7 @@ lb_vm:
   cores: 1
   disks:
     - size: 1GiB
-      storage_domain: "{{ rhv_data_storage }}"
+      storage_domain: "{{ rhv_data_storage[0] }}"
       name: docker_disk
       interface: virtio
 #    - size: 1GiB

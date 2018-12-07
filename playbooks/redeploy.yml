@@ -4,8 +4,8 @@
     - debug:
         msg: "Erasing all VMs and re-installing openshift"
 
-- import_playbook: ovirt-vm-uninstall.yaml
+- import_playbook: remove-vms.yaml
   
-- import_playbook: ovirt-vm-infra.yaml
+- import_playbook: deploy-vms.yaml
 
 - import_playbook: openshift-install.yaml

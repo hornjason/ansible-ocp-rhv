@@ -5,16 +5,20 @@
   vars:
     env: "{{ lookup('env','ENV') }}"
   vars_files:
-    - "../ocp-vars-{{ env }}.yml"
+    - ../ocp-vars-{{ env }}.yml
   tasks:
+    - name: Ensure dir for {{ env }}
+      file:
+        path: "{{ item }}/{{ env }}"
+        state: directory
+      loop:
+        - vars
+        - inventory
 
     - name: Template Openshift hosts files
       template:
-        src: hosts.j2
+        src: templates/hosts.j2
         dest: "{{ playbook_dir }}/inventory/{{ env }}/hosts"
-      run_once: true      
-      failed_when: env == ''
-
 
     - local_action: meta
         refresh_inventory
