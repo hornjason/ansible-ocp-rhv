@@ -20,8 +20,13 @@ oreg_auth_password={{ oreg_auth_password | default('') }}
 
 {% if oreg_url is defined and oreg_url != '' %}
 oreg_url={{ oreg_url }}
-openshift_docker_insecure_registries={{ registry }}
-openshift_docker_additional_registries={{ registry }}
+openshift_docker_insecure_registries={{ openshift_docker_insecure_registries }}
+{% if openshift_docker_additional_registries is defined %}
+openshift_docker_additional_registries={{ openshift_docker_additional_registries }}
+{% endif %}
+{% if openshift_docker_blocked_registries is defined %}
+openshift_docker_blocked_registries={{ openshift_docker_blocked_registries }}
+{% endif %}
 openshift_examples_modify_imagestreams=true
 {% endif %}
 
@@ -94,7 +99,7 @@ openshift_enable_olm=true
 {% if deploy_logging | default('True') | bool %}
 # Logging
 openshift_logging_install_logging=True
-openshift_logging_es_memory_limit={{ logging_es_mem }}
+openshift_logging_es_memory_limit={{ logging_es_mem | default('8Gi') }}
 {% if storage_type == 'dynamic' %}
 openshift_logging_es_pvc_dynamic=True
 openshift_logging_es_pvc_size={{ logging_volume_size }}
@@ -209,17 +214,17 @@ openshift_storageclass_default=true
 
 [masters]
 {% for i in range(1, master_nodes +1) %}
-master0{{ i }}
+master0{{ i }}.{{ local_hosted_zone }}
 {% endfor %}
 
 [infra]
 {% for i in range(1, infra_nodes +1) %}
-infra0{{ i }}
+infra0{{ i }}.{{ local_hosted_zone }}
 {% endfor %}
 
 {% if software_lb is defined %}
 [lb]
-openshift-lb
+openshift-lb.{{ local_hosted_zone }}
 {% endif %}
 
 [etcd]
@@ -229,31 +234,31 @@ masters
 
 [nodes]
 {% for i in range(1, master_nodes +1) %}
-master0{{ i }} openshift_node_group_name='node-config-master' openshift_schedulable=true
+master0{{ i }}.{{ local_hosted_zone }} openshift_node_group_name='node-config-master' openshift_schedulable=true
 {% endfor %}
 {% for i in range(1, infra_nodes +1) %}
-infra0{{ i }} openshift_node_group_name='node-config-infra'
+infra0{{ i }}.{{ local_hosted_zone }} openshift_node_group_name='node-config-infra'
 {% endfor %}
 {% for i in range(1, app_nodes +1) %}
-app0{{ i }}   openshift_node_group_name='node-config-compute'
+app0{{ i }}.{{ local_hosted_zone }}   openshift_node_group_name='node-config-compute'
 {% endfor %}
 
 {% if deploy_ocs | default(true) | bool  and deploy_ocs is defined %}
 {% if ( infra_nodes + app_nodes ) >= 6 %}
 [glusterfs_registry]
 {% for i in range(1, infra_nodes+1) %}
-infra0{{ i }} glusterfs_zone={{ i }}  glusterfs_devices='[ "/dev/vdd" ]'
+infra0{{ i }}.{{ local_hosted_zone }}  glusterfs_zone={{ i }}  glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-app0{{ i }} glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
+app0{{ i }}.{{ local_hosted_zone }}  glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 {% else %}
 [glusterfs_registry]
 [glusterfs]
 {% for i in range(1, infra_nodes +1) %}
-infra0{{ i }} glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
+infra0{{ i }}.{{ local_hosted_zone }}  glusterfs_zone={{ i }} glusterfs_devices='[ "/dev/vdd" ]'
 {% endfor %}
 {% endif %}
 {% endif %}

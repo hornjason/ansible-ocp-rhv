@@ -100,6 +100,10 @@ rhsm_ocs_pool: ""
 ## registry authentication when using registry.redhat.io
 oreg_auth_user: ""
 oreg_auth_password: ""
+#oreg_url: "docker-repo.docker-registry.example.com/openshift3/ose-${component}:${version}"
+#openshift_docker_insecure_registries: "docker-repo.docker-registry.example.com"
+#openshift_docker_additional_registries: "registry.example.com"
+#openshift_docker_blocked_registries: "registry.redhat.io"
 rhsm_repos:
   - rhel-7-server-rpms
   - rhel-7-server-extras-rpms

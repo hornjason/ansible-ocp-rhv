@@ -1,7 +1,7 @@
 ---
 - name: oVirt infra
   hosts: localhost
-  become: true
+  #become: true
   connection: local
   gather_facts: false
   vars:

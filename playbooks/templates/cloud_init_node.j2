@@ -1,4 +1,5 @@
 runcmd:
+  - ipa-client-install  --mkhomedir --enable-dns-updates --server=idm1-lab.deadpool.od4apps.com --principal=admin --password='!EALAB4odfl' --unattended --domain=lab.od4apps.com --no-ntp
   - mkdir -p '/var/lib/origin/openshift.local.volumes'
   - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
   - touch /etc/sysconfig/.finished
@@ -43,6 +44,7 @@ packages:
   - {{ pkg }}
 {% endfor %}
 {% endif %}
+  - ipa-client
   - wget
   - git
   - net-tools
