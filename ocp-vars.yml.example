@@ -184,7 +184,7 @@ openshift_master_htpasswd_users: {'admin': '$apr1$zAhyA9Ko$rBxBOwAwwtRuuaw8OtCwH
 openshift_master_identity_providers: [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider' }]
 
 # example with multiple identityproviders
-#openshift_master_identity_providers: [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'},{'name': 'google', 'login': 'true', 'challenge': 'false', 'kind': 'GoogleIdentityProvider', 'clientID': 'thisisaFakeTokenChange.apps.googleusercontent.com', 'clientSecret': 'FakeSecretForGoogleIdentity', 'hostedDomain': ''}]
+#openshift_master_identity_providers: [{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'},{'name': 'google', 'login': 'true', 'challenge': 'false', 'kind': 'GoogleIdentityProvider', 'clientID': 'thisisaFakeTokenChange.apps.googleusercontent.com', 'clientSecret': 'FakeSecretForGoogleIdentity', 'hostedDomain': ''}]
 
 
 ##############################################################################
