@@ -1,4 +1,6 @@
 ---
+# TODO: JTH: - query ovirt for matching VMs using facts
+# don't rely on vars and inventory files
 - name: Unregister VMs
   hosts: nodes:lb
   gather_facts: False

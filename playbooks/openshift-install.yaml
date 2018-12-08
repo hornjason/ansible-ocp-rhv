@@ -24,7 +24,7 @@
         refresh_inventory
 
 - name: call openshift pre-req play
-  import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml"
+  import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml "
 
 - name: call openshift deploy_cluster play
   import_playbook: "/usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"

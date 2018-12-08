@@ -1,4 +1,4 @@
 ---
-- import_playbook: deploy-vms.yaml
+- import_playbook: deploy-vms.yaml 
 
 - import_playbook: openshift-install.yaml
