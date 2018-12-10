@@ -3,7 +3,7 @@
 # Reference Architecture: OpenShift Container Platform on Red Hat Virtualization
 
 This repository contains the Ansible playbooks used to deploy  
-an OpenShift Container Platform environment on Red Hat Virtualization
+an OpenShift Container Platform environment on Red Hat Virtualization.
 
 ## Overview
 
@@ -35,28 +35,117 @@ The VMs have hard coded NICS outside the default RHV pool, This makes it easier 
 Make sure RHV is installed, [RHV 4.1 Documentation](https://access.redhat.com/documentation/en-us/red_hat_virtualization/?version=4.1)
 ### Preparing the Deployment Host
 **Step 1.**
-
-**deploy-host playbook:**
-Ensure the deployment host (aka workstation host) is running Red Hat Enterprise  
-Linux 7 and is registered and subscribed to at least the following channels: 
-
- -   rhel-7-server-rpms
- -   rhel-7-server-extras-rpms
- -   rhel-7-server-ansible-2.4-rpms
- -   ﻿rhel-7-server-rhv-4.1-rpms
-
-`ovirt-ansible-roles` rpm will be installed via the **deploy-host** playbook.
-
-The following commands should be issued from the deployment host (by preference from a  
-regular user account with sudo access):
+Git clone the ansible-ocp-rhv repository and run the setup playbook.
 
 ```
 $ sudo yum install -y git 
-$ mkdir -p ~/git
+$ mkdir -p git
 $ cd ~/git/ && git clone https://github.com/hornjason/rhev-ocp.git
-$ cd ~/git/rhev-ocp && ansible-playbook playbooks/deploy-host.yaml -e provider=rhv
+$ cd ~/git/rhev-ocp && ansible-playbook setup.yml
 ```
 
+Once the playbook has completed your host should be configured with the prerequisites to run the automation.
+
+
+### Varibles
+#### RHV
+| Variable | Description
+| engine_hostname | The hostname of the RHV engine.
+| engine_url | Url to engine api. defaults to https://`<engine_hostname>`/ovirt-engine/api.
+| engine_user | User to authenticate to RHV.
+| engine_password | Password to use for `engine_user`.
+| engine_cafile | Certificate Authority file from engine:/etc/pki/ovirt-engine/ca.pem. Path is relative to playbook directory.
+| qcow_url | URL to qcow image to upload if needed. Can also be of the form `file:///<path>`.
+| rhv_cluster | Name of the RHV cluster to install on.
+| rhv_data_center | Name of datacenter to install on.
+| rhv_vm_network | VM Network to attach to the Virtual Machines. Defaults to `ovirtmgmt`.
+| rhv_data_storage | List of the RHV storage domain to use when creating disks.
+#### Virtual Machines
+| template_cluster | Name of RHV cluster to install to. Defaults to `rhv_cluster`
+| template_name | Name of the template to clone the virtual machines from.
+| template_memory | Amount of memory for the virtual machine. Ex. `4GiB`.
+| template_cpu | Number of virtual cores for the virtual machines.
+| template_disk_storage | Data storage for the virtual machine to create disks on. Defaults to `rhv_data_storage`.
+| template_disk_size | Size of the disk for the provisioned virtual machine. Ex. `30GiB`.
+| template_nics | List of NIC's to attach to the virtual machine. Entries should have `name`, `profile_name`, `interface` 
+| master_vm_mem | Memory for the master hosts. Ex. `8`.
+| master_vm_vcpu | Virtual cpu for the master hosts. Ex. `2`.
+| master_docker_volume_size | Size of the docker volume for master hosts in gigabytes. Ex. `10`.
+| master_local_volume_size | Size of the local volume for the master hosts in gigabytes. Ex. `10`.
+| master_etcd_volume_size | Size of the etcd volume for master hosts in gigabytes. Ex. `10`.
+| infra_vm_mem | Memory for the infra hosts. Ex. `8`.
+| infra_vm_vcpu | Virtual cpu for the infra hosts. Ex. `2`.
+| infra_docker_volume_size | Size of the docker volume for infra hosts in gigabytes. Ex. `10`.
+| infra_local_volume_size | Size of the local volume for the infra hosts in gigabytes. Ex. `10`.
+| node_vm_mem | Memory for the node hosts. Ex. `8`.
+| node_vm_vcpu | Virtual cpu for the node hosts. Ex. `2`.
+| node_docker_volume_size | Size of the docker volume for node hosts in gigabytes. Ex. `10`.
+| node_local_volume_size | Size of the local volume for the node hosts in gigabytes. Ex. `10`.
+#### Subscriptions
+| rhsm_master_key | Activation key for master hosts to use to subscribe to satellite.
+| rhsm_master_org | Organization to use for master hosts to use when subscribing to satellite.
+| rhsm_node_key | Activation key for node hosts to use to subscribe to satellite.
+| rhsm_node_org | Organization to use for node hosts to use when subscribing to satellite.
+| rhsm_user | Username to use to subscribe to RHSM. Unnecessary if using activation key.
+| rhsm_pass | Password to use to subscribe to RHSM. Unnecessary if using activation key.
+| rhsm_broker_pool | Pool id to subscribe masters to. Unnecessary if using activation key.
+| rhsm_node_pool | Pool id to subscribe nodes to. Unnecessary if using activation key.
+| rhsub_server | Hostname of the subscription server. Ex. `subscription.rhsm.redhat.com`.
+| rhsm_satellite | Hostname of the satellite server. Ex. `https://satellite.company.com`.
+| rhsm_repos | List of repositories to enable on the hosts.
+| rhsm_packages | List of packages to install during cloud-init.
+#### Access
+| root_ssh_key | SSH key to add to root's authorized keys list.
+#### Openshift
+| console_port | Port to expose the master API on.
+| debug_level | Setting the Openshift services Debug output level.
+| admin_user | Administrative user to allow through htpasswd auth. Ex. `root`.
+| master_nodes | Number of master nodes to provision for the cluster.
+| infra_nodes | Number of infra nodes to provision for the cluster.
+| app_nodes | Number of app nodes to provision for the cluster.
+| lbs | Number of loadbalancers to provision for the cluster.
+| public_hosted_zone | The public network zone Openshift components will use. Ex. `cluster1.company.com`.
+| local_hosted_zone | The local network zone Openshift components will use. Ex. `cluster1.company.com`.
+| apps_dns_prefix | The prefix to use for accessing Openshift application routes. Ex. `apps`.
+| load_balancer_hostname | Hostname to access loadbalancer for the master api. Defaults to master.`<local_hosted_zone>`.
+| router_cert | Dictionary containing the cafile, certfile, and keyfile to use on the Openshift routers.
+| master_cert | Dictionary container the cafiles, certfile, and keyfile to use on the Openshift masters.
+| openshift_master_htpasswd_users | Dictionary used to specify user and password for backdoor admin acces using htpasswd.
+| openshift_master_identity_providers | Dictionary defining the identity providers to use for authentication to Openshift.
+| openshift_disable_check | Disable any health checks performed in the openshift installer pre-flight checks.
+| os_sdn_network_plugin_name | Network Plugin name to use for Openshift SDN.
+| osm_cluster_network_cidr | CIDR to use to specify IP range for pods/Docker.
+| openshift_portal_net | CIDR to use to specify IP range of Openshift Services.
+| storage_type | Type of storage to use when installing the cluster. Options are `dynamic` and `none`.
+| metrics_volume_size | Size of the persistent volume for metrics storage.
+| logging_volume_size | Size of the persistent volume for logging storage.
+| prometheus_volume_size | Size of the persistent volume for prometheus storage.
+| prometheus_alertmanager_size | Size of the persistent volume for alertmanager storage.
+| prometheus_alertbuffer_size | Size of the persistent volume for alertbuffer storage.
+| cassandra_volume_size | Size of the persistent volume for cassandra storage.
+| registry_volume_size | Size of the persistent volume for registry storage.
+| logging_es_size |  Size of the persistent volume for elasticsearch storage.
+| logging_es_mem: | Amount of memory to set for Elasticsearch containers. Ex. 16Gi.
+| oreg_auth_user | Service account for use with registry.redhat.io.
+| oreg_auth_password | Service account password or auth token for use with the auth user.
+| openshift_release | Openshift version to use. Ex. "3.11".
+| deploy_grafana | Boolean value to deploy Grafana.
+| deploy_prometheus | Boolean value to deploy Prometheus.
+| deploy_logging | Boolean value to deploy EFK logging stack.
+| deploy_metrics | Boolean value to deploy hawkular, heapster, cassandra  metrics stack.
+| deploy_ocs | Boolean value to deploy Openshift Container Storage.
+| ocs_infra_cluster_usable_storage | Amount of storage usable for to OCS.<TODO>.
+| ocs_infra_cluster_allocated_storage |  Amount of storage allocated to OCS. <TODO>.
+| ocs_app_cluster_usable_storage | Amount of storage <TODO>.
+| container_runtime_docker_storage_setup_device | Device to use for docker storage.
+| container_runtime_docker_storage_type | Storage type to use for docker storage. Ex. overlay2.
+| oreg_url | Url to use for the Openshift registry components.<TODO>
+| openshift_docker_insecure_registries | Registries for docker to allow insecure connections to.
+| openshift_docker_blocked_registries | Registries for docker to block access to.
+| osm_project_request_message | Message to display when users want to request a project projects.
+| local_volumes_device | Device to be used for local volumes on the host. Ex. /dev/vdc.
+#### Load Balancer
+<TODO>
 ### Dynamic Inventory
 
 A copy of `ovirt4.py` from the Ansible project is provided under the inventory directory. This script will, given credentials to a RHV 4 engine, populate the Ansible inventory with facts about all virtual machines in the cluster.
