@@ -50,6 +50,7 @@ Once the playbook has completed your host should be configured with the prerequi
 ### Varibles
 #### RHV
 | Variable | Description
+|---|---
 | engine_hostname | The hostname of the RHV engine.
 | engine_url | Url to engine api. defaults to https://`<engine_hostname>`/ovirt-engine/api.
 | engine_user | User to authenticate to RHV.
@@ -61,6 +62,8 @@ Once the playbook has completed your host should be configured with the prerequi
 | rhv_vm_network | VM Network to attach to the Virtual Machines. Defaults to `ovirtmgmt`.
 | rhv_data_storage | List of the RHV storage domain to use when creating disks.
 #### Virtual Machines
+| Variable | Description
+|---|---
 | template_cluster | Name of RHV cluster to install to. Defaults to `rhv_cluster`
 | template_name | Name of the template to clone the virtual machines from.
 | template_memory | Amount of memory for the virtual machine. Ex. `4GiB`.
@@ -82,6 +85,8 @@ Once the playbook has completed your host should be configured with the prerequi
 | node_docker_volume_size | Size of the docker volume for node hosts in gigabytes. Ex. `10`.
 | node_local_volume_size | Size of the local volume for the node hosts in gigabytes. Ex. `10`.
 #### Subscriptions
+| Variable | Description
+|---|---
 | rhsm_master_key | Activation key for master hosts to use to subscribe to satellite.
 | rhsm_master_org | Organization to use for master hosts to use when subscribing to satellite.
 | rhsm_node_key | Activation key for node hosts to use to subscribe to satellite.
@@ -95,8 +100,12 @@ Once the playbook has completed your host should be configured with the prerequi
 | rhsm_repos | List of repositories to enable on the hosts.
 | rhsm_packages | List of packages to install during cloud-init.
 #### Access
+| Variable | Description
+|---|---
 | root_ssh_key | SSH key to add to root's authorized keys list.
 #### Openshift
+| Variable | Description
+|---|---
 | console_port | Port to expose the master API on.
 | debug_level | Setting the Openshift services Debug output level.
 | admin_user | Administrative user to allow through htpasswd auth. Ex. `root`.
@@ -145,6 +154,8 @@ Once the playbook has completed your host should be configured with the prerequi
 | osm_project_request_message | Message to display when users want to request a project projects.
 | local_volumes_device | Device to be used for local volumes on the host. Ex. /dev/vdc.
 #### Load Balancer
+| Variable | Description
+|---|---
 <TODO>
 ### Dynamic Inventory
 
