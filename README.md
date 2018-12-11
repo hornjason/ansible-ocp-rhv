@@ -40,7 +40,7 @@ Git clone the ansible-ocp-rhv repository and run the setup playbook.
 ```
 $ sudo yum install -y git 
 $ mkdir -p git
-$ cd ~/git/ && git clone https://github.com/hornjason/rhev-ocp.git
+$ cd ~/git/ && git clone https://github.com/hornjason/ansible-ocp-rhv.git
 $ cd ~/git/rhev-ocp && ansible-playbook setup.yml
 ```
 
@@ -181,25 +181,28 @@ preferable to download the image to a local server, e.g. the /pub/ directory of 
 available, and provide that URL to the Ansible playbook, because the download link will expire  
 after a short while and need to be refreshed, or host it locally on a web server thats accessible from the ansible deployment server and update the _qcow_url_ variable in `ocp-vars.yml`  
 Ex.  
-`qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.4-x86_64-kvm.qcow2`
+`qcow_url: http://web.foo.bar:8080/iso/rhel-server-7.4-x86_64-kvm.qcow2
+or 
+qcow_url: file:///iso/rhel-server-7.4-x86_64-kvm.qcow2`
 
 ## Usage
 
 Edit the `ocp-vars.yml` file in this directory, and fill in any blank values.
 
-VMs are defined in `playbooks/vars/ovirt-infra-vars.yaml`  
+VMs are defined in `playbooks/vars/{{ env }}/vars.yml`  
 Edit to fit your environment as needed
 
 # Installation
 
 ## Virtual Machines + OpenShift
 
-This will deploy all Virtual Machines using `rhev-ocp/playbooks/vars/ovirt-vm-infra.yaml`
+This will deploy all Virtual Machines using `rhev-ocp/playbooks/vars/{{ env }}/vars.yaml`
 
-From the `rhev-ocp/` directory, run
+From the `ansible-ocp-rhv/` directory, run
 
 ```
-ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars.yml
+ansible-playbook playbooks/deploy-vms.yaml
+ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars-{{ env }}.yml
 
 ```
 
@@ -209,16 +212,16 @@ This will provision all VMs and a complete OpenShift infrastructure.
 
 ### Virtual machines _ONLY_
 
-From the `rhev-ocp/` directory, run
+From the `ansible-ocp-rhv/` directory, run
 
 ```
-ansible-playbook playbooks/ovirt-vm-infra.yaml -e@ocp-vars.yml
+ansible-playbook playbooks/deploy-vms.yaml -e@ocp-vars-{{ env }}.yml
 
 ```
 
 ### Set up OpenShift Container Platform on the VMs from the previoius step
 
 ```
-ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars.yaml
+ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars-{{ env }}.yaml
 
 ```
