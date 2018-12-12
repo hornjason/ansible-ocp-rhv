@@ -163,7 +163,7 @@ A copy of `ovirt4.py` from the Ansible project is provided under the inventory d
 
 ### Red Hat Virtualization Certificate
 
-A copy of the `/etc/pki/ovirt-engine/ca.pem` from the RHV engine will be downloaded using the following variables in `ocp-vars.yml`.
+A copy of the `/etc/pki/ovirt-engine/ca.pem` from the RHV engine will be downloaded using the following variables in `ocp-vars-<env>.yml`.
 
 ```
 engine_hostname: rhvm.foo.bar
@@ -187,7 +187,16 @@ qcow_url: file:///iso/rhel-server-7.4-x86_64-kvm.qcow2`
 
 ## Usage
 
-Edit the `ocp-vars.yml` file in this directory, and fill in any blank values.
+Before running any playbooks its important to specify the environment being built or modified. This is done via an environment varibale. In order to build environment `foo`, the following command must be used to specify this environment:
+`export ENV=foo`
+
+This environment variable `ENV`, is used throughout the automation process to tell ansible which variable files to use at runtime. In this case ansible will attempt to source its varibles from `ocp-vars-foo.yml` in the root of the repository. 
+
+The `ENV` varible allows for users of this repository to manage and create multiple Openshift clusters without having to rename and replace name clashing files. Instead, users can simultaneously have many cluster variable files in the root of the repository at once and simply switch between them using the `ENV` varible.
+
+The `ENV` varibale also provides further decoupling of the automation to a specific environment. The only actions that need to be performed for creating a new cluster is a new `ocp-vars-<env>.yml` file to be created and tuned to the users specifications, followed by the setting of the `export ENV=<env>` varible prior to running the automation to select that new cluster.
+
+Edit the `ocp-vars.yml.example` file in this directory, and save it as `ocp-vars-<env>.yml`. Replacing `<env>` with an identifier for your cluster.
 
 VMs are defined in `playbooks/vars/{{ env }}/vars.yml`  
 Edit to fit your environment as needed
@@ -202,7 +211,7 @@ From the `ansible-ocp-rhv/` directory, run
 
 ```
 ansible-playbook playbooks/deploy-vms.yaml
-ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars-{{ env }}.yml
+ansible-playbook playbooks/openshift-install.yaml -e @ocp-vars-{{ env }}.yml
 
 ```
 
@@ -215,13 +224,13 @@ This will provision all VMs and a complete OpenShift infrastructure.
 From the `ansible-ocp-rhv/` directory, run
 
 ```
-ansible-playbook playbooks/deploy-vms.yaml -e@ocp-vars-{{ env }}.yml
+ansible-playbook playbooks/deploy-vms.yaml -e @ocp-vars-{{ env }}.yml
 
 ```
 
 ### Set up OpenShift Container Platform on the VMs from the previoius step
 
 ```
-ansible-playbook playbooks/openshift-install.yaml -e@ocp-vars-{{ env }}.yaml
+ansible-playbook playbooks/openshift-install.yaml -e @ocp-vars-{{ env }}.yaml
 
 ```
