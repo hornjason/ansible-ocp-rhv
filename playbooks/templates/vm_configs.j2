@@ -8,6 +8,7 @@ master_vm:
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
   memory: "{{ master_vm_mem }}GiB"
+  memory_max: "{{ master_vm_mem }}GiB"
   cores: "{{ master_vm_vcpu }}"
   high_availability: true
 
@@ -15,12 +16,14 @@ node_vm:
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
   memory: "{{ node_vm_mem }}GiB"
+  memory_max: "{{ node_vm_mem }}GiB"
   cores: "{{ node_vm_vcpu }}"
 
 infra_vm:
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
   memory: "{{ infra_vm_mem }}GiB"
+  memory_max: "{{ infra_vm_mem }}GiB"
   cores: "{{ infra_vm_vcpu }}"
   # disks are created alphanumeric using name:value -  vdb/vdc/vdd
 
@@ -29,6 +32,7 @@ lb_vm:
   cluster: "{{ rhv_cluster }}"
   template: "{{ template_name }}"
   memory: 4GiB
+  memory_max: 4GiB
   cores: 1
   disks:
     - size: 1GiB

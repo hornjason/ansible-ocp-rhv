@@ -99,6 +99,11 @@ vms:
 {% elif deploy_ocs|bool %}
         # TODO: this will be the ONLY OCS cluster if we hit this point, Change variable name?
         - size: "{{ ocs_infra_cluster_usable_storage }}GiB"
+{% if rhv_data_storage | length > 1 %}
+          storage_domain: "{{ rhv_data_storage[i % (rhv_data_storage | length)] }}"
+{% else %}
+          storage_domain: "{{ rhv_data_storage[0] }}"
+{% endif %}
           name: storage_gluster
           interface: virtio
 {% endif %}
@@ -192,7 +197,7 @@ vms:
 affinity_groups:
   - name: masters_ag
     cluster: "{{ rhv_cluster }}"
-    vm_enforcing: true
+    vm_enforcing: {{ master_ag_enforce | default('yes') }}
     vm_rule: negative
     vms:
 {% for i in range(1, (master_nodes +1) ) %}
@@ -202,7 +207,7 @@ affinity_groups:
 
   - name: infra_ag
     cluster: "{{ rhv_cluster }}"
-    vm_enforcing: true
+    vm_enforcing: {{ infra_ag_enforce | default('yes') }}
     vm_rule: negative
     vms:
 {% for i in range(1, (infra_nodes +1) ) %}
@@ -215,7 +220,7 @@ affinity_groups:
 
   - name: app_ag
     cluster: "{{ rhv_cluster }}"
-    vm_enforcing: true
+    vm_enforcing: {{ app_ag_enforce | default('yes') }}
     vm_rule: negative
     vms:
 {% for i in range(1, (app_nodes +1) ) %}

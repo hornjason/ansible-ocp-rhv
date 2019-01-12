@@ -4,6 +4,8 @@
 - name: Unregister VMs
   hosts: nodes:lb
   gather_facts: False
+  vars:
+    unregister: "{{ skip_unregister | default('False') }}"
   tasks:
     - name: RHSM Unregister VMs
       redhat_subscription:
@@ -13,6 +15,7 @@
       retries: 10
       delay: 30
       ignore_errors: True
+      when: not unregister | bool 
 
 - name: oVirt infra destroy
   hosts: localhost

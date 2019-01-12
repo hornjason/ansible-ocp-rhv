@@ -1,5 +1,14 @@
+{% if admin_user is defined and admin_user != '' %}
+users:
+  - name: {{ admin_user }}
+    sudo:  ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - "{{ admin_ssh_key }}"
+{% endif %}
 runcmd:
-  - ipa-client-install  --mkhomedir --enable-dns-updates --server=idm1-lab.deadpool.od4apps.com --principal=admin --password='!EALAB4odfl' --unattended --domain=lab.od4apps.com --no-ntp
+{% if idm_server is defined and idm_server != ''  %}
+  - ipa-client-install  --mkhomedir --enable-dns-updates --server={{ idm_server }}  --principal=admin --password={{ idm_password }} --unattended --domain={{ idm_domain }}  --no-ntp
+{% endif %}
   - mkdir -p '/var/lib/origin/openshift.local.volumes'
   - /usr/sbin/mkfs.xfs -L localvol "{{ local_volumes_device }}"
   - touch /etc/sysconfig/.finished
@@ -7,6 +16,8 @@ runcmd:
   - sync
 mounts:
   - [ '{{ local_volumes_device }}', '/var/lib/origin/openshift.local.volumes', 'xfs', 'defaults,gquota' ]
+
+{% if use_rhsm | bool %}
 rh_subscription:
 {% if rhsm_user is defined %}
   username: {{ rhsm_user }}
@@ -38,15 +49,22 @@ rh_subscription:
     - rhel-7-server-rpms
     - rhel-7-server-exras-rpms
 {% endif %}
+{% else %} # if using custom yum repo server
+yum_repos:
+{{ lookup('template', 'templates/yum_repos.j2') | indent(0,false) }}
+{% endif %} # end using rhsm
+
 packages:
 {% if pkgs is defined %}
 {% for pkg in pkgs %}
   - {{ pkg }}
 {% endfor %}
 {% endif %}
+{% if idm_server is defined and idm_server != ''  %}
   - ipa-client
+{% endif %}
+  #- kernel
   - wget
-  - git
   - net-tools
   - bind-utils
   - iptables-services
@@ -57,6 +75,6 @@ packages:
   - psacct
   - vim
 package_update: true
-package_upgrade: false
+package_upgrade: true
 package_reboot_if_required: false
 

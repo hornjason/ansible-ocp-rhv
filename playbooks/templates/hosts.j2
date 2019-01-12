@@ -12,18 +12,17 @@ glusterfs_registry
 
 [OSEv3:vars]
 openshift_hosted_registry_replicas={{ infra_nodes }}
+openshift_hosted_registry_storage_kind={{ 'glusterfs' if (deploy_ocs | bool) else '' }}
+openshift_hosted_registry_storage_volume_size={{ registry_volume_size | default('10') }}Gi
 
-{% if oreg_auth_user is defined and oreg_auth_password is defined %}
-oreg_auth_user={{ oreg_auth_user | default('') }}
-oreg_auth_password={{ oreg_auth_password | default('') }}
+{% if oreg_user is defined and oreg_password is defined and 'redhat.io' in registry %}
+oreg_auth_user={{ oreg_user | default('') }}
+oreg_auth_password={{ oreg_password | default('') }}
 {% endif %}
-
 {% if oreg_url is defined and oreg_url != '' %}
 oreg_url={{ oreg_url }}
-openshift_docker_insecure_registries={{ openshift_docker_insecure_registries }}
-{% if openshift_docker_additional_registries is defined %}
-openshift_docker_additional_registries={{ openshift_docker_additional_registries }}
-{% endif %}
+openshift_docker_insecure_registries={{ openshift_docker_insecure_registries | default(registry) }}
+openshift_docker_additional_registries={{ openshift_docker_additional_registries | default(registry) }}
 {% if openshift_docker_blocked_registries is defined %}
 openshift_docker_blocked_registries={{ openshift_docker_blocked_registries }}
 {% endif %}
@@ -37,9 +36,14 @@ openshift_master_dynamic_provisioning_enabled=True
 {% endif %}
 ansible_ssh_user="{{ admin_user }}"
 ansible_become=true
-openshift_deployment_type=openshift-enterprise
-openshift_release='3.11'
 ansible_become=true
+
+# version
+openshift_deployment_type=openshift-enterprise
+openshift_release='v3.11'
+#openshift_pkg_version='-3.11.16'
+#openshift_image_tag='v3.11.16'
+
 openshift_master_api_port={{ console_port }}
 openshift_master_console_port={{ console_port }}
 openshift_master_cluster_method=native
@@ -98,15 +102,19 @@ openshift_enable_olm=true
 
 {% if deploy_logging | default('True') | bool %}
 # Logging
+# https://docs.openshift.com/container-platform/3.11/install_config/persistent_storage/persistent_storage_glusterfs.html#install-example-infra
 openshift_logging_install_logging=True
 openshift_logging_es_memory_limit={{ logging_es_mem | default('8Gi') }}
 {% if storage_type == 'dynamic' %}
+openshift_logging_storage_kind=dynamic
+openshift_logging_elasticsearch_storage_type=pvc
 openshift_logging_es_pvc_dynamic=True
-openshift_logging_es_pvc_size={{ logging_volume_size }}
+openshift_logging_es_pvc_size={{ logging_volume_size }}Gi
 {% endif %}
 openshift_logging_es_cluster_size={{ infra_nodes }}
 {% if deploy_ocs | default('true') | bool %}
-openshift_logging_es_pvc_storage_class_name='glusterfs-registry-block'
+openshift_logging_elasticsearch_pvc_storage_class_name='glusterfs-registry-block'
+#openshift_logging_es_pvc_storage_class_name='glusterfs-registry-block'
 {% endif %}
 openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra": "true"}
 openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra": "true"}
@@ -116,11 +124,11 @@ openshift_logging_install_logging=False
 {% endif %}
 
 # Metrics
-{% if deploy_logging | default('True') | bool %}
+{% if deploy_metrics | default('True') | bool %}
 openshift_metrics_install_metrics=True
 {% if storage_type == 'dynamic' %}
 openshift_metrics_storage_kind=dynamic
-openshift_metrics_storage_volume_size={{ metrics_volume_size }}
+openshift_metrics_storage_volume_size={{ metrics_volume_size }}Gi
 {% endif %}
 {% if deploy_ocs | default('true') | bool %}
 openshift_metrics_cassandra_pvc_storage_class_name='glusterfs-registry-block'
@@ -148,19 +156,6 @@ openshift_cluster_monitoring_operator_prometheus_storage_class_name='glusterfs-r
 openshift_cluster_monitoring_operator_install=True 
 {% endif %}
 
-# Grafana
-#{% if deploy_grafana | default(true) | bool %}
-#openshift_grafana_state=present
-#openshift_grafana_node_exporter=True
-#openshift_grafana_storage_type=pvc
-#openshift_grafana_storage_class='glusterfs-registry-block'
-#openshift_grafana_prometheus_namespace='openshift-metrics'
-#openshift_grafana_prometheus_serviceaccount='prometheus'
-#openshift_grafana_prometheus_route='prometheus'
-#{% else %}
-#openshift_grafana_state=absent
-#{% endif %}
-
 ### NODES ###
 openshift_node_local_quota_per_fsgroup=512Mi
 container_runtime_docker_storage_setup_device=/dev/vdb
@@ -170,14 +165,13 @@ osm_use_cockpit=false
 ### OCS ###
 {% if deploy_ocs | default(true) | bool %}
 # CNS Cnfiguration
-# Container image to use for glusterfs pods
-openshift_storage_glusterfs_image="registry.access.redhat.com/rhgs3/rhgs-server-rhel7:v3.10"
-# Container image to use for glusterblock-provisioner pod
-openshift_storage_glusterfs_block_image="registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7:v3.10"
-# Container image to use for heketi pods
-openshift_storage_glusterfs_heketi_image="registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7:v3.10"
-# Container image to user for S3
-openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-gluster-s3-server-rhel7:v3.10"
+openshift_storage_glusterfs_image={{ registry }}/rhgs3/rhgs-server-rhel7:v3.11
+openshift_storage_glusterfs_block_image={{ registry }}/rhgs3/rhgs-gluster-block-prov-rhel7:v3.11
+openshift_storage_glusterfs_s3_image={{ registry }}/rhgs3/rhgs-s3-server-rhel7:v3.11
+openshift_storage_glusterfs_heketi_image={{ registry }}/rhgs3/rhgs-volmanager-rhel7:v3.11
+
+#openshift_storage_glusterfs_wipe=True
+
 # Cluster 1
 # Total Storage allocated (GB) = {{ ocs_infra_cluster_allocated_storage }}
 # Total Storage available (GB) = {{ ocs_infra_cluster_usable_storage }}
@@ -186,26 +180,43 @@ openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-glust
 # Total Storage allocated (GB) = 0
 # Total Storage available (GB) = {{ ocs_app_cluster_usable_storage }}
 
-# CNS storage cluster
+openshift_storageclass_default=False
+
+# CNS storage for applications
 openshift_storage_glusterfs_namespace=app-storage
+openshift_storage_glusterfs_block_deploy=false    
 openshift_storage_glusterfs_storageclass=true
-openshift_storage_glusterfs_storageclass_default=true
-openshift_storage_glusterfs_block_deploy=true
-openshift_storage_glusterfs_block_host_vol_create=false
-openshift_storage_glusterfs_block_host_vol_size=100
-openshift_storage_glusterfs_block_storageclass=true
-openshift_storage_glusterfs_block_storageclass_default=false
+openshift_storageclass_default=false
+openshift_storage_glusterfs_storageclass_default=True
+
+# CNS storage cluster
+#openshift_storage_glusterfs_namespace=app-storage
+#openshift_storage_glusterfs_storageclass=true
+#openshift_storage_glusterfs_storageclass_default=false
+#openshift_storage_glusterfs_block_deploy=true
+#openshift_storage_glusterfs_block_host_vol_create=True
+#openshift_storage_glusterfs_block_host_vol_size=100
+#openshift_storage_glusterfs_block_storageclass=true
+#openshift_storage_glusterfs_block_storageclass_default=false
 {% endif %}
 
 # CNS storage for OpenShift infrastructure
-openshift_storage_glusterfs_registry_namespace=infra-storage
-openshift_storage_glusterfs_registry_storageclass=true
-openshift_storage_glusterfs_registry_default=false
-openshift_storage_glusterfs_registry_block_deploy=true
-openshift_storage_glusterfs_registry_block_host_vol_create=true
-openshift_storage_glusterfs_registry_block_host_vol_size=150
+openshift_storage_glusterfs_registry_namespace=infra-storage  
+openshift_storage_glusterfs_registry_storageclass=false       
+openshift_storage_glusterfs_registry_block_deploy=true   
+openshift_storage_glusterfs_registry_block_host_vol_create=true    
+openshift_storage_glusterfs_registry_block_host_vol_size=200   
 openshift_storage_glusterfs_registry_block_storageclass=true
-openshift_storage_glusterfs_registry_block_storageclass_default=false
+
+# CNS storage for OpenShift infrastructure
+#openshift_storage_glusterfs_registry_namespace=infra-storage
+#openshift_storage_glusterfs_registry_storageclass=False
+#openshift_storage_glusterfs_registry_default=false
+#openshift_storage_glusterfs_registry_block_deploy=true
+#openshift_storage_glusterfs_registry_block_host_vol_create=true
+#openshift_storage_glusterfs_registry_block_host_vol_size=100
+#openshift_storage_glusterfs_registry_block_storageclass=true
+#openshift_storage_glusterfs_registry_block_storageclass_default=false
 
 {% else %}
 # StorageClass if not OCS

@@ -118,28 +118,31 @@
         path: /etc/sysconfig/.finished
         sleep: 10
         #delay: 300
-        timeout: 600
+        timeout: 1100
       delegate_to: "{{ item }}"
-      loop:  "{{ groups['nodes'] }}" # TODO + groups['lb'] }}"
+      loop: "{{ groups['nodes'] if ( software_lb is undefined or not software_lb | bool ) else groups['nodes'] + groups['lb'] }}"
+      #loop:  "{{ groups['nodes'] if ( software_lb is defined}}" # TODO + groups['lb'] }}"
       register: task_result
 
     - name: Reboot immediately if there was a change.
-      shell: "sleep 5 && reboot"
+      shell: "sleep 5  && reboot"
       async: 1
       poll: 0
       when: task_result is succeeded
       delegate_to: "{{ item }}"
-      loop:  "{{ groups['nodes'] }}" # TODO+ groups['lb'] }}"
+      loop: "{{ groups['nodes'] if ( software_lb is undefined or not software_lb | bool ) else groups['nodes'] + groups['lb'] }}"
+      #loop:  "{{ groups['nodes'] }}" # TODO+ groups['lb'] }}"
     
     - name: Wait for the reboot to complete if there was a change.
       wait_for_connection:
-        connect_timeout: 20
-        sleep: 5
+        connect_timeout: 30
+        sleep: 30
         delay: 5
-        timeout: 300
+        timeout: 600
       when: task_result is succeeded
       delegate_to: "{{ item }}"
-      loop:  "{{ groups['nodes'] }}" #`TODO groups['lb'] }}"
+      loop: "{{ groups['nodes'] if ( software_lb is undefined or not software_lb | bool ) else groups['nodes'] + groups['lb'] }}"
+      #loop:  "{{ groups['nodes'] }}" #`TODO groups['lb'] }}"
       
     # TODO: ANSIBLE 2.7 introduced
     #    - name: Reboot
